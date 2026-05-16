@@ -4,7 +4,7 @@
 
 [🇪🇸 Español](#-español) | [🇬🇧 English](#-english) | [🇫🇷 Français](#-français) | [🇩🇪 Deutsch](#-deutsch)
 
-![Cheatsheet](imagenCheats\CHEATS.png)
+![Cheatsheet](imagenCheats/CHEATS.png)
 ---
 
 # 🇪🇸 Español
