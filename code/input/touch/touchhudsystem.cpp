@@ -882,13 +882,11 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_CHARACTER_CONTEXT_ACTION,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_DO_ACTION,
-        TouchRect( 0.63f, 0.34f, 0.10f, 0.24f ), // posicion original exclamación y demás a pie TouchRect( 0.31f, 0.58f, 0.12f, 0.22f )
+        TouchRect( 0.63f, 0.38f, 0.12f, 0.24f ),
         true,
         "CharacterContextAction"
     );
 
-    // Entrar al coche 
-  
     AddControl(
         TOUCH_HUD_CONTROL_CHARACTER_SECONDARY_CONTEXT_ACTION,
         TOUCH_PROFILE_CHARACTER,
@@ -902,7 +900,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_CHARACTER_JUMP,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_JUMP,
-        TouchRect( 0.76f, 0.34f, 0.12f, 0.24f ),
+        TouchRect( 0.76f, 0.38f, 0.12f, 0.24f ),
         true,
         "CharacterJump"
     );
@@ -911,7 +909,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_CHARACTER_ATTACK,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_ATTACK,
-        TouchRect( 0.64f, 0.68f, 0.10f, 0.22f ),
+        TouchRect( 0.63f, 0.67f, 0.12f, 0.24f ),
         true,
         "CharacterAttack"
     );
@@ -943,7 +941,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_CAMERA_TOGGLE,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_CAMERA_TOGGLE,
-        TouchRect( 0.01f, 0.30f, 0.065f, 0.13f ),
+        TouchRect( 0.06f, 0.42f, 0.08f, 0.16f ), // Originalmente TouchRect( 0.01f, 0.30f, 0.065f, 0.13f )
         true,
         "VehicleCameraToggle"
     );
@@ -980,7 +978,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_REVERSE,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_REVERSE,
-        TouchRect( 0.66f, 0.72f, 0.11f, 0.20f ),
+        TouchRect( 0.69f, 0.72f, 0.11f, 0.20f ),
         true,
         "VehicleReverse"
     );
@@ -989,7 +987,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_HAND_BRAKE,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_HAND_BRAKE,
-        TouchRect( 0.66f, 0.49f, 0.11f, 0.20f ),
+        TouchRect( 0.69f, 0.49f, 0.11f, 0.20f ),
         true,
         "VehicleHandBrake"
     );
@@ -998,16 +996,16 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_GET_OUT,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_GET_OUT_CAR,
-        TouchRect( 0.54f, 0.49f, 0.10f, 0.20f ),
+        TouchRect( 0.797f, 0.325f, 0.127f, 0.230f ), // anterior  TouchRect( 0.805f, 0.34f, 0.11f, 0.20f )
         true,
         "VehicleGetOut"
-    );
+        );
 
     AddControl(
         TOUCH_HUD_CONTROL_VEHICLE_HORN,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_HORN,
-        TouchRect( 0.54f, 0.72f, 0.10f, 0.20f ),
+        TouchRect( 0.565f, 0.72f, 0.11f, 0.20f ),
         true,
         "VehicleHorn"
     );
@@ -1016,7 +1014,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_RESET,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_RESET_CAR,
-        TouchRect( 0.06f, 0.42f, 0.08f, 0.16f ),
+        TouchRect( 0.01f, 0.30f, 0.065f, 0.13f ), // originalmente TouchRect( 0.06f, 0.42f, 0.08f, 0.16f )
         true,
         "VehicleReset"
     );
@@ -1025,11 +1023,11 @@ void TouchHudSystem::InitializeDefaultControls()
     // Frontend buttons
     // -------------------------------------------------------------------------
 
-    AddControl(
+     AddControl(
         TOUCH_HUD_CONTROL_FRONTEND_MOVE_UP,
         TOUCH_PROFILE_FRONTEND,
         TOUCH_ACTION_FE_MOVE_UP,
-        TouchRect( 0.10f, 0.50f, 0.12f, 0.10f ),
+        TouchRect( 0.135f, 0.530f, 0.144f, 0.120f ),
         true,
         "FrontendMoveUp"
     );
@@ -1038,7 +1036,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_FRONTEND_MOVE_DOWN,
         TOUCH_PROFILE_FRONTEND,
         TOUCH_ACTION_FE_MOVE_DOWN,
-        TouchRect( 0.10f, 0.74f, 0.12f, 0.10f ),
+        TouchRect( 0.135f, 0.770f, 0.144f, 0.120f ),
         true,
         "FrontendMoveDown"
     );
@@ -1047,7 +1045,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_FRONTEND_MOVE_LEFT,
         TOUCH_PROFILE_FRONTEND,
         TOUCH_ACTION_FE_MOVE_LEFT,
-        TouchRect( 0.03f, 0.62f, 0.12f, 0.10f ),
+        TouchRect( 0.065f, 0.650f, 0.144f, 0.120f ),
         true,
         "FrontendMoveLeft"
     );
@@ -1056,7 +1054,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_FRONTEND_MOVE_RIGHT,
         TOUCH_PROFILE_FRONTEND,
         TOUCH_ACTION_FE_MOVE_RIGHT,
-        TouchRect( 0.17f, 0.62f, 0.12f, 0.10f ),
+        TouchRect( 0.205f, 0.650f, 0.144f, 0.120f ),
         true,
         "FrontendMoveRight"
     );

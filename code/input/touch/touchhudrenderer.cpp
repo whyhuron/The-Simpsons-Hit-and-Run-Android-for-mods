@@ -38,7 +38,7 @@ TouchHudRenderer::TouchHudRenderer()
 :
 mInitialized( false ),
 mEnabled( true ),
-mOpacity( 0.2f ),
+mOpacity( 0.25f ),
 mPressedOpacity( 0.85f ),
 mJoystickVisualScale( 1.25f )
 {
