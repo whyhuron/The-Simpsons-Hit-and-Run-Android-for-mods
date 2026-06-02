@@ -48,6 +48,19 @@
 #include <libmtap.h>
 #endif
 
+
+#ifdef RAD_ANDROID
+#include <input/touch/touchcameracontroller.h>
+#include <input/touch/touchinputadapter.h>
+#endif
+
+#if defined(RAD_ANDROID)
+  #include <android/log.h>
+  #define LOG_TAG "SimpsonsHitAndRun"
+  #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,  LOG_TAG, __VA_ARGS__)
+  #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#endif
+
 #if defined RAD_XBOX
 
     InputManager::eButtonMap RESET_BUTTONS[] =
@@ -138,6 +151,12 @@ MEMTRACK_PUSH_GROUP( "InputManager" );
         // preallocate run time controller structure.
         mControllerArray[ i ].Create(i);
     }
+    #if defined(__ANDROID__)
+    // este fix fue antes de añadir los cambios al sdlController.cpp
+    // convendria revisar si sigue siendo estrictamente necesario mantenerlo 
+    // Por el momento lo dejamos porque funciona 
+    mControllerArray[ 0 ].SetVirtualInputAvailable( true );
+    #endif
 #ifndef RAD_PC
     mxIControllerSystem2->RegisterConnectionChangeCallback( this );
 #endif
@@ -156,12 +175,18 @@ void InputManager::Update( unsigned int timeinms )
 
     ::radControllerSystemService();
 
+    #ifdef RAD_ANDROID
+    TouchCameraController::GetInstance().Update( timeinms );
+    TouchInputAdapter::GetInstance().FlushQueuedInputs();
+    #endif
+
     // if controllers have been disconnected, change the state
     if(mConnectStateChanged)
     {
         mConnectStateChanged = false;
         EnumerateControllers( );
     }
+    
 
     unsigned int i = 0;
 
@@ -169,11 +194,12 @@ void InputManager::Update( unsigned int timeinms )
     bool resetting = false;
     for ( i = 0; i < Input::MaxControllers; i++ )
     {
-        if(mControllerArray[i].IsConnected())
+        if(mControllerArray[i].IsInputAvailable())
         {
             mControllerArray[i].Update(timeinms);
 
-            if ( mResetEnabled &&
+            if ( mControllerArray[i].IsConnected() && 
+                mResetEnabled &&
                 NUM_RESET_BUTTONS > 0 &&
                 !resetting &&
                 mControllerArray[i].GetInputValueRT( RESET_BUTTONS[ 0 ] ) > 0.5f &&
@@ -242,7 +268,11 @@ void InputManager::OnControllerConnectionStatusChange( IRadController * pIContro
 bool InputManager::IsControllerInPort( int portnum ) const
 {
     rAssert(portnum < static_cast< int >( Input::MaxControllers ) );
+    #if defined(__ANDROID__)
+    return mControllerArray[portnum].IsInputAvailable();
+#else
     return mControllerArray[portnum].IsConnected();
+#endif
 }
 
 void InputManager::ToggleRumble( bool on )
@@ -633,6 +663,7 @@ void InputManager::EnumerateControllers( void )
     strcat(connectionMap,")\n");
 
     rReleaseString(connectionMap);
+    
 //#endif
 }
 

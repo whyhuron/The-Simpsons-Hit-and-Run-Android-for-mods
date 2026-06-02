@@ -363,7 +363,7 @@ int effectsTest( int argc, char * argv[] )
 	#endif // RAD_WIN32
 
 	rAssert( refIRadController != NULL );
-	rAssert( refIRadController->IsConnected() );
+	rAssert( refIRadController->IsInputAvailable() );
 
 	#ifdef RAD_WIN32
     ref< IRadControllerInputPoint > refIRcip_Source_X (  refIRadController->GetInputPointByTypeAndIndex( SOURCE_POS_X_AXIS, 0 ) );

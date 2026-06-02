@@ -73,9 +73,25 @@ class Platform : public IRadDriveErrorCallback
         //Override this if you wanna support it.
         virtual bool OnDriveError( radFileError error, const char* pDriveName, void* pUserData ) { return false; };  
         void ClearControllerError() { OnDriveError(Success, NULL, NULL);}
-        bool PausedForErrors() const { return mPauseForError; };
-        bool IsControllerError() const {  return mErrorState==CTL_ERROR; };
+        //bool PausedForErrors() const { return mPauseForError; }; // ORIGINAL
+        bool IsControllerError() const {  return mErrorState==CTL_ERROR; }; //ORIGINAL
         IRadDrive* GetHostDrive( void ) const { return mpIRadDrive; }
+
+        bool PausedForErrors() const
+        {
+        #if defined(RAD_ANDROID)
+            // On Android, missing physical controller must not pause the game,
+            // because touch is a valid input source.
+            // Keep real platform/file errors untouched.
+            if ( mErrorState == CTL_ERROR )
+            {
+                return false;
+            }
+        #endif
+
+            return mPauseForError;
+        }
+        
         
     protected:
         enum ErrorState 
@@ -98,7 +114,8 @@ class Platform : public IRadDriveErrorCallback
         // Foundation attributes
         IRadDrive* mpIRadDrive;
 
-        Platform() : mPauseForError( false ), mpIRadDrive( 0 ) {};
+        // Platform() : mPauseForError( false ), mpIRadDrive( 0 ) {}; //ORIGINAL
+           Platform() : mErrorState( NONE ),mPauseForError( false ), mpIRadDrive( 0 ) {};// NUEVA 
 };
 
 #endif // PLATFORM_H

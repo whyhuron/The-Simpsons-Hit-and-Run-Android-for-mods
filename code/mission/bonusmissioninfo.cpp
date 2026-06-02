@@ -44,6 +44,10 @@
 #include <presentation/gui/ingame/guiscreenhud.h>
 #include <presentation/gui/ingame/guiscreenmissionload.h>
 
+#if defined(RAD_ANDROID)
+#include <input/touch/touchcontextresolver.h>
+#endif
+
 //******************************************************************************
 //
 // Global Data, Local Data, Local Classes
@@ -169,6 +173,10 @@ BonusMissionInfo::~BonusMissionInfo()
 void BonusMissionInfo::HandleEvent( EventEnum id, void* pEventData )
 {
     rAssert( id == EVENT_CONVERSATION_DONE );
+
+    #if defined(RAD_ANDROID)
+    TouchContextResolver::GetInstance().SetGameplayConversationActive( false );
+    #endif
     //
     // Turn on the animated icon
     //
@@ -316,6 +324,9 @@ void BonusMissionInfo::SetPositions( CarStartLocator* pos1, CarStartLocator* pos
 //=============================================================================
 void BonusMissionInfo::CleanUp()
 {
+    #if defined(RAD_ANDROID)
+        TouchContextResolver::GetInstance().SetGameplayConversationActive( false );
+    #endif
     ResetCharacterPositions();
 
     // if not already done so, unregister hud map icon
@@ -668,6 +679,9 @@ void BonusMissionInfo::TriggerDialogue()
     mReset = false;
 
     CGuiScreenMissionBase::GetBitmapName( mPreviousMissionPic );
+    #if defined(RAD_ANDROID)
+        TouchContextResolver::GetInstance().SetGameplayConversationActive( true );
+    #endif
     GetEventManager()->TriggerEvent( EVENT_CONVERSATION_INIT, (void*)(&mDialogEventData) );
     GetEventManager()->TriggerEvent( EVENT_CONVERSATION_INIT_DIALOG, (void*)(&mDialogEventData) );
     GetEventManager()->TriggerEvent( EVENT_CONVERSATION_START, (void*)(NULL) );

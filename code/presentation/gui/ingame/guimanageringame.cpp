@@ -1106,7 +1106,7 @@ void CGuiManagerInGame::HandleMessage
         if( controllerID >= 0 )
         {
             UserController* controller = GetInputManager()->GetController( controllerID );
-            if( controller != NULL && controller->IsConnected() )
+            if( controller != NULL && controller->IsInputAvailable() ) // ORIGINAL if( controller != NULL && controller->IsConnected() )
             {
                 this->OnControllerConnected( controllerID );
             }
@@ -1140,7 +1140,7 @@ void CGuiManagerInGame::HandleMessage
             if( message == GUI_MSG_UPDATE )
             {
                 int controllerID = GetInputManager()->GetControllerIDforPlayer( 0 );
-                if( !GetInputManager()->GetController( controllerID )->IsConnected() )
+                if( !GetInputManager()->GetController( controllerID )->IsInputAvailable() )
                 {
                     bool setState = !m_controllerPromptShown;
                     this->OnControllerDisconnected( controllerID );

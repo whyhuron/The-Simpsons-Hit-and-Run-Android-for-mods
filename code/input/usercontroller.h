@@ -61,6 +61,15 @@ public:
     void NotifyConnect( void );
     void NotifyDisconnect( void );
 
+    // Virtual input support.
+    // This is used by touch controls or any other non-radController input source.
+    void SetVirtualInputAvailable( bool available );
+    bool IsVirtualInputAvailable( void ) const;
+    bool IsInputAvailable( void ) const;
+
+    void SetVirtualInputValue( unsigned int index, float value, bool forceChange = false );
+    void ClearVirtualInputs( void );
+
     // Returns the value stored by input point at index.
     float GetInputValue( unsigned int index ) const;
     Button* GetInputButton( unsigned int index );
@@ -112,7 +121,13 @@ protected:
 	int m_controllerId;
 
     bool m_bConnected;
+    // True when touch/virtual input is available even if no physical controller
+    // is connected.
+    bool mVirtualInputAvailable;
 
+    // Tracks which physical input slots were written by virtual input, so they
+    // can be cleared safely without blindly resetting the whole controller state.
+    bool mVirtualInputActive[ Input::MaxPhysicalButtons ];
     Mappable* mMappable[ Input::MaxMappables ];
     bool mbInputPointsRegistered;
 

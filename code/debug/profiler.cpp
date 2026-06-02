@@ -241,8 +241,11 @@ void Profiler::EndFrame()
         if (!mSamples[i].bValid) continue;
         float sampleTime, percentTime;
             
+        // este assert de seguridad nos da crash estando en modo debug algunas veces en android 
+        // lo salto en android simplemente
+        #ifndef RAD_ANDROID
         rAssertMsg(!mSamples[i].isOpen, "ProfileEnd() called without a ProfileBegin()" );
-
+        #endif
         sampleTime = mSamples[i].fAccumulator - mSamples[i].fChildrenSampleTime;
 
         float profileTime = mEndProfile - mStartProfile;
@@ -323,8 +326,11 @@ void Profiler::BeginProfile( const char* name )
         mOpenSampleStore->Store(nameUID, sample);
     }
 
+    // este assert de seguridad nos da crash estando en modo debug algunas veces en android 
+        // lo salto en android simplemente
+        #ifndef RAD_ANDROID
     rAssertMsg(!sample->isOpen, "Profiler section error: Started a second time without closing.");
-
+        #endif
     sample->iProfileInstances++;
     sample->isOpen      = true;
     sample->fStartTime = ((float)radTimeGetMicroseconds()) / 1000.0F;

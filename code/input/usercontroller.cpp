@@ -7,6 +7,13 @@
 #include <raddebug.hpp>
 #include <radmath/radmath.hpp>
 
+#if defined(RAD_ANDROID)
+  #include <android/log.h>
+  #define LOG_TAG "SimpsonsHitAndRun"
+  #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,  LOG_TAG, __VA_ARGS__)
+  #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#endif
+
 #if defined(RAD_PS2) || defined(RAD_GAMECUBE)
 #include <input/wheeldefines.h>
 #endif
@@ -131,6 +138,7 @@ m_iPlayerIndex( -1 ),
 m_xIController2( NULL ),
 m_controllerId( -1 ),
 m_bConnected( false ),
+mVirtualInputAvailable( false ),
 mbInputPointsRegistered( false ),
 mGameState( Input::ACTIVE_ALL ),
 mbIsRumbleOn( false )
@@ -141,6 +149,11 @@ mbIsRumbleOn( false )
         this->mMappable[ i ] = 0;
     }
 
+    for ( i = 0; i < Input::MaxPhysicalButtons; i++ )
+    {
+        mVirtualInputActive[ i ] = false;
+    }
+
 #if defined(RAD_PS2) || defined(RAD_GAMECUBE)
     mHeavyWheelRumble.SetRumbleType( LG_TYPE_SQUARE );
 #endif
@@ -148,6 +161,7 @@ mbIsRumbleOn( false )
 
 void UserController::NotifyConnect( void )
 {
+   
     if ( !IsConnected( ) )
     {
         m_bConnected = true;
@@ -159,19 +173,73 @@ void UserController::NotifyConnect( void )
         }
     }
 }
+
 void UserController::NotifyDisconnect( void )
 {
+
+
     if ( IsConnected( ) )
     {
         m_bConnected = false;
 
         for ( unsigned int i = 0; i < Input::MaxMappables; i++ )
         {
-            if (mMappable[ i ])
+            if ( mMappable[ i ] )
+            {
                 mMappable[ i ]->OnControllerDisconnect( GetControllerId( ) );
+            }
         }
     }
 }
+// funciones modificadas 
+void UserController::SetVirtualInputAvailable( bool available )
+{
+    mVirtualInputAvailable = available;
+}
+
+bool UserController::IsVirtualInputAvailable( void ) const
+{
+    return mVirtualInputAvailable;
+}
+
+bool UserController::IsInputAvailable( void ) const
+{
+    return IsConnected() || IsVirtualInputAvailable(); // se ha añadido IsVirtualInputAvailable para diferenciar mando fisico de touch disponible
+}
+
+void UserController::SetVirtualInputValue( unsigned int index, float value, bool forceChange )
+{
+    if ( index >= Input::MaxPhysicalButtons )
+    {
+        return;
+    }
+
+    mButtonArray[ index ].SetValue( value );
+
+    if ( forceChange )
+    {
+        mButtonArray[ index ].ForceChange();
+    }
+
+    mVirtualInputActive[ index ] = ( value != 0.0f );
+}
+
+void UserController::ClearVirtualInputs( void )
+{
+    unsigned int i = 0;
+
+    for ( i = 0; i < Input::MaxPhysicalButtons; i++ )
+    {
+        if ( mVirtualInputActive[ i ] )
+        {
+            mButtonArray[ i ].SetValue( 0.0f );
+            mButtonArray[ i ].ForceChange();
+            mVirtualInputActive[ i ] = false;
+        }
+    }
+}
+//FIN NUEVOS METODOS
+
 
 void UserController::Create( int id )
 {
@@ -502,7 +570,7 @@ void UserController::ApplyDynaEffect( RumbleEffect::DynaEffect effect, unsigned 
 
 void UserController::Update( unsigned timeins )
 {
-    if(!IsConnected())
+    if( !IsInputAvailable() ) // originalmente era !IsConnected() pero lo cambiamos ya que cuando haya touch no habrá mando y queremos poder jugar
         return;
 
 #ifdef CONTROLLER_DEBUG

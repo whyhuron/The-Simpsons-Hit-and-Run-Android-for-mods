@@ -26,7 +26,6 @@
 // Pure3D
 #include <p3d/loadmanager.hpp>
 #include <p3d/utility.hpp>
-
 #ifdef RAD_WIN32
 #include <SDL.h>  // for SDL_PollEvent...
 #endif
@@ -52,7 +51,26 @@
 #include <render/RenderFlow/renderflow.h>
 #include <sound/soundmanager.h>
 #include <input/inputmanager.h>
+#ifdef RAD_WIN32
+#include <input/touch/touchinputmodemanager.h>
+#include <input/touch/touchinputadapter.h>
+#endif
+#ifdef RAD_ANDROID
+#include <input/touch/touchcontextresolver.h>
+#include <input/touch/touchhudsystem.h>
+#include <input/touch/touchinputadapter.h>
+#include <worldsim/avatarmanager.h>
+#include <input/touch/touchassetextractor.h>
+#include <input/touch/touchassetmanager.h>
+#include <input/touch/touchhudrenderer.h>
+#endif
 
+#if defined(RAD_ANDROID)
+  #include <android/log.h>
+  #define LOG_TAG "SimpsonsHitAndRun"
+  #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,  LOG_TAG, __VA_ARGS__)
+  #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#endif
 //******************************************************************************
 //
 // Global Data, Local Data, Local Classes
@@ -65,6 +83,315 @@
 Game* Game::spInstance = NULL;
 
 bool g_inDemoMode = false;
+
+#ifdef RAD_ANDROID
+
+static bool GetTouchAvatarInVehicleForPlayer0()
+{
+    /*
+     * Keep this helper conservative.
+     *
+     * It is only queried when the current context is gameplay.
+     * AvatarManager is the correct long-term source for detecting whether
+     * player 0 is currently inside a vehicle.
+     */
+    Avatar* avatar = GetAvatarManager()->GetAvatarForPlayer( 0 );
+
+    if ( avatar == NULL )
+    {
+        return false;
+    }
+
+    return avatar->IsInCar();
+}
+
+static void UpdateTouchContextResolverFromGame()
+{
+    if ( GetGameFlow() == NULL || InputManager::GetInstance() == NULL )
+    {
+        return;
+    }
+
+    const int currentContext = GetGameFlow()->GetCurrentContext();
+    const unsigned inputGameState = InputManager::GetInstance()->GetGameState();
+
+    bool avatarInVehicle = false;
+
+    /*
+     * Only query AvatarManager while actually in gameplay.
+     * This avoids touching avatar systems during boot, frontend, loading or exit.
+     */
+    if ( currentContext == CONTEXT_GAMEPLAY )
+    {
+        avatarInVehicle = GetTouchAvatarInVehicleForPlayer0();
+    }
+
+    TouchContextResolver::GetInstance().UpdateFromGameState(
+        currentContext,
+        inputGameState,
+        avatarInVehicle
+    );
+}
+
+static void UpdateTouchHudSystemFromSDLEvent( const SDL_Event& msg )
+{
+#if SDL_MAJOR_VERSION < 3
+
+    switch ( msg.type )
+    {
+        case SDL_FINGERDOWN:
+        {
+            TouchInputAdapter::GetInstance().SetEnabled( true );
+            TouchInputAdapter::GetInstance().SetTargetControllerIndex( 0 );
+
+            TouchHudSystem::GetInstance().HandleFingerDown(
+                static_cast<TouchHudFingerId>( msg.tfinger.fingerId ),
+                msg.tfinger.x,
+                msg.tfinger.y,
+                msg.tfinger.pressure
+            );
+
+            break;
+        }
+
+        case SDL_FINGERMOTION:
+        {
+            TouchHudSystem::GetInstance().HandleFingerMove(
+                static_cast<TouchHudFingerId>( msg.tfinger.fingerId ),
+                msg.tfinger.x,
+                msg.tfinger.y,
+                msg.tfinger.pressure
+            );
+
+            break;
+        }
+
+        case SDL_FINGERUP:
+        {
+            TouchHudSystem::GetInstance().HandleFingerUp(
+                static_cast<TouchHudFingerId>( msg.tfinger.fingerId ),
+                msg.tfinger.x,
+                msg.tfinger.y,
+                msg.tfinger.pressure
+            );
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+#else
+
+    switch ( msg.type )
+    {
+        case SDL_EVENT_FINGER_DOWN:
+        {
+            TouchInputAdapter::GetInstance().SetEnabled( true );
+            TouchInputAdapter::GetInstance().SetTargetControllerIndex( 0 );
+
+            TouchHudSystem::GetInstance().HandleFingerDown(
+                static_cast<TouchHudFingerId>( msg.tfinger.fingerID ),
+                msg.tfinger.x,
+                msg.tfinger.y,
+                msg.tfinger.pressure
+            );
+
+            break;
+        }
+
+        case SDL_EVENT_FINGER_MOTION:
+        {
+            TouchHudSystem::GetInstance().HandleFingerMove(
+                static_cast<TouchHudFingerId>( msg.tfinger.fingerID ),
+                msg.tfinger.x,
+                msg.tfinger.y,
+                msg.tfinger.pressure
+            );
+
+            break;
+        }
+
+        case SDL_EVENT_FINGER_UP:
+        {
+            TouchHudSystem::GetInstance().HandleFingerUp(
+                static_cast<TouchHudFingerId>( msg.tfinger.fingerID ),
+                msg.tfinger.x,
+                msg.tfinger.y,
+                msg.tfinger.pressure
+            );
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+#endif
+}
+
+#endif // RAD_ANDROID
+
+#ifdef RAD_WIN32
+
+static void UpdateTouchInputModeFromSDLEvent( const SDL_Event& msg )
+{
+#if SDL_MAJOR_VERSION < 3
+
+    switch ( msg.type )
+    {
+        case SDL_FINGERDOWN:
+        case SDL_FINGERMOTION:
+        case SDL_FINGERUP:
+        {
+            TouchInputModeManager::GetInstance().NotifyTouchInput();
+            break;
+        }
+
+        case SDL_CONTROLLERDEVICEADDED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+            break;
+        }
+
+        case SDL_CONTROLLERDEVICEREMOVED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+            break;
+        }
+
+        case SDL_CONTROLLERBUTTONDOWN:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            break;
+        }
+
+        case SDL_CONTROLLERAXISMOTION:
+        {
+            if ( msg.caxis.value > 8000 || msg.caxis.value < -8000 )
+            {
+                TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            }
+            break;
+        }
+
+        case SDL_JOYDEVICEADDED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+            break;
+        }
+
+        case SDL_JOYDEVICEREMOVED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+            break;
+        }
+
+        case SDL_JOYBUTTONDOWN:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            break;
+        }
+
+        case SDL_JOYAXISMOTION:
+        {
+            if ( msg.jaxis.value > 8000 || msg.jaxis.value < -8000 )
+            {
+                TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            }
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+#else
+
+    switch ( msg.type )
+    {
+        case SDL_EVENT_FINGER_DOWN:
+        case SDL_EVENT_FINGER_MOTION:
+        case SDL_EVENT_FINGER_UP:
+        {
+            TouchInputModeManager::GetInstance().NotifyTouchInput();
+            break;
+        }
+
+        case SDL_EVENT_GAMEPAD_ADDED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+            break;
+        }
+
+        case SDL_EVENT_GAMEPAD_REMOVED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+            break;
+        }
+
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            break;
+        }
+
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        {
+            if ( msg.gaxis.value > 8000 || msg.gaxis.value < -8000 )
+            {
+                TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            }
+            break;
+        }
+
+        case SDL_EVENT_JOYSTICK_ADDED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+            break;
+        }
+
+        case SDL_EVENT_JOYSTICK_REMOVED:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+            break;
+        }
+
+        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            break;
+        }
+
+        case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        {
+            if ( msg.jaxis.value > 8000 || msg.jaxis.value < -8000 )
+            {
+                TouchInputModeManager::GetInstance().NotifyGamepadInput();
+            }
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+#endif
+}
+
+
+
+#endif // RAD_WIN32
 
 //#define DEMO_MODE_PROFILER
 
@@ -369,6 +696,16 @@ void Game::Initialize()
     //
     mpPlatform->InitializePlatform();
 
+    // Extraemos el layout tactil contenido en el apk en archivos leibles para que el pure3d mas adelante lo pueda renderizar en el juego 
+    //APK->com.c4rlox.simpsons/files/touch_controls/icono.png
+    #ifdef RAD_ANDROID
+    TouchAssetExtractor::GetInstance().EnsureAssetsExtracted();
+    // Realizamos la carga con pure3d de los iconos extraidos anteriormente 
+    TouchAssetManager::GetInstance().Initialize();
+    // Realizamos inicializacion del render, pero aqui no es donde solicitamos el renderizado,solo iniciamos el sistema de render
+    TouchHudRenderer::GetInstance().Initialize();
+    #endif
+
     //
     // Initialize the sound manager.
     //
@@ -415,10 +752,17 @@ void Game::Initialize()
 //==============================================================================
 void Game::Terminate() 
 {
+    
     rAssert( mpGameFlow != NULL );
     rAssert( mpRenderFlow != NULL );
     rAssert( mpTimerList != NULL );
     rAssert( mpPlatform != NULL );
+
+    #ifdef RAD_ANDROID
+    // Primero apagamos el render y despues liberamos los assets(iconos tactiles)
+    TouchHudRenderer::GetInstance().Shutdown();
+    TouchAssetManager::GetInstance().Shutdown();
+    #endif
 
     //
     // Kill the flow servers.
@@ -498,7 +842,15 @@ void Game::Run()
         unsigned newTime =  radTimeGetMilliseconds();
         unsigned elapsed = newTime - time;
         time = newTime;
+        #ifdef RAD_ANDROID
+        UpdateTouchContextResolverFromGame();
+        TouchHudSystem::GetInstance().Update( elapsed );
+        #endif
+       
 
+        #ifdef RAD_WIN32
+            TouchInputModeManager::GetInstance().Update( elapsed );
+        #endif
         //
         // Service the windows message loop.
         //
@@ -506,6 +858,10 @@ void Game::Run()
         SDL_Event msg;
         while( SDL_PollEvent( &msg ) )
         {
+            UpdateTouchInputModeFromSDLEvent( msg );
+            #ifdef RAD_ANDROID
+                UpdateTouchHudSystemFromSDLEvent( msg );
+            #endif
 #if SDL_MAJOR_VERSION < 3
             if( msg.type == SDL_QUIT )
 #else

@@ -66,6 +66,10 @@
 
 #include <cheats/cheatinputsystem.h>
 
+#if defined(RAD_ANDROID)
+#include <input/touch/touchcameracontroller.h>
+#endif
+
 //*****************************************************************************
 //
 // Global Data, Local Data, Local Classes
@@ -484,7 +488,7 @@ void SuperCamCentral::Init( bool shutdown )
                 // and wrap back to controller 0
                 //
                 int secondaryControllerID = (controllerID + 1) % NUM_CONTROLLERS;
-                while ( !(GetInputManager()->GetController( secondaryControllerID )->IsConnected()) )
+                while ( !(GetInputManager()->GetController( secondaryControllerID )->IsInputAvailable()) )
                 {
                     secondaryControllerID = (secondaryControllerID + 1) % NUM_CONTROLLERS;
                     if ( secondaryControllerID == controllerID )
@@ -623,25 +627,43 @@ void SuperCamCentral::UpdateCameraCollisionSphereRadius(float radius)
 //=============================================================================
 void SuperCamCentral::Update( unsigned int milliseconds, bool isFirstSubstep )
 {
-#if defined(RAD_XBOX) || defined(RAD_WIN32)
-    if ( mController && 
-         !mCameraToggling && 
-         mController->GetValue( SuperCamController::cameraToggle ) == 1.0f &&
-         AllowCameraToggle() && 
-         GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT &&
-         mActiveSuperCam &&
-#ifdef RAD_PC
-         mActiveSuperCam->GetType() != SuperCam::PC_CAM &&
-#endif
-         mActiveSuperCam->GetType() != SuperCam::WALKER_CAM )
-    {
-        ToggleSuperCam( true );
-        mCameraToggling = true;
-    }
-    else if ( mController && mCameraToggling && mController->GetValue( SuperCamController::cameraToggle) < 0.5f )
-    {
-        mCameraToggling = false;
-    }
+
+    #if defined(RAD_XBOX) || defined(RAD_WIN32)
+
+        bool cameraTogglePressed = false;
+
+        if ( mController )
+        {
+            cameraTogglePressed =
+                mController->GetValue( SuperCamController::cameraToggle ) == 1.0f;
+        }
+
+    #if defined(RAD_ANDROID)
+        if ( TouchCameraController::GetInstance().ConsumeCameraToggleRequest() )
+        {
+            cameraTogglePressed = true;
+        }
+    #endif
+
+        if ( mController &&
+            !mCameraToggling &&
+            cameraTogglePressed &&
+            AllowCameraToggle() &&
+            GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT &&
+            mActiveSuperCam &&
+    #ifdef RAD_PC
+            mActiveSuperCam->GetType() != SuperCam::PC_CAM &&
+    #endif
+            mActiveSuperCam->GetType() != SuperCam::WALKER_CAM )
+        {
+            ToggleSuperCam( true );
+            mCameraToggling = true;
+        }
+        else if ( mController && mCameraToggling && !cameraTogglePressed )
+        {
+            mCameraToggling = false;
+        }
+
 #endif
 
     //Test to see if we should change cameras or not.

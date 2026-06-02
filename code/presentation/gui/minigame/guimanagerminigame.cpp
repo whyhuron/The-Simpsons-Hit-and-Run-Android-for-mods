@@ -344,7 +344,7 @@ CGuiManagerMiniGame::PollControllers()
         if (controllerID >= 0)
         {
             has_registered = true;
-            if( !GetInputManager()->GetController( controllerID )->IsConnected() )
+            if( !GetInputManager()->GetController( controllerID )->IsInputAvailable() )
             {
                 OnControllerDisconnected(controllerID, true);
                 all_ok = false;
@@ -359,7 +359,7 @@ CGuiManagerMiniGame::PollControllers()
             if (controllerID >= 0)
             {
                 has_registered = true;
-                if( !GetInputManager()->GetController( controllerID )->IsConnected() )
+                if( !GetInputManager()->GetController( controllerID )->IsInputAvailable() )
                 {
                     OnControllerDisconnected(controllerID, true);
                     all_ok = false;
@@ -374,7 +374,7 @@ CGuiManagerMiniGame::PollControllers()
             int controllerID = GetGuiSystem()->GetPrimaryController( );
             if (controllerID >= 0)
             {
-                if( !GetInputManager()->GetController( controllerID )->IsConnected() )
+                if( !GetInputManager()->GetController( controllerID )->IsInputAvailable() )
                 {
                     OnControllerDisconnected(controllerID, true);
                     all_ok = false;

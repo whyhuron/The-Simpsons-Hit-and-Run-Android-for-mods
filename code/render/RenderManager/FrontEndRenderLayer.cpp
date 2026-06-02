@@ -33,6 +33,7 @@
 #endif
 #ifdef RAD_ANDROID
 #include <presentation/fmvplayer/fmvplayer.h>
+#include <input/touch/touchhudrenderer.h>
 #endif
 
 
@@ -312,10 +313,16 @@ void FrontEndRenderLayer::Render()
 
         if( GetCoinManager()->DrawAfterGui() )
             DrawCoinObject();
-
+        
+        
+        #ifdef RAD_ANDROID
+        TouchHudRenderer::GetInstance().Render(); // Excelente sitio para renderizar pero hay que vigilar el caso de cinematica
+        #endif
         HeapMgr()->PopHeap( GMA_TEMP );
 
         mpView[ view ]->EndRender();
+
+        
     }
 
 #ifdef DEBUGWATCH

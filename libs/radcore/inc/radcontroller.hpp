@@ -198,6 +198,8 @@ struct IRadControllerConnectionChangeCallback
     //               pIController->GetLocation() );
     // }
     //
+    // Esto ha sido cambiado el IsConnected por IsInputAvailable debido a que en android el touch es como un mando siempre disponible
+    // Ademas la funcion IsInputAvailable ha sido poco invasiva y sustituble por IsConnected para respetar la arquitectura
 
     virtual void OnControllerConnectionStatusChange( IRadController * pIController ) = 0;
 };

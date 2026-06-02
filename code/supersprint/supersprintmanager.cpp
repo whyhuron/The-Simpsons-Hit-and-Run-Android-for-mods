@@ -1415,7 +1415,7 @@ void SuperSprintManager::OnButtonDown( int controllerId, int buttonId, const But
 //=============================================================================
 void SuperSprintManager::LoadControllerMappings( unsigned int controllerId )
 {
-    if ( GetInputManager()->GetController( controllerId )->IsConnected() )
+    if ( GetInputManager()->GetController( controllerId )->IsInputAvailable() )
     {
 #if defined(RAD_XBOX) || defined(RAD_CONSOLE) && defined(RAD_WIN32)
         ClearMap(0);

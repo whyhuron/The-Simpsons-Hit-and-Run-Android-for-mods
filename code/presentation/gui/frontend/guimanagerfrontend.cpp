@@ -800,7 +800,7 @@ void CGuiManagerFrontEnd::HandleMessage
         if( controllerID >= 0 )
         {
             UserController* controller = GetInputManager()->GetController( controllerID );
-            if( controller != NULL && controller->IsConnected() )
+            if( controller != NULL && controller->IsInputAvailable() ) // ORIGINAL if( controller != NULL && controller->IsConnected() )
             {
                 this->OnControllerConnected( controllerID );
             }
@@ -836,7 +836,7 @@ void CGuiManagerFrontEnd::HandleMessage
 #else
                 int controllerID = GetGuiSystem()->GetPrimaryController();
 #endif
-                if( controllerID >=0 && !GetInputManager()->GetController( controllerID )->IsConnected() )
+                if( controllerID >=0 && !GetInputManager()->GetController( controllerID )->IsInputAvailable() )
                 {
                     this->OnControllerDisconnected( controllerID );
                 }

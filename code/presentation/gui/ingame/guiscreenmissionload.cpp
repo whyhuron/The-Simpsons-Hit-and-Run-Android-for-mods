@@ -36,6 +36,10 @@
 #include <p3d/unicode.hpp>
 #include <string.h>
 
+#if defined(RAD_ANDROID)
+#include <input/touch/touchcontextresolver.h>
+#endif
+
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
@@ -274,6 +278,8 @@ void CGuiScreenMissionLoad::HandleMessage
 
                     // resume game and start mission
                     //
+                   
+
                     m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME );
 
                     // trigger this event ONLY for wager race missions
@@ -348,6 +354,10 @@ void CGuiScreenMissionLoad::InitIntro()
 {
     CGuiScreenMissionBase::InitIntro();
 
+    #if defined(RAD_ANDROID)
+        TouchContextResolver::GetInstance().SetMissionBriefingActive( true );
+    #endif
+
     Scrooby::Text* missionTitle = GetTitleText();
     rAssert( missionTitle != NULL );
 
@@ -419,6 +429,9 @@ void CGuiScreenMissionLoad::InitIntro()
 //===========================================================================
 void CGuiScreenMissionLoad::InitOutro()
 {
+    #if defined(RAD_ANDROID)
+        TouchContextResolver::GetInstance().SetMissionBriefingActive( false );
+    #endif
     CGuiScreenMissionBase::InitOutro();
     rWarning( m_LoadIsDone );
     m_LoadIsDone = false;

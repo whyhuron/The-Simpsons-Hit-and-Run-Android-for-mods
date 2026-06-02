@@ -206,7 +206,7 @@ void FMVUserInputHandler::OnControllerDisconnect( int id )
         char str_buffer[256];
         CGuiScreenMessage::GetControllerDisconnectedMessage(controllerID, str_buffer,  255);
         // FIX temporal anticrash en 64 bits 
-        //GetGame()->GetPlatform()->OnControllerError(str_buffer);
+        //GetGame()->GetPlatform()->OnControllerError(str_buffer); // Segun yo llegado a este punto podria descomentar esto pero para que probarlo si ya funciona :)
     }
 #endif
 }

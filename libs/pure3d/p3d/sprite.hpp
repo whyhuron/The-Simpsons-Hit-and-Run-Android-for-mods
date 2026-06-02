@@ -40,6 +40,12 @@ public:
 
     void Display();
 
+    // Hemos añadido esta nueva función para representar los iconos en pantalla del táctil
+    // la funcion Display no nos servía ya que no utilizaba coordenadas normalizas, por lo que el icono se dibujaba a menos de 1 pixel y no se representaba
+    // con esta funcion tendremos control total sobre la posición del icono en pantalla lo cual es importante
+    //El flujo será p3d carga en memoria los iconos y pddi se encarga de dibujarlos con esta función
+    void DisplayAt( float x, float y, float displayWidth, float displayHeight );
+
     int GetNativeX(void); 
     int GetNativeY(void);
 

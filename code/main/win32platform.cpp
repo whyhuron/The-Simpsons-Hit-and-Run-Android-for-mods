@@ -894,7 +894,7 @@ void Win32Platform::DisplaySplashScreen( const char* textureName,
 }
 
 // FUNCION ORIGINAL
-
+/*
 void Win32Platform::OnControllerError(const char *msg)
 {
     DisplaySplashScreen( Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
@@ -902,7 +902,26 @@ void Win32Platform::OnControllerError(const char *msg)
     mPauseForError = true;
 
 }
+*/
 
+// NUEVA FUNCION para añadir una capa extra defensiva (no necesaria realmente pero bueno)
+void Win32Platform::OnControllerError(const char* msg)
+{
+#ifdef RAD_ANDROID
+    // Android always has touch as a valid input source.
+    // A physical controller error must not pause the whole game,
+    // because the player can continue using touch controls.
+    //
+    // Keep file/drive errors handled by OnDriveError().
+    mErrorState = NONE;
+    mPauseForError = false;
+    return;
+#else
+    DisplaySplashScreen( Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+    mErrorState = CTL_ERROR;
+    mPauseForError = true;
+#endif
+}
 
 // NUEVA FUNCION MISMO COMPORTAMIENTO CON LOGI 
 /*
@@ -971,6 +990,9 @@ void Win32Platform::OnControllerError(const char *msg)
 // Return:      bool 
 //
 //=============================================================================
+
+// ULTIMA QUE ESTABA USANDO 
+
 bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, void* pUserData )
 {
     // First check if the error is related to loading/saving games.
@@ -1059,6 +1081,7 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
 
     return false;
 }
+
 
 //=============================================================================
 // Win32Platform::SetResolution
@@ -1865,14 +1888,15 @@ void Win32Platform::TranslateResolution( Resolution res, int&x, int&y )
 #elif defined(RAD_VITA)
     x = 960;
     y = 544;
-	
+
+/*
 #elif defined(RAD_ANDROID)
     // Android: fixed render size for a first working port (720p target).
     // This keeps behavior predictable across devices and matches the "fixed res per platform" style
     // already used for Vita and Switch.
     x = 1280;
     y = 720;
-
+*/
 #else
     switch( res )
     {

@@ -17,6 +17,9 @@
 //========================================
 #include <input/mappable.h>
 
+#if defined(RAD_ANDROID)
+#include <input/touch/touchcameracontroller.h>
+#endif
 //========================================
 // Forward References
 //========================================
@@ -145,6 +148,7 @@ inline void SuperCamController::OnButtonUp( int controllerId, int buttonId, cons
 // Return:      n/a
 //
 //=============================================================================
+
 inline float SuperCamController::GetAxisValue( unsigned int buttonId ) const
 {
 #ifdef RAD_PC
@@ -170,7 +174,29 @@ inline float SuperCamController::GetAxisValue( unsigned int buttonId ) const
         }
     }
 #else
-    return GetValue( buttonId );
+    float value = GetValue( buttonId );
+
+#if defined(RAD_ANDROID)
+    if ( buttonId == stickX )
+    {
+        value += TouchCameraController::GetInstance().GetLookX();
+    }
+    else if ( buttonId == stickY )
+    {
+        value += TouchCameraController::GetInstance().GetLookY();
+    }
+
+    if ( value > 1.0f )
+    {
+        value = 1.0f;
+    }
+    else if ( value < -1.0f )
+    {
+        value = -1.0f;
+    }
+#endif
+
+    return value;
 #endif
 }
 

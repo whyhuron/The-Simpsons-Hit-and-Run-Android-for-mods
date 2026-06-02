@@ -731,7 +731,7 @@ int main( void )
     ref< IRadController > refIRadController ( ::radControllerSystemGet( )->GetControllerByIndex( 0 ) );
 
 	rAssert( refIRadController != NULL );
-	rAssert( refIRadController->IsConnected() );
+	rAssert( refIRadController->IsInputAvailable() );
 
     ref< IRadControllerInputPoint > refIRcip_Play  (  refIRadController->GetInputPointByName( PLAY_BUTTON ) );
     ref< IRadControllerInputPoint > refIRcip_Pause ( refIRadController->GetInputPointByName( PAUSE_BUTTON ) );

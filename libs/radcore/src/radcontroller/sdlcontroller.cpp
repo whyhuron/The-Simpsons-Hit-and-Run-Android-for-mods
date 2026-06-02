@@ -150,6 +150,10 @@ static SDLInputPoint g_SDLPoints[] =
 static class radControllerSystemSDL* s_pTheSDLControllerSystem2 = NULL;
 static radMemoryAllocator g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
 
+// Es decir el touch entrará como mando principal respetando la estructura del juego de puertos, en este caso puerto 0
+#if defined(RAD_ANDROID)
+static const char* ANDROID_TOUCH_CONTROLLER_LOCATION = "Port0\\Slot0";
+#endif
 
 #if defined(RAD_ANDROID)
 static bool AndroidJavaRumbleFallback(float intensity, int length)
@@ -373,15 +377,11 @@ class radControllerInputPointSDL
     //========================================================================
 
 	float CalculateNewValue( void )
-	{
-        //
-        // Calculate the current value of the input point according to the
-        // data structure passed in.  We get initialized with the offset
-        // into this data array to get our data.  Knowing this and our type
-        // we can determine our new floating point value.
-        //
+{
+   
+   
 
-        float newValue = 0.0f;
+    float newValue = 0.0f;
 
         if ( m_pController != NULL )
         {
@@ -756,6 +756,240 @@ class radControllerInputPointSDL
 
     ref< IRadObjectList > m_xIOl_Callbacks;
 };
+
+#if defined(RAD_ANDROID)
+
+//============================================================================
+// Component: radControllerInputPointAndroidTouch
+//
+// Input point used by the Android/touch virtual controller.
+//
+// Important:
+// - This does NOT read from SDL.
+// - Buttons and triggers stay released.
+// - X/Y axes stay centered.
+// - Real touch values are injected later through TouchInputAdapter directly
+//   into UserController::mButtonArray.
+//============================================================================
+
+class radControllerInputPointAndroidTouch
+    :
+    public IRadControllerInputPointSDL,
+    public radRefCount
+{
+public:
+
+    IMPLEMENT_REFCOUNTED( "radControllerInputPointAndroidTouch" )
+
+    radControllerInputPointAndroidTouch
+    (
+        const char* pType,
+        const char* pName,
+        int id
+    )
+        :
+        radRefCount( 0 ),
+        m_Value( 0.0f ),
+        m_MinRange( 0.0f ),
+        m_MaxRange( 1.0f ),
+        m_Tolerance( 0.0f ),
+        m_TimeInState( 0 ),
+        m_TimeOfStateChange( 0 ),
+        m_pType( pType ),
+        m_pName( pName ),
+        m_Identifier( id )
+    {
+        radMemoryMonitorIdentifyAllocation(
+            this,
+            g_nameFTech,
+            "radControllerInputPointAndroidTouch"
+        );
+
+        ::radObjectListCreate( &m_xIOl_Callbacks, g_ControllerSystemAllocator );
+
+        m_Value = GetNeutralInternalValue();
+    }
+
+    ~radControllerInputPointAndroidTouch()
+    {
+        rAssertMsg(
+            m_xIOl_Callbacks->GetSize() == 0,
+            "Somebody forgot to UnRegister an Android touch input point callback"
+        );
+    }
+
+    virtual void iInitialize( void )
+    {
+        m_Value = GetNeutralInternalValue();
+    }
+
+    virtual void iVirtualTimeReMapped( unsigned int virtualTime )
+    {
+        m_TimeInState = 0;
+        m_TimeOfStateChange = virtualTime;
+    }
+
+    virtual void iVirtualTimeChanged( unsigned int virtualTime )
+    {
+        /*
+         * No SDL polling here. This input point is only a neutral placeholder.
+         * Real touch input is injected through TouchInputAdapter.
+         */
+        m_TimeInState = virtualTime - m_TimeOfStateChange;
+    }
+
+    virtual const char* GetName( void )
+    {
+        return m_pName;
+    }
+
+    virtual const char* GetType( void )
+    {
+        return m_pType;
+    }
+
+    virtual void SetTolerance( float percentage )
+    {
+        rAssert( percentage >= 0.0f && percentage <= 1.0f );
+
+        if ( percentage < 0.0f )
+        {
+            percentage = 0.0f;
+        }
+        else if ( percentage > 1.0f )
+        {
+            percentage = 1.0f;
+        }
+
+        m_Tolerance = percentage;
+    }
+
+    virtual float GetTolerance( void )
+    {
+        return m_Tolerance;
+    }
+
+    virtual void RegisterControllerInputPointCallback
+    (
+        IRadControllerInputPointCallback* pCallback,
+        unsigned int userData = 0
+    )
+    {
+        rAssert( pCallback != NULL );
+
+        ref< IRadWeakCallbackWrapper > xIWcr;
+
+        radWeakCallbackWrapperCreate( &xIWcr, g_ControllerSystemAllocator );
+
+        rAssert( xIWcr != NULL );
+
+        if ( xIWcr != NULL )
+        {
+            xIWcr->SetWeakInterface( pCallback );
+            xIWcr->SetUserData( (void*)(uintptr_t)userData );
+        }
+
+        m_xIOl_Callbacks->AddObject( xIWcr );
+    }
+
+    virtual void UnRegisterControllerInputPointCallback
+    (
+        IRadControllerInputPointCallback* pCallback
+    )
+    {
+        rAssert( pCallback != NULL );
+
+        IRadWeakCallbackWrapper* pIWcr;
+
+        m_xIOl_Callbacks->Reset();
+
+        while ( ( pIWcr = reinterpret_cast< IRadWeakCallbackWrapper* >( m_xIOl_Callbacks->GetNext() ) ) )
+        {
+            if ( pIWcr->GetWeakInterface() == pCallback )
+            {
+                m_xIOl_Callbacks->RemoveObject( pIWcr );
+                return;
+            }
+        }
+
+        rAssertMsg( false, "Android touch input point callback not registered." );
+    }
+
+    virtual float GetCurrentValue( unsigned int* pTime = NULL )
+    {
+        if ( pTime != NULL )
+        {
+            *pTime = m_TimeInState;
+        }
+
+        return ( ( m_MaxRange - m_MinRange ) * m_Value ) + m_MinRange;
+    }
+
+    virtual void SetRange( float min, float max )
+    {
+        m_MinRange = min;
+        m_MaxRange = max;
+    }
+
+    virtual void GetRange( float* pMin, float* pMax )
+    {
+        rAssert( pMin != NULL || pMax != NULL );
+
+        if ( pMin != NULL )
+        {
+            *pMin = m_MinRange;
+        }
+
+        if ( pMax != NULL )
+        {
+            *pMax = m_MaxRange;
+        }
+    }
+
+private:
+
+    float GetNeutralInternalValue() const
+    {
+        /*
+         * radControllerInputPointSDL stores stick axes internally in 0..1:
+         *
+         *   0.0 = negative edge
+         *   0.5 = center
+         *   1.0 = positive edge
+         *
+         * UserController later maps XAxis/YAxis to -1..1.
+         * Therefore the virtual neutral axis value must be 0.5f.
+         */
+        if ( ( m_pType == g_Sdlipt[ 2 ] ) || ( m_pType == g_Sdlipt[ 3 ] ) )
+        {
+            return 0.5f;
+        }
+
+        /*
+         * Buttons and analog triggers stay released.
+         */
+        return 0.0f;
+    }
+
+private:
+
+    float m_Value;
+    float m_MinRange;
+    float m_MaxRange;
+    float m_Tolerance;
+
+    unsigned int m_TimeInState;
+    unsigned int m_TimeOfStateChange;
+
+    const char* m_pType;
+    const char* m_pName;
+
+    int m_Identifier;
+
+    ref< IRadObjectList > m_xIOl_Callbacks;
+};
+
+#endif // RAD_ANDROID
 
 //============================================================================
 // Component: radControllerSDL
@@ -1511,6 +1745,321 @@ else
     uint16_t                          m_LeftGain, m_RightGain;
 };
 
+#if defined(RAD_ANDROID)
+
+//============================================================================
+// Component: radControllerAndroidTouch
+//
+// Android/touch virtual controller.
+//
+// This controller is NOT a physical SDL gamepad.
+// It exists only so the original input pipeline can initialize controller 0
+// when Android has touch input but no physical gamepad connected.
+//
+// Real touch values are still written by TouchInputAdapter directly into
+// UserController::mButtonArray through SetVirtualInputValue().
+//============================================================================
+
+class radControllerAndroidTouch
+    :
+    public IRadControllerSDL,
+    public radRefCount
+{
+public:
+
+    IMPLEMENT_REFCOUNTED( "radControllerAndroidTouch" )
+
+    radControllerAndroidTouch
+    (
+        unsigned int virtualTime,
+        unsigned int bufferTime,
+        unsigned int pollingRate
+    )
+        :
+        radRefCount( 0 )
+    {
+        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerAndroidTouch" );
+
+        ::radObjectListCreate( &m_xIOl_InputPoints, g_ControllerSystemAllocator );
+        ::radObjectListCreate( &m_xIOl_OutputPoints, g_ControllerSystemAllocator );
+        ::radStringCreate( &m_xIString_Location, g_ControllerSystemAllocator );
+
+        m_xIString_Location->SetSize( 12 );
+        m_xIString_Location->Append( "Port0\\Slot0" );
+
+        /*
+         * Create the same input point layout as a normal SDL controller.
+         * The input points have a NULL SDL controller, so their value stays 0.
+         * Actual touch values are injected later through TouchInputAdapter.
+         */
+       for ( unsigned int button = 0; button < ( sizeof( g_SDLPoints ) / sizeof( SDLInputPoint ) ); button++ )
+        {
+            ref< radControllerInputPointAndroidTouch > pInputPoint =
+                new( g_ControllerSystemAllocator ) radControllerInputPointAndroidTouch
+                (
+                    g_SDLPoints[ button ].m_pType,
+                    g_SDLPoints[ button ].m_pName,
+                    g_SDLPoints[ button ].m_Mask
+                );
+
+            m_xIOl_InputPoints->AddObject( pInputPoint );
+
+            pInputPoint->iInitialize();
+        }
+
+        radControllerOutputPointSDL* pLeft =
+            new( g_ControllerSystemAllocator ) radControllerOutputPointSDL( "LeftMotor" );
+
+        radControllerOutputPointSDL* pRight =
+            new( g_ControllerSystemAllocator ) radControllerOutputPointSDL( "RightMotor" );
+
+        m_xIOl_OutputPoints->AddObject( reinterpret_cast< IRefCount* >( pLeft ) );
+        m_xIOl_OutputPoints->AddObject( reinterpret_cast< IRefCount* >( pRight ) );
+
+        iSetBufferTime( bufferTime, pollingRate );
+        iVirtualTimeReMapped( virtualTime );
+    }
+
+    virtual ~radControllerAndroidTouch()
+    {
+    }
+
+    virtual void iPoll( unsigned int virtualTime )
+    {
+        /*
+         * No SDL polling here.
+         * This is not a physical gamepad.
+         */
+        (void)virtualTime;
+    }
+
+    virtual void iVirtualTimeReMapped( unsigned int virtualTime )
+    {
+        IRadControllerInputPointSDL* pInputPoint;
+
+        m_xIOl_InputPoints->Reset();
+
+        while ( ( pInputPoint = reinterpret_cast< IRadControllerInputPointSDL* >( m_xIOl_InputPoints->GetNext() ) ) )
+        {
+            pInputPoint->iVirtualTimeReMapped( virtualTime );
+        }
+    }
+
+    virtual void iVirtualTimeChanged( unsigned int virtualTime )
+    {
+        IRadControllerInputPointSDL* pInputPoint;
+
+        m_xIOl_InputPoints->Reset();
+
+        while ( ( pInputPoint = reinterpret_cast< IRadControllerInputPointSDL* >( m_xIOl_InputPoints->GetNext() ) ) )
+        {
+            pInputPoint->iVirtualTimeChanged( virtualTime );
+        }
+    }
+
+    virtual void iSetBufferTime( unsigned int milliseconds, unsigned int pollingRate )
+    {
+        (void)milliseconds;
+        (void)pollingRate;
+    }
+
+    virtual bool IsConnected( void )
+    {
+        /*
+         * Logical connection only.
+         * Physical gamepad state must be tracked by TouchInputModeManager,
+         * not by this virtual controller.
+         */
+        return true;
+    }
+
+    virtual const char* GetType( void )
+    {
+        /*
+         * Keep SDLStandard for compatibility with existing mappings.
+         */
+        return "SDLStandard";
+    }
+
+    virtual const char* GetClassification( void )
+    {
+        return "Joystick";
+    }
+
+    virtual unsigned int GetNumberOfInputPointsOfType( const char* pType )
+    {
+        rAssert( pType != NULL );
+
+        unsigned int count = 0;
+
+        m_xIOl_InputPoints->Reset();
+
+        IRadControllerInputPoint* pInputPoint;
+
+        while ( ( pInputPoint = reinterpret_cast< IRadControllerInputPointSDL* >( m_xIOl_InputPoints->GetNext() ) ) )
+        {
+            if ( strcmp( pInputPoint->GetType(), pType ) == 0 )
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    virtual unsigned int GetNumberOfOutputPointsOfType( const char* pType )
+    {
+        rAssert( pType != NULL );
+
+        unsigned int count = 0;
+
+        m_xIOl_OutputPoints->Reset();
+
+        IRadControllerOutputPoint* pOutputPoint;
+
+        while ( ( pOutputPoint = reinterpret_cast< IRadControllerOutputPoint* >( m_xIOl_OutputPoints->GetNext() ) ) )
+        {
+            if ( strcmp( pOutputPoint->GetType(), pType ) == 0 )
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    virtual IRadControllerInputPoint* GetInputPointByTypeAndIndex
+    (
+        const char* pType,
+        unsigned int index
+    )
+    {
+        rAssert( pType != NULL );
+
+        unsigned int count = 0;
+
+        m_xIOl_InputPoints->Reset();
+
+        IRadControllerInputPoint* pInputPoint;
+
+        while ( ( pInputPoint = reinterpret_cast< IRadControllerInputPointSDL* >( m_xIOl_InputPoints->GetNext() ) ) )
+        {
+            if ( strcmp( pInputPoint->GetType(), pType ) == 0 )
+            {
+                if ( count == index )
+                {
+                    return pInputPoint;
+                }
+
+                count++;
+            }
+        }
+
+        return NULL;
+    }
+
+    virtual IRadControllerOutputPoint* GetOutputPointByTypeAndIndex
+    (
+        const char* pType,
+        unsigned int index
+    )
+    {
+        rAssert( pType != NULL );
+
+        unsigned int count = 0;
+
+        m_xIOl_OutputPoints->Reset();
+
+        IRadControllerOutputPoint* pOutputPoint;
+
+        while ( ( pOutputPoint = reinterpret_cast< IRadControllerOutputPoint* >( m_xIOl_OutputPoints->GetNext() ) ) )
+        {
+            if ( strcmp( pOutputPoint->GetType(), pType ) == 0 )
+            {
+                if ( count == index )
+                {
+                    return pOutputPoint;
+                }
+
+                count++;
+            }
+        }
+
+        return NULL;
+    }
+
+    virtual IRadControllerInputPoint* GetInputPointByName( const char* pName )
+    {
+        rAssert( pName != NULL );
+
+        m_xIOl_InputPoints->Reset();
+
+        IRadControllerInputPoint* pInputPoint;
+
+        while ( ( pInputPoint = reinterpret_cast< IRadControllerInputPointSDL* >( m_xIOl_InputPoints->GetNext() ) ) )
+        {
+            if ( strcmp( pName, pInputPoint->GetName() ) == 0 )
+            {
+                return pInputPoint;
+            }
+        }
+
+        return NULL;
+    }
+
+    virtual IRadControllerOutputPoint* GetOutputPointByName( const char* pName )
+    {
+        rAssert( pName != NULL );
+
+        m_xIOl_OutputPoints->Reset();
+
+        IRadControllerOutputPoint* pOutputPoint;
+
+        while ( ( pOutputPoint = reinterpret_cast< IRadControllerOutputPoint* >( m_xIOl_OutputPoints->GetNext() ) ) )
+        {
+            if ( strcmp( pName, pOutputPoint->GetName() ) == 0 )
+            {
+                return pOutputPoint;
+            }
+        }
+
+        return NULL;
+    }
+
+    virtual const char* GetLocation( void )
+    {
+        return m_xIString_Location->GetChars();
+    }
+
+    virtual unsigned int GetNumberOfInputPoints( void )
+    {
+        return m_xIOl_InputPoints->GetSize();
+    }
+
+    virtual IRadControllerInputPoint* GetInputPointByIndex( unsigned int index )
+    {
+        return reinterpret_cast< IRadControllerInputPointSDL* >( m_xIOl_InputPoints->GetAt( index ) );
+    }
+
+    virtual unsigned int GetNumberOfOutputPoints( void )
+    {
+        return m_xIOl_OutputPoints->GetSize();
+    }
+
+    virtual IRadControllerOutputPoint* GetOutputPointByIndex( unsigned int index )
+    {
+        return reinterpret_cast< IRadControllerOutputPoint* >( m_xIOl_OutputPoints->GetAt( index ) );
+    }
+
+private:
+
+    ref< IRadObjectList > m_xIOl_InputPoints;
+    ref< IRadObjectList > m_xIOl_OutputPoints;
+    ref< IRadString > m_xIString_Location;
+};
+
+#endif // RAD_ANDROID
+
 //============================================================================
 // Component: radControllerSystemSDL
 //============================================================================
@@ -1524,6 +2073,32 @@ class radControllerSystemSDL
     public:
 
     IMPLEMENT_REFCOUNTED( "radControllerSystemSDL" )
+
+    //========================================================================
+    // radControllerSystemSDL::FindPhysicalControllerAtLocation
+    //
+    // Searches only real SDL physical controllers.
+    // Does NOT return the Android touch virtual fallback.
+    //========================================================================
+
+    IRadController* FindPhysicalControllerAtLocation( const char* pLocation )
+    {
+        rAssert( pLocation != NULL );
+
+        m_xIOl_Controllers->Reset();
+
+        IRadController* pIC2;
+
+        while ( ( pIC2 = reinterpret_cast< IRadControllerSDL* >( m_xIOl_Controllers->GetNext() ) ) )
+        {
+            if ( strcmp( pIC2->GetLocation(), pLocation ) == 0 )
+            {
+                return pIC2;
+            }
+        }
+
+        return NULL;
+    }
 
      //========================================================================
     // radControllerSystemSDL::CheckDeviceConnectionStatus
@@ -1571,7 +2146,8 @@ class radControllerSystemSDL
 #endif
         sprintf( location, "Port%d\\Slot0", iController );
 
-        xIController2 = sys->GetControllerAtLocation( location );
+        // con esta liena de abajo el touch no bloqueará el puerto 0, por si luego se conecta un mando físico no existan problemas
+        xIController2 = sys->FindPhysicalControllerAtLocation( location ); 
 
         if ( xIController2 != NULL )
         {
@@ -1719,24 +2295,34 @@ class radControllerSystemSDL
         const char * pLocation
     )
     {
-        //
-        // Just loop through all of the controllers asking it for its location
-        // if we find a match, return it.
-        //
-
         rAssert( pLocation != NULL );
 
-        m_xIOl_Controllers->Reset( );
+        /*
+        * First priority: real physical SDL controller.
+        */
+        IRadController* pPhysicalController = FindPhysicalControllerAtLocation( pLocation );
 
-        IRadController * pIC2;
-
-        while ((pIC2 = reinterpret_cast< IRadControllerSDL * >( m_xIOl_Controllers->GetNext( ) )))
+        if ( pPhysicalController != NULL )
         {
-            if ( strcmp( pIC2->GetLocation(), pLocation ) == 0 )
-            {
-                return pIC2;
-            }
+            return pPhysicalController;
         }
+
+    #if defined(RAD_ANDROID)
+        /*
+        * Android touch fallback:
+        *
+        * If no physical controller exists in Port0\Slot0, return the internal
+        * virtual touch controller so the original game input pipeline can
+        * initialize controller 0 normally.
+        *
+        * This does NOT mean a physical gamepad is connected.
+        * TouchInputModeManager remains responsible for physical gamepad/touch UI.
+        */
+        if ( strcmp( pLocation, ANDROID_TOUCH_CONTROLLER_LOCATION ) == 0 )
+        {
+            return m_xIAndroidTouchController;
+        }
+    #endif
 
         return NULL;
     }
@@ -1967,6 +2553,25 @@ class radControllerSystemSDL
         //
         ::radObjectListCreate( & m_xIOl_Callbacks, g_ControllerSystemAllocator );
         rAssert( m_xIOl_Callbacks != NULL );
+        #if defined(RAD_ANDROID)
+        {
+            unsigned int virtualTime = radTimeGetMilliseconds() + m_VirtualTimeAdjust;
+            unsigned int pollingRate = 10;
+
+            if ( m_xITimer != NULL )
+            {
+                pollingRate = m_xITimer->GetTimeout();
+            }
+
+            m_xIAndroidTouchController =
+                new( g_ControllerSystemAllocator ) radControllerAndroidTouch
+                (
+                    virtualTime,
+                    m_EventBufferTime,
+                    pollingRate
+                );
+        }
+        #endif
 
         //
         // Register the default connection state callback
@@ -2096,6 +2701,9 @@ class radControllerSystemSDL
     ref< IRadObjectList >     m_xIOl_Controllers;
     ref< IRadTimer >          m_xITimer;
     ref< IRadTimerList >      m_xITimerList;
+    #if defined(RAD_ANDROID)
+    ref< IRadControllerSDL > m_xIAndroidTouchController;
+    #endif
 
 };
 
