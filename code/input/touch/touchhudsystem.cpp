@@ -137,14 +137,16 @@ void TouchHudSystem::Reset()
     mEnabled = true;
     mCurrentProfile = TOUCH_PROFILE_HIDDEN;
 
+    mCurrentInteractionType = TOUCH_INTERACTION_NONE;
+    mCurrentInteractionIcon = TOUCH_INTERACTION_ICON_NONE;
+
     ClearActiveTouches();
 
     if ( mControlCount == 0 )
     {
         InitializeDefaultControls();
     }
-    mCurrentInteractionType = TOUCH_INTERACTION_NONE;
-    mCurrentInteractionIcon = TOUCH_INTERACTION_ICON_NONE;
+    
 }
 
 void TouchHudSystem::SetEnabled( bool enabled )
@@ -199,13 +201,10 @@ bool TouchHudSystem::IsControlVisible( TouchHudControlId controlId ) const
 
         case TOUCH_HUD_CONTROL_CHARACTER_SECONDARY_CONTEXT_ACTION:
         {
-            /*
-             * Recomendación inicial:
-             * desactivarlo mientras usamos un único botón contextual dinámico.
-             *
-             * Más adelante podría ser un segundo slot si detectamos dos
-             * interacciones simultáneas.
-             */
+            /*Lo desactive para un inicio pero quizas lo vuelva a habilitar para tener 
+            * la puerta del coche entrar  como un caso aparte aunque aun no lo se seguro
+            * Tambien su touchRect fue puesto a false, ojo ahi si luego se quiere habilitar
+            */
             return false;
         }
 
@@ -231,6 +230,8 @@ void TouchHudSystem::Update( unsigned int elapsedMs )
      */
     if ( RejectTouchInputIfSuppressed() )
     {
+        mCurrentInteractionType = TOUCH_INTERACTION_NONE;
+        mCurrentInteractionIcon = TOUCH_INTERACTION_ICON_NONE;
         return;
     }
 
@@ -1148,10 +1149,7 @@ const TouchHudControlDefinition* TouchHudSystem::FindControlAtPosition
 {
     unsigned int i = 0;
 
-    /*
-     * Iterate from last to first so later controls have priority if rectangles
-     * overlap. This is useful for buttons on top of general drag areas later.
-     */
+    
     for ( i = mControlCount; i > 0; --i )
     {
         const TouchHudControlDefinition& control = mControls[ i - 1 ];

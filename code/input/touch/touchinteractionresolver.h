@@ -3,6 +3,11 @@
 
 #include <input/touch/touchtypes.h>
 
+namespace ActionButton
+{
+    class ButtonHandler;
+}
+
 class TouchInteractionResolver
 {
 public:
@@ -19,6 +24,11 @@ private:
 
     TouchInteractionResolver( const TouchInteractionResolver& );
     TouchInteractionResolver& operator=( const TouchInteractionResolver& );
+
+    TouchInteractionType ConvertHandlerToInteraction
+    (
+        ActionButton::ButtonHandler* handler
+    ) const;
 };
 
 #endif // TOUCHINTERACTIONRESOLVER_H_
