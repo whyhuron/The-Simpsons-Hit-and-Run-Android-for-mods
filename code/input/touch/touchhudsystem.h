@@ -180,6 +180,12 @@ public:
     bool IsControlPressed( TouchHudControlId controlId ) const;
     TouchActionId GetControlAction( TouchHudControlId controlId ) const;
 
+    TouchInteractionType GetCurrentInteractionType() const;
+    TouchInteractionIcon GetCurrentInteractionIcon() const;
+    bool HasCurrentInteraction() const;
+
+    bool IsControlVisible( TouchHudControlId controlId ) const;
+
 private:
     TouchHudSystem();
     ~TouchHudSystem();
@@ -206,6 +212,7 @@ private:
     void BeginCameraDrag( TouchHudFingerState* finger, float x, float y );
     void UpdateCameraDrag( TouchHudFingerState* finger, float x, float y );
     void EndCameraDrag( TouchHudFingerState* finger );
+    void UpdateCurrentInteraction();
 
     bool IsInsideCharacterMovementArea( float x, float y ) const;
     bool IsInsideCharacterCameraArea( float x, float y ) const;
@@ -271,6 +278,10 @@ private:
 
     //Variable que delimita a partir de que valor la pantalla se considera zona izquierda para joystick o zona derecha para cámara
     float mCharacterTouchSplitX;
+
+    
+    TouchInteractionType mCurrentInteractionType;
+    TouchInteractionIcon mCurrentInteractionIcon;
     
 };
 

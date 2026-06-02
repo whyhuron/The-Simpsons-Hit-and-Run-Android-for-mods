@@ -61,156 +61,156 @@ bool TouchAssetManager::LoadAllSprites()
 #if !defined(RAD_ANDROID)
     return true;
 #else
-    bool allLoaded = true;
+   bool allLoaded = true;
 
-    // Character
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_JOYSTICK_BASE,
-        "character/circulo.png",
-        "TouchCharacterJoystickBase"
-    ) && allLoaded;
+// Character
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_JOYSTICK_BASE,
+    "character/circulo.png",
+    "tc_joy_base"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_JOYSTICK_KNOB,
-        "character/circuloInteriorJoystick.png",
-        "TouchCharacterJoystickKnob"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_JOYSTICK_KNOB,
+    "character/circuloInteriorJoystick.png",
+    "tc_joy_knob"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_SPRINT,
-        "character/correr.png",
-        "TouchCharacterSprint"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_SPRINT,
+    "character/correr.png",
+    "tc_sprint"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_CONTEXT_EXCLAMATION,
-        "character/exclamacion.png",
-        "TouchCharacterContextExclamation"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_CONTEXT_EXCLAMATION,
+    "character/exclamacion.png",
+    "tc_exclaim"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_ATTACK,
-        "character/golpear.png",
-        "TouchCharacterAttack"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_ATTACK,
+    "character/golpear.png",
+    "tc_attack"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_DOOR,
-        "character/Puerta.png",
-        "TouchCharacterDoor"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_DOOR,
+    "character/Puerta.png",
+    "tc_door"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_ENTER_CAR,
-        "character/PuertaEntrar.png",
-        "TouchCharacterEnterCar"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_ENTER_CAR,
+    "character/PuertaEntrar.png",
+    "tc_enter"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_JUMP,
-        "character/saltar.png",
-        "TouchCharacterJump"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_JUMP,
+    "character/saltar.png",
+    "tc_jump"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_PHONE,
-        "character/Telefono.png",
-        "TouchCharacterPhone"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_PHONE,
+    "character/Telefono.png",
+    "tc_phone"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_CHARACTER_DOLLAR,
-        "character/dollar.png",
-        "TouchCharacterDolar"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_CHARACTER_DOLLAR,
+    "character/dollar.png",
+    "tc_dollar"
+) && allLoaded;
 
 
-    // Frontend
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_BACK,
-        "frontend/atras.png",
-        "TouchFrontendBack"
-    ) && allLoaded;
+// Frontend
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_BACK,
+    "frontend/atras.png",
+    "tf_back"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_SELECT,
-        "frontend/check.png",
-        "TouchFrontendSelect"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_SELECT,
+    "frontend/check.png",
+    "tf_select"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_DOWN,
-        "frontend/fabajo.png",
-        "TouchFrontendDown"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_DOWN,
+    "frontend/fabajo.png",
+    "tf_down"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_UP,
-        "frontend/farriba.png",
-        "TouchFrontendUp"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_UP,
+    "frontend/farriba.png",
+    "tf_up"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_RIGHT,
-        "frontend/fderecha.png",
-        "TouchFrontendRight"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_RIGHT,
+    "frontend/fderecha.png",
+    "tf_right"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_LEFT,
-        "frontend/fizquierda.png",
-        "TouchFrontendLeft"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_LEFT,
+    "frontend/fizquierda.png",
+    "tf_left"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_FRONTEND_START,
-        "frontend/start.png",
-        "TouchFrontendStart"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_FRONTEND_START,
+    "frontend/start.png",
+    "tf_start"
+) && allLoaded;
 
-    // Vehicle
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_ACCELERATE,
-        "vehicle/acelerador.png",
-        "TouchVehicleAccelerate"
-    ) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_HORN,
-        "vehicle/bocina.png",
-        "TouchVehicleHorn"
-    ) && allLoaded;
+// Vehicle
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_ACCELERATE,
+    "vehicle/acelerador.png",
+    "tv_accel"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_HANDBRAKE,
-        "vehicle/derrape.png",
-        "TouchVehicleHandbrake"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_HORN,
+    "vehicle/bocina.png",
+    "tv_horn"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_BRAKE,
-        "vehicle/freno.png",
-        "TouchVehicleBrake"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_HANDBRAKE,
+    "vehicle/derrape.png",
+    "tv_handbrake"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_EXIT,
-        "vehicle/puertaSalir.png",
-        "TouchVehicleExit"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_BRAKE,
+    "vehicle/freno.png",
+    "tv_brake"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_RESET,
-        "vehicle/reset.png",
-        "TouchVehicleReset"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_EXIT,
+    "vehicle/puertaSalir.png",
+    "tv_exit"
+) && allLoaded;
 
-    allLoaded = LoadSpriteForAsset(
-        TOUCH_ASSET_VEHICLE_CAMERA_TOGGLE,
-        "vehicle/camara.png",
-        "TouchVehicleCameraToggle"
-    ) && allLoaded;
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_RESET,
+    "vehicle/reset.png",
+    "tv_reset"
+) && allLoaded;
 
+allLoaded = LoadSpriteForAsset(
+    TOUCH_ASSET_VEHICLE_CAMERA_TOGGLE,
+    "vehicle/camara.png",
+    "tv_camera"
+) && allLoaded;
     TOUCH_ASSET_MANAGER_LOGI(
         "[TouchAssetManager] LoadAllSprites finished. allLoaded=%d",
         allLoaded ? 1 : 0
@@ -787,4 +787,44 @@ void TouchAssetManager::SetLastError( const char* error )
 
     strncpy( mLastError, error, sizeof( mLastError ) );
     mLastError[ sizeof( mLastError ) - 1 ] = '\0';
+}
+
+tSprite* TouchAssetManager::GetSpriteForInteractionIcon
+(
+    TouchInteractionIcon icon
+) const
+{
+    switch ( icon )
+    {
+        case TOUCH_INTERACTION_ICON_EXCLAMATION:
+        {
+            return GetSprite( TOUCH_ASSET_CHARACTER_CONTEXT_EXCLAMATION );
+        }
+
+        case TOUCH_INTERACTION_ICON_DOOR:
+        {
+            return GetSprite( TOUCH_ASSET_CHARACTER_DOOR );
+        }
+
+        case TOUCH_INTERACTION_ICON_PHONE:
+        {
+            return GetSprite( TOUCH_ASSET_CHARACTER_PHONE );
+        }
+
+        case TOUCH_INTERACTION_ICON_DOLLAR:
+        {
+            return GetSprite( TOUCH_ASSET_CHARACTER_DOLLAR );
+        }
+
+        case TOUCH_INTERACTION_ICON_ENTER_CAR:
+        {
+            return GetSprite( TOUCH_ASSET_CHARACTER_ENTER_CAR );
+        }
+
+        case TOUCH_INTERACTION_ICON_NONE:
+        default:
+        {
+            return 0;
+        }
+    }
 }

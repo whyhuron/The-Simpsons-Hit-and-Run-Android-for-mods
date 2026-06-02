@@ -7,6 +7,7 @@
 #include <math.h>
 #if defined(RAD_ANDROID)
 #include <input/touch/touchcameracontroller.h>
+#include <input/touch/touchinteractionresolver.h>
 #endif
 
 
@@ -116,7 +117,8 @@ TouchHudSystem& TouchHudSystem::GetInstance()
 // Construction
 //=============================================================================
 
-TouchHudSystem::TouchHudSystem():mEnabled( true ),mCurrentProfile( TOUCH_PROFILE_HIDDEN ),mControlCount( 0 ),mCharacterTouchSplitX( 0.32f )
+TouchHudSystem::TouchHudSystem():mEnabled( true ),mCurrentProfile( TOUCH_PROFILE_HIDDEN ),mControlCount( 0 ),mCharacterTouchSplitX( 0.32f ),
+mCurrentInteractionType( TOUCH_INTERACTION_NONE ),mCurrentInteractionIcon( TOUCH_INTERACTION_ICON_NONE )
 {
     InitializeDefaultControls();
     ClearActiveTouches();
@@ -141,6 +143,8 @@ void TouchHudSystem::Reset()
     {
         InitializeDefaultControls();
     }
+    mCurrentInteractionType = TOUCH_INTERACTION_NONE;
+    mCurrentInteractionIcon = TOUCH_INTERACTION_ICON_NONE;
 }
 
 void TouchHudSystem::SetEnabled( bool enabled )
@@ -152,6 +156,62 @@ void TouchHudSystem::SetEnabled( bool enabled )
         if ( !mEnabled )
         {
             ClearActiveTouches();
+        }
+    }
+}
+
+TouchInteractionType TouchHudSystem::GetCurrentInteractionType() const
+{
+    return mCurrentInteractionType;
+}
+
+TouchInteractionIcon TouchHudSystem::GetCurrentInteractionIcon() const
+{
+    return mCurrentInteractionIcon;
+}
+
+bool TouchHudSystem::HasCurrentInteraction() const
+{
+    return mCurrentInteractionIcon != TOUCH_INTERACTION_ICON_NONE;
+}
+
+bool TouchHudSystem::IsControlVisible( TouchHudControlId controlId ) const
+{
+    const TouchHudControlDefinition* control = GetControlDefinition( controlId );
+
+    if ( control == 0 )
+    {
+        return false;
+    }
+
+    if ( !control->enabled || !control->visibleByDefault )
+    {
+        return false;
+    }
+
+    switch ( controlId )
+    {
+        case TOUCH_HUD_CONTROL_CHARACTER_CONTEXT_ACTION:
+        {
+            return mCurrentProfile == TOUCH_PROFILE_CHARACTER &&
+                   mCurrentInteractionIcon != TOUCH_INTERACTION_ICON_NONE;
+        }
+
+        case TOUCH_HUD_CONTROL_CHARACTER_SECONDARY_CONTEXT_ACTION:
+        {
+            /*
+             * Recomendación inicial:
+             * desactivarlo mientras usamos un único botón contextual dinámico.
+             *
+             * Más adelante podría ser un segundo slot si detectamos dos
+             * interacciones simultáneas.
+             */
+            return false;
+        }
+
+        default:
+        {
+            return true;
         }
     }
 }
@@ -181,6 +241,7 @@ void TouchHudSystem::Update( unsigned int elapsedMs )
         ClearActiveTouches();
         mCurrentProfile = resolvedProfile;
     }
+    UpdateCurrentInteraction();
     #if defined(RAD_ANDROID)
         /*
         *Se actualiza aunque este el dedo pulsado en pantalla
@@ -825,14 +886,14 @@ void TouchHudSystem::InitializeDefaultControls()
         "CharacterContextAction"
     );
 
-    // Door / car / secondary context slot.
-    // Also maps to DoAction for now.
+    // Entrar al coche 
+  
     AddControl(
         TOUCH_HUD_CONTROL_CHARACTER_SECONDARY_CONTEXT_ACTION,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_DO_ACTION,
         TouchRect( 0.63f, 0.34f, 0.10f, 0.24f ),
-        true,
+        false,
         "CharacterSecondaryContextAction"
     );
 
@@ -1099,8 +1160,14 @@ const TouchHudControlDefinition* TouchHudSystem::FindControlAtPosition
         {
             continue;
         }
+        
 
         if ( control.profile != profile )
+        {
+            continue;
+        }
+
+        if ( !IsControlVisible( control.id ) )
         {
             continue;
         }
@@ -1360,4 +1427,25 @@ float TouchHudSystem::Clamp01( float value ) const
     }
 
     return value;
+}
+
+void TouchHudSystem::UpdateCurrentInteraction()
+{
+#if defined(RAD_ANDROID)
+    if ( mCurrentProfile != TOUCH_PROFILE_CHARACTER )
+    {
+        mCurrentInteractionType = TOUCH_INTERACTION_NONE;
+        mCurrentInteractionIcon = TOUCH_INTERACTION_ICON_NONE;
+        return;
+    }
+
+    mCurrentInteractionType =
+        TouchInteractionResolver::GetInstance().ResolveCharacterInteraction();
+
+    mCurrentInteractionIcon =
+        TouchInteractionTypeToIcon( mCurrentInteractionType );
+#else
+    mCurrentInteractionType = TOUCH_INTERACTION_NONE;
+    mCurrentInteractionIcon = TOUCH_INTERACTION_ICON_NONE;
+#endif
 }

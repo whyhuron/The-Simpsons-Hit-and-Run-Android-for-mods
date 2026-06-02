@@ -68,9 +68,9 @@ public:
     // Compatibility/helper for the first render tests.
     tSprite* GetCharacterJumpSprite() const;
 
-    // Future renderer mapping.
-    // We will expand this when TouchHudRenderer starts drawing by control id.
+
     tSprite* GetSpriteForControl( TouchHudControlId controlId ) const;
+    tSprite* GetSpriteForInteractionIcon( TouchInteractionIcon icon ) const;
 
 private:
     TouchAssetManager();

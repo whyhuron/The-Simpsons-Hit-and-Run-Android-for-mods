@@ -109,6 +109,33 @@ enum TouchActionId
     TOUCH_ACTION_COUNT
 };
 
+enum TouchInteractionType
+{
+    TOUCH_INTERACTION_NONE = 0,
+
+    TOUCH_INTERACTION_MISSION_MAIN,
+    TOUCH_INTERACTION_MISSION_BONUS,
+    TOUCH_INTERACTION_RACE,
+
+    TOUCH_INTERACTION_INTERIOR_DOOR,
+    TOUCH_INTERACTION_PHONE_BOOTH,
+    TOUCH_INTERACTION_PURCHASE,
+    TOUCH_INTERACTION_CLOTHING,
+    TOUCH_INTERACTION_ENTER_CAR
+};
+
+enum TouchInteractionIcon
+{
+    TOUCH_INTERACTION_ICON_NONE = 0,
+    TOUCH_INTERACTION_ICON_EXCLAMATION,
+    TOUCH_INTERACTION_ICON_DOOR,
+    TOUCH_INTERACTION_ICON_PHONE,
+    TOUCH_INTERACTION_ICON_DOLLAR,
+    TOUCH_INTERACTION_ICON_ENTER_CAR
+};
+
+
+
 struct TouchVector2
 {
     TouchVector2() : x( 0.0f ), y( 0.0f ) {}
@@ -217,6 +244,46 @@ inline const char* TouchActionCategoryToString( TouchActionCategory category )
             return "Special";
         default:
             return "Unknown";
+    }
+}
+
+inline TouchInteractionIcon TouchInteractionTypeToIcon( TouchInteractionType type )
+{
+    switch ( type )
+    {
+        case TOUCH_INTERACTION_MISSION_MAIN:
+        case TOUCH_INTERACTION_MISSION_BONUS:
+        case TOUCH_INTERACTION_RACE:
+        {
+            return TOUCH_INTERACTION_ICON_EXCLAMATION;
+        }
+
+        case TOUCH_INTERACTION_INTERIOR_DOOR:
+        {
+            return TOUCH_INTERACTION_ICON_DOOR;
+        }
+
+        case TOUCH_INTERACTION_PHONE_BOOTH:
+        {
+            return TOUCH_INTERACTION_ICON_PHONE;
+        }
+
+        case TOUCH_INTERACTION_PURCHASE:
+        case TOUCH_INTERACTION_CLOTHING:
+        {
+            return TOUCH_INTERACTION_ICON_DOLLAR;
+        }
+
+        case TOUCH_INTERACTION_ENTER_CAR:
+        {
+            return TOUCH_INTERACTION_ICON_ENTER_CAR;
+        }
+
+        case TOUCH_INTERACTION_NONE:
+        default:
+        {
+            return TOUCH_INTERACTION_ICON_NONE;
+        }
     }
 }
 

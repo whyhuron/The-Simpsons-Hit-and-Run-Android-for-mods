@@ -397,15 +397,32 @@ void TouchHudRenderer::RenderControlDefinition
 
     TouchAssetManager& assetManager = TouchAssetManager::GetInstance();
 
-    tSprite* sprite = assetManager.GetSpriteForControl( control.id );
+    TouchHudSystem& hudSystem = TouchHudSystem::GetInstance();
+
+    tSprite* sprite = 0;
+
+    if ( control.id == TOUCH_HUD_CONTROL_CHARACTER_CONTEXT_ACTION )
+    {
+        sprite = assetManager.GetSpriteForInteractionIcon(
+            hudSystem.GetCurrentInteractionIcon()
+        );
+    }
+    else
+    {
+        sprite = assetManager.GetSpriteForControl( control.id );
+    }
 
     if ( sprite == 0 )
     {
         return;
     }
 
-    TouchHudSystem& hudSystem = TouchHudSystem::GetInstance();
 
+    if ( !hudSystem.IsControlVisible( control.id ) )
+    {
+        return;
+    }
+    
     const bool pressed = hudSystem.IsControlPressed( control.id );
     const float opacity = pressed ? mPressedOpacity : mOpacity;
 

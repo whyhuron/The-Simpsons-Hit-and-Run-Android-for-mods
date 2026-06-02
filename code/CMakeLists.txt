@@ -128,6 +128,7 @@ set(SRR2_SOURCES
 	"input/touch/touchassetmanager.cpp"
 	"input/touch/touchhudrenderer.cpp"
 	"input/touch/touchcameracontroller.cpp"
+	"input/touch/touchinteractionresolver.cpp"
 	"interiors/interiormanager.cpp"
 	"loading/cameradataloader.cpp"
 	"loading/cementfilehandler.cpp"
