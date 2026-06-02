@@ -882,7 +882,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_CHARACTER_CONTEXT_ACTION,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_DO_ACTION,
-        TouchRect( 0.31f, 0.58f, 0.12f, 0.22f ),
+        TouchRect( 0.63f, 0.34f, 0.10f, 0.24f ), // posicion original exclamación y demás a pie TouchRect( 0.31f, 0.58f, 0.12f, 0.22f )
         true,
         "CharacterContextAction"
     );
