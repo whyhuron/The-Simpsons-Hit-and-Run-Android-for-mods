@@ -102,7 +102,11 @@ TutorialManager* TutorialManager::GetInstance()
 //=============================================================================
 void TutorialManager::AddToQueue( TutorialMode event )
 {
+   #if defined(RAD_ANDROID)
+    return;
+#else
     m_Queue.push_back( event );
+#endif
 }
 
 //=============================================================================
@@ -136,7 +140,11 @@ void TutorialManager::DestroyInstance()
 //==============================================================================
 TutorialManager::TutorialManager() :
     m_EnableTutorialMode( false ),
+    #if defined(RAD_ANDROID)
+    m_EnableTutorialEvents( false ), // desactivamos tutoriales en android
+#else
     m_EnableTutorialEvents( true ),
+#endif
     m_DialogCurrentlyPlaying( false ),
     m_TimeSinceDialogStart( 0.0f ),
     m_CurrentEvent( TUTORIAL_INVALID ),
@@ -146,10 +154,12 @@ TutorialManager::TutorialManager() :
 
     GetGameDataManager()->RegisterGameData( this, 1 + sizeof( m_tutorialsSeen ), "Tutorial Manager" );
 
+    #if !defined(RAD_ANDROID)
     if( CommandLineOptions::Get( CLO_NO_TUTORIAL ) )
     {
         m_EnableTutorialEvents = false;
     }
+    #endif
 }
 
 //==============================================================================
@@ -402,6 +412,26 @@ void TutorialManager::MarkDialogFinished()
 //==============================================================================
 void TutorialManager::ProcessQueue()
 {
+
+    #if defined(RAD_ANDROID)
+    /*
+     * Android touch port:
+     *
+     * Tutorial prompts are disabled globally. Even if something was added
+     * to the tutorial queue, do not process it and never open the tutorial
+     * GUI screen.
+     */
+    while( !m_Queue.empty() )
+    {
+        m_Queue.pop_back();
+    }
+
+    m_EnableTutorialEvents = false;
+    m_DialogCurrentlyPlaying = false;
+    m_CurrentEvent = TUTORIAL_INVALID;
+
+    return;
+#endif
 /*
     CGuiScreenHud* hud = GetCurrentHud();
     if( hud == NULL )
