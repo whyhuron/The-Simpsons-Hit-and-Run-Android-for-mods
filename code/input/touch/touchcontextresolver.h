@@ -82,12 +82,17 @@ public:
     bool HasForcedProfile() const;
     TouchProfile GetForcedProfile() const;
 
+// Para detectar dialogos de personajes que te venden 1 coche por nivel 
+    void SetPurchaseRewardConversationActive( bool active );
+    bool IsPurchaseRewardConversationActive() const;
+
     bool IsHidden() const;
     bool IsFrontend() const;
     bool IsCharacter() const;
     bool IsVehicle() const;
     bool IsCinematic() const;
     bool IsSpecial() const;
+    
 
 private:
     TouchContextResolver();
@@ -106,6 +111,7 @@ private:
     bool IsMissionDialogueObjectiveActive() const;
     bool IsMissionBriefingActive() const;
     bool IsGameplayConversationActive() const;
+    bool mPurchaseRewardConversationActive;
 private:
     TouchContextArea mContextArea;
 

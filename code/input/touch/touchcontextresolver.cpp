@@ -29,7 +29,8 @@ mGameplayProfile( TOUCH_PROFILE_CHARACTER ),
 mHasForcedProfile( false ),
 mForcedProfile( TOUCH_PROFILE_HIDDEN ),
 mMissionBriefingActive( false ),
-mGameplayConversationActive( false )
+mGameplayConversationActive( false ),
+mPurchaseRewardConversationActive( false )
 {
 }
 
@@ -211,12 +212,22 @@ void TouchContextResolver::SetGameplayConversationActive( bool active )
     mGameplayConversationActive = active;
 }
 
+void TouchContextResolver::SetPurchaseRewardConversationActive( bool active )
+{
+    mPurchaseRewardConversationActive = active;
+}
+
+bool TouchContextResolver::IsPurchaseRewardConversationActive() const
+{
+    return mPurchaseRewardConversationActive;
+}
+
 bool TouchContextResolver::IsGameplayFrontendLikeState() const
 {
-    // Agrupamos dialogo mision, dialogo mision bonus y dialogo conversacion de carrera 
+    // Agrupamos dialogo mision, dialogo mision bonus, dialogo conversacion de carrera y dialogo compra de vehiculo
     return IsMissionDialogueObjectiveActive() ||
            IsMissionBriefingActive() ||
-           IsGameplayConversationActive();
+           IsGameplayConversationActive()||  IsPurchaseRewardConversationActive();
 }
 
 bool TouchContextResolver::IsMissionDialogueObjectiveActive() const

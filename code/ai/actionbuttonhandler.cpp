@@ -111,6 +111,10 @@
 #include <contexts/context.h>
 #include <render/DSG/StatePropDSG.h>
 
+#ifdef RAD_ANDROID
+#include <input/touch/touchcontextresolver.h>
+#endif
+
 //******************************************************************************
 //
 // Global Data, Local Data, Local Classes
@@ -4651,6 +4655,9 @@ bool PurchaseCar::OnButtonPressed( Character* pCharacter )
 
         if( s_carPurchaseConvNames[level].convName != 0 )
         {
+            #ifdef RAD_ANDROID
+                TouchContextResolver::GetInstance().SetPurchaseRewardConversationActive( true );
+            #endif
             DialogEventData data;
 
             data.dialogName = s_carPurchaseConvNames[level].convName;

@@ -51,6 +51,10 @@
 
 #include <string.h>
 
+#ifdef RAD_ANDROID
+#include <input/touch/touchcontextresolver.h>
+#endif
+
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
@@ -498,6 +502,10 @@ eFEHotspotType CGuiScreenPurchaseRewards::CheckCursorAgainstHotspots( float x, f
 //===========================================================================
 void CGuiScreenPurchaseRewards::InitIntro()
 {
+
+    #ifdef RAD_ANDROID
+        TouchContextResolver::GetInstance().SetPurchaseRewardConversationActive( false );
+    #endif
     // load 3D pedestal
     //
     GetLoadingManager()->AddRequest( FILEHANDLER_PURE3D,
@@ -939,7 +947,7 @@ CGuiScreenPurchaseRewards::UpdateRewardPrice()
             {
                 // special case for German for proper grammar
                 //
-                sprintf( buffer, "Für %d %s", rewardCost, coinsText );
+                sprintf( buffer, "Fï¿½r %d %s", rewardCost, coinsText );
             }
             else
 #endif // PAL
