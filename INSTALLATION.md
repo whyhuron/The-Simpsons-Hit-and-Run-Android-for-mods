@@ -86,6 +86,25 @@ Valores recomendados:
 * `900`
 * `1080`
 ---
+## 📱 Controles táctiles
+
+La versión **0.87** incluye controles táctiles integrados para poder jugar directamente desde la pantalla del dispositivo Android.
+
+Por defecto, el juego utiliza el **Modo 1** para las coordenadas táctiles, que debería funcionar correctamente en la mayoría de dispositivos.
+
+Si al iniciar el juego notas que los botones táctiles no responden correctamente, que los toques no coinciden con la posición de los iconos o que la zona táctil parece desplazada, cambia al **Modo 2** modificando este archivo:
+
+```txt
+Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
+```
+
+En resumen:
+
+Modo 1: modo por defecto recomendado.
+
+Modo 2: modo alternativo si los controles táctiles no funcionan correctamente en tu dispositivo.
+
+Para más información, consulta el archivo [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
 
 Espero que disfrutes el port.
 
@@ -171,8 +190,28 @@ Recommended values:
 
 
 ---
+## 📱 Touch controls
 
-Hope you enjoy the port.
+Version **0.87** includes built-in touch controls so you can play directly from your Android device’s screen.
+
+By default, the game uses **Mode 1** for touch coordinates, which should work correctly on most devices.
+
+If, when starting the game, you notice that the touch buttons do not respond correctly, that taps do not match the position of the icons, or that the touch area seems shifted, switch to **Mode 2** by modifying this file:
+
+```txt
+Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
+```
+
+Summary:
+
+Mode 1: recommended default mode.
+
+Mode 2: alternative mode if the touch controls do not work correctly on your device.
+
+For more information, check the [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+
+I hope you enjoy the port.
+
 
 ---
 
@@ -258,7 +297,27 @@ Valeurs recommandées :
 
 ---
 
-Profitez bien du port.
+## 📱 Commandes tactiles
+
+La version **0.87** inclut des commandes tactiles intégrées afin de pouvoir jouer directement depuis l’écran de votre appareil Android.
+
+Par défaut, le jeu utilise le **Mode 1** pour les coordonnées tactiles, ce qui devrait fonctionner correctement sur la plupart des appareils.
+
+Si, au lancement du jeu, vous remarquez que les boutons tactiles ne répondent pas correctement, que les pressions ne correspondent pas à la position des icônes ou que la zone tactile semble décalée, passez au **Mode 2** en modifiant ce fichier :
+
+```txt
+Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
+```
+
+En résumé :
+
+Mode 1 : mode par défaut recommandé.
+
+Mode 2 : mode alternatif si les commandes tactiles ne fonctionnent pas correctement sur votre appareil.
+
+Pour plus d’informations, consultez le fichier [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+
+J’espère que vous apprécierez le portage.
 
 ---
 
@@ -342,4 +401,24 @@ Empfohlene Werte:
 
 ---
 
-Viel Spaß mit dem Port.
+## 📱 Touch-Steuerung
+
+Version **0.87** enthält integrierte Touch-Steuerungen, damit du direkt über den Bildschirm deines Android-Geräts spielen kannst.
+
+Standardmäßig verwendet das Spiel **Modus 1** für die Touch-Koordinaten, was auf den meisten Geräten korrekt funktionieren sollte.
+
+Wenn du beim Starten des Spiels bemerkst, dass die Touch-Buttons nicht richtig reagieren, dass die Berührungen nicht mit der Position der Symbole übereinstimmen oder dass der Touch-Bereich verschoben wirkt, wechsle zu **Modus 2**, indem du diese Datei änderst:
+
+```txt
+Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
+```
+
+Zusammenfassung:
+
+Modus 1: empfohlener Standardmodus.
+
+Modus 2: alternativer Modus, falls die Touch-Steuerung auf deinem Gerät nicht korrekt funktioniert.
+
+Weitere Informationen findest du in der Datei [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+
+Ich hoffe, dir gefällt der Port.

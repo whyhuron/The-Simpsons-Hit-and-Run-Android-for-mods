@@ -16,7 +16,7 @@
 
 ---
 
-* ✔ **Controles táctiles integrados a la perfección**, utilizando las propias herramientas del juego y proporcionando así el mayor rendimiento posible.
+* ✔ **Controles táctiles integrados a la perfección**, utilizando las propias herramientas del juego y proporcionando así el mayor rendimiento posible. [**Controles táctiles**](TOUCH_CONTROLS.md)
 
 ---
 
@@ -109,7 +109,7 @@
 
 ---
 
-* ✔ **Touch controls perfectly integrated**, using the game’s own tools and therefore providing the best possible performance.
+* ✔ **Touch controls perfectly integrated**, using the game’s own tools and therefore providing the best possible performance. [**Touch controls**](TOUCH_CONTROLS.md)
 
 ---
 
@@ -202,7 +202,7 @@
 
 ---
 
-* ✔ **Commandes tactiles parfaitement intégrées**, en utilisant les propres outils du jeu et en offrant ainsi les meilleures performances possibles.
+* ✔ **Commandes tactiles parfaitement intégrées**, en utilisant les propres outils du jeu et en offrant ainsi les meilleures performances possibles.[**Commandes tactiles**](TOUCH_CONTROLS.md)
 
 ---
 
@@ -295,7 +295,7 @@
 
 ---
 
-* ✔ **Touch-Steuerung perfekt integriert**, unter Verwendung der spieleigenen Werkzeuge und dadurch mit der bestmöglichen Leistung.
+* ✔ **Touch-Steuerung perfekt integriert**, unter Verwendung der spieleigenen Werkzeuge und dadurch mit der bestmöglichen Leistung. [**Touch-Steuerung**](TOUCH_CONTROLS.md)
 
 ---
 
