@@ -17,7 +17,7 @@
 #endif
 
 // Increase this when you change bundled touch PNGs and want to force recopy.
-static const char* TOUCH_ASSET_VERSION = "5";
+static const char* TOUCH_ASSET_VERSION = "1";
 
 
 static const char* TOUCH_ASSET_FILES[] =

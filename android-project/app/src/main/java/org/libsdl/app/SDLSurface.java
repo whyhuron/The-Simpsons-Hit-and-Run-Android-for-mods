@@ -77,6 +77,8 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     // First safe profile. Later we can make this configurable through a text file.
     private static final String SHAR_RESOLUTION_CONFIG_FILE = "Simpsons_resolution.txt";
+    private static final String SHAR_TOUCH_CONTROLS_FOLDER = "touch_controls";
+    private static final String SHAR_TOUCH_MODE_CONFIG_FILE = "Simpson_touch_mode.txt";
 
     private static final int SHAR_DEFAULT_TARGET_RENDER_HEIGHT = 1080;
     private static final int SHAR_MIN_TARGET_RENDER_HEIGHT = 300;
@@ -99,6 +101,27 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     // Keep logs useful but not invasive.
     private static final boolean SHAR_LOG_RESOLUTION = true;
+
+    /*
+    * Touch coordinate normalization mode.
+    *
+    * touch_mode=1:
+    *     Use the visible SurfaceView size as the touch normalization base.
+    *     This matches the standard Android MotionEvent.getX()/getY() behavior
+    *     and is the safest default for most modern/64-bit devices.
+    *
+    * touch_mode=2:
+    *     Use the physical display size in landscape terms as the touch
+    *     normalization base.
+    *     This is useful on some older/32-bit devices where getWidth()/getHeight()
+    *     does not match the actual touch coordinate space after setFixedSize().
+    */
+    private static final int SHAR_TOUCH_MODE_VIEW = 1;
+    private static final int SHAR_TOUCH_MODE_PHYSICAL_LANDSCAPE = 2;
+
+    private static final int SHAR_DEFAULT_TOUCH_MODE = SHAR_TOUCH_MODE_VIEW;
+
+    private int mSHARTouchMode = SHAR_DEFAULT_TOUCH_MODE;
 
     // ANDROID studio me da warning aqui pero la funcion está implementada correctamente luego en el gldisplay.cpp
     // y compila correctamente
@@ -130,6 +153,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
          */
         loadSHARResolutionConfig();
 
+        loadSHARTouchModeConfig();
         /*
          * Simpsons Android:
          * Apply the internal render resolution before the native surface starts.
@@ -145,28 +169,45 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         mIsSurfaceReady = false;
     }
 
-// FUnciones para lectura del archivo de resoluciones para el usuario final
-private File getSHARResolutionConfigFile() {
-    File baseDir = null;
+    private File getSHARPrivateBaseDir() {
+        File baseDir = null;
 
-    try {
-        baseDir = getContext().getExternalFilesDir(null);
-    } catch (Exception ignored) {
-    }
-
-    if (baseDir == null) {
         try {
-            baseDir = getContext().getFilesDir();
+            baseDir = getContext().getExternalFilesDir(null);
         } catch (Exception ignored) {
         }
+
+        if (baseDir == null) {
+            try {
+                baseDir = getContext().getFilesDir();
+            } catch (Exception ignored) {
+            }
+        }
+
+        return baseDir;
     }
 
-    if (baseDir == null) {
-        return null;
+    private File getSHARResolutionConfigFile() {
+        File baseDir = getSHARPrivateBaseDir();
+
+        if (baseDir == null) {
+            return null;
+        }
+
+        return new File(baseDir, SHAR_RESOLUTION_CONFIG_FILE);
     }
 
-    return new File(baseDir, SHAR_RESOLUTION_CONFIG_FILE);
-}
+    private File getSHARTouchModeConfigFile() {
+        File baseDir = getSHARPrivateBaseDir();
+
+        if (baseDir == null) {
+            return null;
+        }
+
+        File touchControlsDir = new File(baseDir, SHAR_TOUCH_CONTROLS_FOLDER);
+
+        return new File(touchControlsDir, SHAR_TOUCH_MODE_CONFIG_FILE);
+    }
 
     private void createDefaultSHARResolutionConfigIfNeeded(File configFile) {
         if (configFile == null || configFile.exists()) {
@@ -246,6 +287,53 @@ private File getSHARResolutionConfigFile() {
             }
         }
     }
+
+private void createDefaultSHARTouchModeConfigIfNeeded(File configFile) {
+        if (configFile == null || configFile.exists()) {
+            return;
+        }
+
+        try {
+            File parent = configFile.getParentFile();
+
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+
+            OutputStreamWriter writer = new OutputStreamWriter(
+                    new FileOutputStream(configFile),
+                    StandardCharsets.UTF_8
+            );
+
+            writer.write("# Simpsons Hit & Run Android touch mode configuration\n");
+            writer.write("# Android touch mode configuration\n");
+            writer.write("# touch_mode=1: Default. Recommended for most devices.\n");
+            writer.write("# touch_mode=2: Use this if mode 1 does not work correctly,\n");
+            writer.write("# especially if touch buttons look right but press zones are shifted.\n");
+            writer.write("#\n");
+            writer.write("touch_mode=" + SHAR_DEFAULT_TOUCH_MODE + "\n");
+
+            writer.flush();
+            writer.close();
+
+            if (SHAR_LOG_RESOLUTION) {
+                Log.v(
+                        "SDL",
+                        "SHAR touch mode config created: " + configFile.getAbsolutePath()
+                );
+            }
+        } catch (Exception e) {
+            if (SHAR_LOG_RESOLUTION) {
+                Log.v(
+                        "SDL",
+                        "SHAR touch mode config creation failed: " + e.getMessage()
+                );
+            }
+        }
+    }
+
+
+
 
     private void loadSHARResolutionConfig() {
         mSHARTargetRenderHeight = sanitizeSHARTargetRenderHeight(
@@ -366,6 +454,114 @@ private File getSHARResolutionConfigFile() {
     }
 
 
+    private void loadSHARTouchModeConfig() {
+        mSHARTouchMode = sanitizeSHARTouchMode(SHAR_DEFAULT_TOUCH_MODE);
+
+        File configFile = getSHARTouchModeConfigFile();
+
+        if (configFile == null) {
+            if (SHAR_LOG_RESOLUTION) {
+                Log.v(
+                        "SDL",
+                        "SHAR touch mode config skipped: no valid config directory"
+                );
+            }
+            return;
+        }
+
+        createDefaultSHARTouchModeConfigIfNeeded(configFile);
+
+        if (!configFile.exists()) {
+            if (SHAR_LOG_RESOLUTION) {
+                Log.v(
+                        "SDL",
+                        "SHAR touch mode config missing, using default touchMode=" +
+                                mSHARTouchMode
+                );
+            }
+            return;
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(configFile),
+                            StandardCharsets.UTF_8
+                    )
+            );
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.length() == 0 || line.startsWith("#")) {
+                    continue;
+                }
+
+                /*
+                * Supported formats:
+                *
+                * touch_mode=1
+                * touch_mode = 2
+                * 1
+                * 2
+                */
+                String valueText = line;
+
+                if (line.startsWith("touch_mode")) {
+                    int equalIndex = line.indexOf('=');
+
+                    if (equalIndex < 0) {
+                        continue;
+                    }
+
+                    valueText = line.substring(equalIndex + 1).trim();
+                }
+
+                int parsedValue = Integer.parseInt(valueText);
+
+                mSHARTouchMode = sanitizeSHARTouchMode(parsedValue);
+
+                if (SHAR_LOG_RESOLUTION) {
+                    Log.v(
+                            "SDL",
+                            "SHAR touch mode config loaded: touchMode=" +
+                                    mSHARTouchMode +
+                                    " file=" +
+                                    configFile.getAbsolutePath()
+                    );
+                }
+
+                reader.close();
+                return;
+            }
+
+            reader.close();
+
+            if (SHAR_LOG_RESOLUTION) {
+                Log.v(
+                        "SDL",
+                        "SHAR touch mode config has no valid value, using default touchMode=" +
+                                mSHARTouchMode
+                );
+            }
+        } catch (Exception e) {
+            mSHARTouchMode = sanitizeSHARTouchMode(SHAR_DEFAULT_TOUCH_MODE);
+
+            if (SHAR_LOG_RESOLUTION) {
+                Log.v(
+                        "SDL",
+                        "SHAR touch mode config read failed, using default touchMode=" +
+                                mSHARTouchMode +
+                                " error=" +
+                                e.getMessage()
+                );
+            }
+        }
+    }
+
+
     private int[] getPhysicalDisplaySize() {
         int[] size = new int[] { 0, 0 };
 
@@ -427,6 +623,17 @@ private File getSHARResolutionConfigFile() {
 
         return value;
     }
+
+    
+    private int sanitizeSHARTouchMode(int value) {
+        if (value == SHAR_TOUCH_MODE_PHYSICAL_LANDSCAPE) {
+            return SHAR_TOUCH_MODE_PHYSICAL_LANDSCAPE;
+        }
+
+        return SHAR_TOUCH_MODE_VIEW;
+    }
+
+    
 
     private static int roundToMultiple(int value, int multiple) {
         if (multiple <= 1) {
@@ -738,20 +945,112 @@ private File getSHARResolutionConfigFile() {
     }
 
     public void handleResume() {
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        requestFocus();
-        setOnKeyListener(this);
-        setOnTouchListener(this);
+    setFocusable(true);
+    setFocusableInTouchMode(true);
+    requestFocus();
+    setOnKeyListener(this);
+    setOnTouchListener(this);
 
+    /*
+     * Re-apply the fixed Surface size after resume in case Android recreated
+     * the Surface or display metrics changed.
+     */
+    applyAdaptiveFixedSurfaceSize("handleResume", true);
+
+    /*
+     * Re-read touch mode on resume so users can change:
+     *
+     *     touch_controls/Simpson_touch_mode.txt
+     *
+     * without reinstalling the app. Usually restarting the app is still the
+     * cleanest option, but this makes the setting more forgiving.
+     * 
+     * No creo que la gente lo vaya a hacer sin reiniciar la app no tiene sentido ponerlo 
+     */
+    //loadSHARTouchModeConfig();
+
+    final int[] size = getPhysicalDisplaySize();
+    final int deviceWidth = size[0];
+    final int deviceHeight = size[1];
+
+    post(new Runnable() {
+        @Override
+        public void run() {
+            applyTouchNormalizationBase(
+                    "handleResume-post",
+                    mRenderWidth,
+                    mRenderHeight,
+                    deviceWidth,
+                    deviceHeight
+            );
+        }
+    });
+
+    enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+}
+
+    private void applyTouchNormalizationBase(
+        String reason,
+        int surfaceWidth,
+        int surfaceHeight,
+        int deviceWidth,
+        int deviceHeight
+) {
+    int touchWidth = 0;
+    int touchHeight = 0;
+
+    if (mSHARTouchMode == SHAR_TOUCH_MODE_PHYSICAL_LANDSCAPE) {
         /*
-         * Re-apply the fixed Surface size after resume in case Android recreated
-         * the Surface or display metrics changed.
+         * Mode 2:
+         * Use the physical display size in landscape terms.
          */
-        applyAdaptiveFixedSurfaceSize("handleResume", true);
+        touchWidth = Math.max(deviceWidth, deviceHeight);
+        touchHeight = Math.min(deviceWidth, deviceHeight);
+    } else {
+        /*
+         * Mode 1:
+         * Use the View local coordinate size.
+         */
+        touchWidth = getWidth();
+        touchHeight = getHeight();
 
-        enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+        if (touchWidth <= 0 || touchHeight <= 0) {
+            touchWidth = Math.max(deviceWidth, deviceHeight);
+            touchHeight = Math.min(deviceWidth, deviceHeight);
+        }
     }
+
+    if (touchWidth <= 0 || touchHeight <= 0) {
+        return;
+    }
+
+    mWidth = touchWidth;
+    mHeight = touchHeight;
+
+    logSurfaceSizesIfChanged(
+            reason,
+            surfaceWidth,
+            surfaceHeight,
+            touchWidth,
+            touchHeight,
+            deviceWidth,
+            deviceHeight
+    );
+
+    if (SHAR_LOG_RESOLUTION) {
+        Log.v(
+                "SDL",
+                "SHAR touch base [" + reason + "]: " +
+                        "mode=" + mSHARTouchMode +
+                        " touch=" + touchWidth + "x" + touchHeight +
+                        " view=" + getWidth() + "x" + getHeight() +
+                        " surface=" + surfaceWidth + "x" + surfaceHeight +
+                        " device=" + deviceWidth + "x" + deviceHeight +
+                        " render=" + mRenderWidth + "x" + mRenderHeight
+        );
+    }
+}
+
 
     public Surface getNativeSurface() {
         return getHolder().getSurface();
@@ -826,30 +1125,13 @@ private File getSHARResolutionConfigFile() {
          */
         applySurfaceViewUpscale(mRenderWidth, mRenderHeight);
 
-        /*
-         * mWidth/mHeight are used only to normalize touch coordinates.
-         * Touch events are based on the visible SurfaceView area, not necessarily
-         * the internal render buffer size.
-         */
-        int touchWidth = getWidth();
-        int touchHeight = getHeight();
-
-        if (touchWidth <= 0 || touchHeight <= 0) {
-            touchWidth = nDeviceWidth;
-            touchHeight = nDeviceHeight;
-        }
-
-        mWidth = touchWidth;
-        mHeight = touchHeight;
-
-        logSurfaceSizesIfChanged(
-                "surfaceChanged",
-                width,
-                height,
-                touchWidth,
-                touchHeight,
-                nDeviceWidth,
-                nDeviceHeight
+        
+        applyTouchNormalizationBase(
+        "surfaceChanged",
+        width,
+        height,
+        nDeviceWidth,
+        nDeviceHeight
         );
 
         synchronized(SDLActivity.getContext()) {
