@@ -4,7 +4,7 @@
 
 [🇪🇸 Español](#-español) | [🇬🇧 English](#-english) | [🇫🇷 Français](#-français) | [🇩🇪 Deutsch](#-deutsch)
 
-![Cheatsheet](imagenCheats/CHEATS.png)
+![Cheatsheet](logos/LayoutVehiculo.jpeg)
 
 ---
 
@@ -19,7 +19,10 @@ El objetivo de este port es hacer que el juego sea jugable en dispositivos Andro
 ---
 
 Para una instalación completa debes proporcionar **tu propia copia de seguridad de la versión de PC del juego**.
+
 Para más información consulta el archivo **[INSTALLATION.md](INSTALLATION.md)**.
+
+Si deseas jugar **CON CONTROLES TÁCTILES ES MUY IMPORTANTE** leas este archivo **[CONTROLES_TÁCTILES.md](TOUCH_CONTROLS.md)**
 
 ---
 
@@ -70,12 +73,13 @@ Versión actual: **0.87**
 
 ## Documentación
 
-* 📥 [Cómo instalar](INSTALLATION.md)
-* 🎮 [Controles del mando](CONTROLLER_CONTROLS.md)
-* ⚠ [Problemas conocidos](KNOWN_ISSUES.md)
-* 📊 [Estado actual del port en profundidad](FEATURES.md)
-* 🎮 [Cheats](CHEATS.md)
-* 🚧 [Trabajo futuro](FUTURE_WORK.md)
+* 📥  [Cómo instalar](INSTALLATION.md)
+* 🎮  [Controles del mando](CONTROLLER_CONTROLS.md)
+* 📱   [Controles táctiles](TOUCH_CONTROLS.md)
+* ⚠   [Problemas conocidos](KNOWN_ISSUES.md)
+* 📊  [Estado actual del port en profundidad](FEATURES.md)
+* 🎮  [Cheats](CHEATS.md)
+* 🚧  [Trabajo futuro](FUTURE_WORK.md)
 
 ---
 
@@ -116,7 +120,10 @@ The goal of this port is to make the game playable on Android devices while pres
 ---
 
 For a complete installation, you must provide **your own backup copy of the PC version of the game**.
+
 For more information, see **[INSTALLATION.md](INSTALLATION.md)**.
+
+If you want to play **WITH TOUCH CONTROLS, IT IS VERY IMPORTANT** that you read this file **[TOUCH_CONTROLS.md](TOUCH_CONTROLS.md)**
 
 ---
 
@@ -167,12 +174,13 @@ Current version: **0.87**
 
 ## Documentation
 
-* 📥 [Installation Guide](INSTALLATION.md)
-* 🎮 [Controller Controls](CONTROLLER_CONTROLS.md)
-* ⚠ [Known Issues](KNOWN_ISSUES.md)
-* 📊 [Detailed Port Status](FEATURES.md)
-* 🎮 [Cheats](CHEATS.md)
-* 🚧 [Future Work](FUTURE_WORK.md)
+* 📥 [How to install](INSTALLATION.md)
+* 🎮 [Controller controls](CONTROLLER_CONTROLS.md)
+* 📱 [Touch controls](TOUCH_CONTROLS.md)
+* ⚠ [Known issues](KNOWN_ISSUES.md) 
+* 📊 [Current port status in depth](FEATURES.md)
+* 🎮 [Cheats](CHEATS.md) 
+* 🚧 [Future work](FUTURE_WORK.md)
 
 ---
 
@@ -213,7 +221,10 @@ L'objectif de ce port est de rendre le jeu jouable sur les appareils Android tou
 ---
 
 Pour une installation complète, vous devez fournir **votre propre copie de sauvegarde de la version PC du jeu**.
+
 Pour plus d'informations, consultez **[INSTALLATION.md](INSTALLATION.md)**.
+
+Si vous souhaitez jouer **AVEC LES COMMANDES TACTILES, IL EST TRÈS IMPORTANT** de lire ce fichier **[COMMANDES_TACTILES.md](TOUCH_CONTROLS.md)**
 
 ---
 
@@ -264,11 +275,12 @@ Version actuelle : **0.87**
 
 ## Documentation
 
-* 📥 [Guide d'installation](INSTALLATION.md)
+* 📥 [Comment installer](INSTALLATION.md)
 * 🎮 [Commandes de la manette](CONTROLLER_CONTROLS.md)
+* 📱 [Commandes tactiles](TOUCH_CONTROLS.md)
 * ⚠ [Problèmes connus](KNOWN_ISSUES.md)
-* 📊 [État détaillé du port](FEATURES.md)
-* 🎮 [Cheats](CHEATS.md)
+* 📊 [État actuel détaillé du port](FEATURES.md) 
+* 🎮 [Codes de triche](CHEATS.md) 
 * 🚧 [Travail futur](FUTURE_WORK.md)
 
 ---
@@ -310,7 +322,10 @@ Ziel dieses Ports ist es, das Spiel auf Android-Geräten spielbar zu machen und 
 ---
 
 Für eine vollständige Installation musst du **deine eigene Sicherungskopie der PC-Version des Spiels bereitstellen**.
+
 Weitere Informationen findest du in **[INSTALLATION.md](INSTALLATION.md)**.
+
+Wenn du **MIT TOUCH-STEUERUNG** spielen möchtest, ist es **SEHR WICHTIG**, dass du diese Datei liest: **[TOUCH_STEUERUNG.md](TOUCH_CONTROLS.md)**
 
 ---
 
@@ -361,13 +376,13 @@ Aktuelle Version: **0.87**
 
 ## Dokumentation
 
-* 📥 [Installationsanleitung](INSTALLATION.md)
-* 🎮 [Controller-Steuerung](CONTROLLER_CONTROLS.md)
-* ⚠ [Bekannte Probleme](KNOWN_ISSUES.md)
-* 📊 [Detaillierter Port-Status](FEATURES.md)
-* 🎮 [Cheats](CHEATS.md)
+* 📥 [Installationsanleitung](INSTALLATION.md) 
+* 🎮 [Controller-Steuerung](CONTROLLER_CONTROLS.md) 
+* 📱 [Touch-Steuerung](TOUCH_CONTROLS.md)
+* ⚠ [Bekannte Probleme](KNOWN_ISSUES.md) 
+* 📊 [Aktueller Stand des Ports im Detail](FEATURES.md)
+* 🎮 [Cheats](CHEATS.md) 
 * 🚧 [Zukünftige Arbeiten](FUTURE_WORK.md)
-
 ---
 
 ## 📱 Mindestanforderungen

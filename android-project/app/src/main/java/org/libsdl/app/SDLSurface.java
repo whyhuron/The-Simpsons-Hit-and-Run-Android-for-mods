@@ -78,7 +78,7 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     // First safe profile. Later we can make this configurable through a text file.
     private static final String SHAR_RESOLUTION_CONFIG_FILE = "Simpsons_resolution.txt";
     private static final String SHAR_TOUCH_CONTROLS_FOLDER = "touch_controls";
-    private static final String SHAR_TOUCH_MODE_CONFIG_FILE = "Simpson_touch_mode.txt";
+    private static final String SHAR_TOUCH_MODE_CONFIG_FILE = "Simpsons_touch_mode.txt";
 
     private static final int SHAR_DEFAULT_TARGET_RENDER_HEIGHT = 1080;
     private static final int SHAR_MIN_TARGET_RENDER_HEIGHT = 300;
