@@ -315,59 +315,101 @@ Language GetHardwareLanguage()
     }
 
 
-#elif defined(RAD_ANDROID)
+    #elif defined(RAD_ANDROID)
 ////////////////////////////////////////////////////////////
 // ANDROID (via SDL preferred locales)
 ////////////////////////////////////////////////////////////
-{
-   // LOGI("LANG: GetHardwareLanguage() -> ANDROID block");
-
-    const SDL_Locale* locales = SDL_GetPreferredLocales();
-    if (!locales)
     {
-        //LOGI("LANG: SDL_GetPreferredLocales() returned NULL");
+        //LOGI("LANG: GetHardwareLanguage() -> ANDROID block");
+
+        const SDL_Locale* locales = SDL_GetPreferredLocales();
+        if (!locales)
+        {
+            //LOGI("LANG: SDL_GetPreferredLocales() returned NULL -> UNKNOWN");
+            return UNKNOWN;
+        }
+
+        Language detectedLanguage = UNKNOWN;
+
+        for (int i = 0; locales[i].language != NULL; ++i)
+        {
+            const char* lang = locales[i].language;
+
+            //LOGI("LANG: locale[%d] language=%s country=%s",
+              //  i,
+                //locales[i].language ? locales[i].language : "(null)",
+                //locales[i].country  ? locales[i].country  : "(null)");
+
+            if (!lang || lang[0] == '\0')
+            {
+                continue;
+            }
+
+            // Protección básica por si SDL devolviera un código raro de 1 solo carácter.
+            if (lang[1] == '\0')
+            {
+                //LOGI("LANG: locale[%d] language '%s' too short -> skipped", i, lang);
+                continue;
+            }
+
+            char l0 = (char)tolower((unsigned char)lang[0]);
+            char l1 = (char)tolower((unsigned char)lang[1]);
+
+            if (l0 == 'e' && l1 == 'n')
+            {
+                detectedLanguage = ENGLISH;
+                break;
+            }
+            else if (l0 == 'e' && l1 == 's')
+            {
+                detectedLanguage = SPANISH;
+                break;
+            }
+            else if (l0 == 'f' && l1 == 'r')
+            {
+                detectedLanguage = FRENCH;
+                break;
+            }
+            else if (l0 == 'd' && l1 == 'e')
+            {
+                detectedLanguage = GERMAN;
+                break;
+            }
+            else if (l0 == 'i' && l1 == 't')
+            {
+                detectedLanguage = ITALIAN;
+                break;
+            }
+            else if (l0 == 'n' && l1 == 'l')
+            {
+                detectedLanguage = DUTCH;
+                break;
+            }
+            else if (l0 == 'p' && l1 == 't')
+            {
+                detectedLanguage = PORTUGUESE;
+                break;
+            }
+            else if (l0 == 'j' && l1 == 'a')
+            {
+                detectedLanguage = JAPANESE;
+                break;
+            }
+
+           // LOGI("LANG: locale[%d] language '%s' not supported -> trying next", i, lang);
+        }
+
+        SDL_free((void*)locales);
+
+        if (detectedLanguage != UNKNOWN)
+        {
+            //LOGI("LANG: mapped -> %d", detectedLanguage);
+            return detectedLanguage;
+        }
+
+        //LOGI("LANG: no supported locale found -> UNKNOWN");
         return UNKNOWN;
     }
-
-    //LOGI("LANG: locale[0] language=%s country=%s",
-      //  locales[0].language ? locales[0].language : "(null)",
-        //locales[0].country  ? locales[0].country  : "(null)");
-
-    // A veces SDL devuelve lista, imprime algunas más por si la 0 es rara
-    for (int i = 1; i < 4; ++i)
-    {
-        if (!locales[i].language && !locales[i].country)
-            break;
-
-        //LOGI("LANG: locale[%d] language=%s country=%s",
-          //  i,
-            //locales[i].language ? locales[i].language : "(null)",
-            //locales[i].country  ? locales[i].country  : "(null)");
-    }
-
-    if (locales[0].language && locales[0].language[0] != '\0')
-    {
-        const char* lang = locales[0].language;
-
-        char l0 = (char)tolower((unsigned char)lang[0]);
-        char l1 = (char)tolower((unsigned char)lang[1]);
-
-        if (l0 == 'e' && l1 == 'n') { LOGI("LANG: mapped -> ENGLISH");    return ENGLISH; }
-        if (l0 == 'e' && l1 == 's') { LOGI("LANG: mapped -> SPANISH");    return SPANISH; }
-        if (l0 == 'f' && l1 == 'r') { LOGI("LANG: mapped -> FRENCH");     return FRENCH; }
-        if (l0 == 'd' && l1 == 'e') { LOGI("LANG: mapped -> GERMAN");     return GERMAN; }
-        if (l0 == 'i' && l1 == 't') { LOGI("LANG: mapped -> ITALIAN");    return ITALIAN; }
-        if (l0 == 'n' && l1 == 'l') { LOGI("LANG: mapped -> DUTCH");      return DUTCH; }
-        if (l0 == 'p' && l1 == 't') { LOGI("LANG: mapped -> PORTUGUESE"); return PORTUGUESE; }
-        if (l0 == 'j' && l1 == 'a') { LOGI("LANG: mapped -> JAPANESE");   return JAPANESE; }
-
-        //LOGI("LANG: language '%s' not mapped -> UNKNOWN", lang);
-        return UNKNOWN;
-    }
-
-    //LOGI("LANG: locales[0].language empty -> UNKNOWN");
-    return UNKNOWN;
-}
 
     #elif RAD_WIN32
     ////////////////////////////////////////////////////////////

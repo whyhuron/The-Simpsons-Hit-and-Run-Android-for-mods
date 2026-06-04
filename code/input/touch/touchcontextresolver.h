@@ -86,6 +86,12 @@ public:
     void SetPurchaseRewardConversationActive( bool active );
     bool IsPurchaseRewardConversationActive() const;
 
+    // para detectar la pantalla de idioma inicial(guimanagerlanguage.cpp) en caso de no coincidir ningún idioma(language.cpp). 
+    //Ejemplo brasileño quiere jugar en ingles.
+
+    void SetLanguageSelectionActive( bool active );
+    bool IsLanguageSelectionActive() const;
+
     bool IsHidden() const;
     bool IsFrontend() const;
     bool IsCharacter() const;
@@ -112,6 +118,7 @@ private:
     bool IsMissionBriefingActive() const;
     bool IsGameplayConversationActive() const;
     bool mPurchaseRewardConversationActive;
+    bool mLanguageSelectionActive;
 private:
     TouchContextArea mContextArea;
 

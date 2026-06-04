@@ -28,22 +28,10 @@
 
 #include <raddebug.hpp>
 
-#if defined(RAD_ANDROID)
-  #include <android/log.h>
-  #define LOG_TAG "SimpsonsHitAndRun"
-  #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,  LOG_TAG, __VA_ARGS__)
-  #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-#elif defined(RAD_VITA)
-  #include <psp2/kernel/clib.h>
-  #define LOGI(...) do { sceClibPrintf(__VA_ARGS__); sceClibPrintf("\n"); } while(0)
-  #define LOGE(...) do { sceClibPrintf(__VA_ARGS__); sceClibPrintf("\n"); } while(0)
-
-#else
-  #include <cstdio>
-  #define LOGI(...) do { std::printf(__VA_ARGS__); std::printf("\n"); std::fflush(stdout); } while(0)
-  #define LOGE(...) do { std::printf(__VA_ARGS__); std::printf("\n"); std::fflush(stdout); } while(0)
+#ifdef RAD_ANDROID
+#include <input/touch/touchcontextresolver.h>
 #endif
+
 
 
 
@@ -91,6 +79,10 @@ CGuiManagerLanguage::CGuiManagerLanguage
 //===========================================================================
 CGuiManagerLanguage::~CGuiManagerLanguage()
 {
+    #ifdef RAD_ANDROID
+        TouchContextResolver::GetInstance().SetLanguageSelectionActive( false );
+    #endif
+
     for( int i = 0; i < CGuiWindow::NUM_GUI_WINDOW_IDS; i++ )
     {
         if( m_windows[ i ] != NULL )
@@ -137,11 +129,16 @@ CGuiManagerLanguage::Start( CGuiWindow::eGuiWindowID initialWindow )
 
     rAssertMsg( initialWindow == CGuiWindow::GUI_WINDOW_ID_UNDEFINED,
                 "Can't specify another initial window! Not supported by this manager." );
+    
+    
 
     bool isLanguageSupported = this->CheckLanguage();
 
     if( !isLanguageSupported || CommandLineOptions::Get( CLO_LANG_PROMPT ) )
     {
+        #ifdef RAD_ANDROID
+        TouchContextResolver::GetInstance().SetLanguageSelectionActive( true ); // le indicamos que vamos a entrar en la pantalla de idiomas
+        #endif
         m_nextScreen = CGuiWindow::GUI_SCREEN_ID_LANGUAGE;
 
         m_state = GUI_FE_CHANGING_SCREENS; // must be set before calling GotoScreen()
@@ -206,6 +203,10 @@ void CGuiManagerLanguage::HandleMessage
             }
             else if( GUI_FE_SHUTTING_DOWN == m_state )
             {
+                #ifdef RAD_ANDROID
+                TouchContextResolver::GetInstance().SetLanguageSelectionActive( false );
+                #endif
+
                 m_state = GUI_FE_TERMINATED;
 
                 GetGuiSystem()->HandleMessage( GUI_MSG_INIT_BOOTUP );

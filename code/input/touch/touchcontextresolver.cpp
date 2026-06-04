@@ -30,7 +30,8 @@ mHasForcedProfile( false ),
 mForcedProfile( TOUCH_PROFILE_HIDDEN ),
 mMissionBriefingActive( false ),
 mGameplayConversationActive( false ),
-mPurchaseRewardConversationActive( false )
+mPurchaseRewardConversationActive( false ),
+mLanguageSelectionActive( false )
 {
 }
 
@@ -54,6 +55,12 @@ void TouchContextResolver::Reset()
 
 TouchProfile TouchContextResolver::Resolve() const
 {
+    // para activar layout menu en pantalla de selección de idiomas
+    if ( IsLanguageSelectionActive() )
+    {
+        return TOUCH_PROFILE_FRONTEND;
+    }
+
     if ( mHasForcedProfile )
     {
         return mForcedProfile;
@@ -210,6 +217,16 @@ void TouchContextResolver::SetMissionBriefingActive( bool active )
 void TouchContextResolver::SetGameplayConversationActive( bool active )
 {
     mGameplayConversationActive = active;
+}
+
+void TouchContextResolver::SetLanguageSelectionActive( bool active )
+{
+    mLanguageSelectionActive = active;
+}
+
+bool TouchContextResolver::IsLanguageSelectionActive() const
+{
+    return mLanguageSelectionActive;
 }
 
 void TouchContextResolver::SetPurchaseRewardConversationActive( bool active )
