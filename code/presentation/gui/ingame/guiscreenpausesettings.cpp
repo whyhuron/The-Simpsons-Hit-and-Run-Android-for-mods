@@ -64,15 +64,17 @@ enum ePauseSettingsMenuItem
 {
     MENU_ITEM_CAMERA,
     MENU_ITEM_JUMP_CAMERAS,
-#ifndef RAD_PC
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)// he encontrado que como estamos usando en android los assets de pc, pues claro no encontramos esta opcion es lógico
     MENU_ITEM_INVERT_CAM_CONTROL,
 #endif
     MENU_ITEM_INTERSECT_NAV_SYSTEM,
     MENU_ITEM_RADAR,
-#ifndef RAD_PC
+#if !defined(RAD_PC) && !defined(RAD_ANDROID) // temporalmente desactivado la opcion del menu vibracion en android
     MENU_ITEM_VIBRATION,
 #endif
+    #if !defined(RAD_ANDROID)
     MENU_ITEM_TUTORIAL,
+    #endif
 
     NUM_PAUSE_SETTINGS_MENU_ITEMS
 };
@@ -82,15 +84,17 @@ const char* PAUSE_SETTINGS_MENU_ITEMS[] =
 {
     "Camera",
     "JumpCamera",
-#if !defined(RAD_PC) //&& !defined(RAD_ANDROID)
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
     "InvertCamControl",
 #endif
     "IntersectNavSystem",
     "Radar",
-#if !defined(RAD_PC) //&& !defined(RAD_ANDROID)
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
     "Vibration",
 #endif
+    #if !defined(RAD_ANDROID)
     "Tutorial",
+    #endif
 
     ""
 };
@@ -133,41 +137,91 @@ CGuiScreenPauseSettings::CGuiScreenPauseSettings
     m_currentCameraSelectionMode( CAMERA_SELECTION_NOT_AVAILABLE )
 {
 MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
+
+
+
     // Retrieve the Scrooby drawing elements.
     //
     Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "PauseSettings" );
-	rAssert( pPage );
+
+
+
+    rAssert( pPage );
 
     // Create a menu.
     //
     m_pMenu = new CGuiMenu( this, NUM_PAUSE_SETTINGS_MENU_ITEMS, GUI_TEXT_MENU, MENU_SFX_NONE );
+
     rAssert( m_pMenu != NULL );
-    
-    // Add menu items
+
+    // Add menu items.
     //
     char itemName[ 32 ];
 
-    // ORIGINAL CODE lo comento y voy a usar otro ahora mismo para debug
-    /*
+    //
+    // Diagnostic only:
+    // Original PauseSettings code gets each item group directly from pPage.
+    // We only check "Menu" to know whether Android layout differs.
+    //
+    Scrooby::Group* pMenuGroup = pPage->GetGroup( "Menu" );
+
+
+
     for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
     {
-        Scrooby::Group* group = pPage->GetGroup( PAUSE_SETTINGS_MENU_ITEMS[ i ] );
-        rAssert( group != NULL );// Assert que nos provoca el fallo actualmente 
+        const char* item = PAUSE_SETTINGS_MENU_ITEMS[ i ];
 
-        Scrooby::Text* pText = group->GetText( PAUSE_SETTINGS_MENU_ITEMS[ i ] );
-        rAssert( pText != NULL );
+
+
+        //
+        // IMPORTANT:
+        // This is the original access pattern.
+        //
+        Scrooby::Group* group = pPage->GetGroup( item );
+
+        //
+        // Diagnostic only. Do not use this group yet.
+        //
+
+
+        if( group == NULL )
+        {
+            rAssert( group != NULL );
+            MEMTRACK_POP_GROUP( "CGuiScreenPauseSettings" );
+            return;
+        }
+
+        Scrooby::Text* pText = group->GetText( item );
+
+
+        if( pText == NULL )
+        {
+            rAssert( pText != NULL );
+            MEMTRACK_POP_GROUP( "CGuiScreenPauseSettings" );
+            return;
+        }
+
         pText->SetTextMode( Scrooby::TEXT_WRAP );
 
-        sprintf( itemName, "%s_Value", PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        sprintf( itemName, "%s_Value", item );
         Scrooby::Text* pTextValue = group->GetText( itemName );
-        rAssert( pTextValue != NULL );
+
+
+        if( pTextValue == NULL )
+        {
+            rAssert( pTextValue != NULL );
+            MEMTRACK_POP_GROUP( "CGuiScreenPauseSettings" );
+            return;
+        }
+
         pTextValue->SetTextMode( Scrooby::TEXT_WRAP );
 
-        sprintf( itemName, "%s_LArrow", PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        sprintf( itemName, "%s_LArrow", item );
         Scrooby::Sprite* pLArrow = group->GetSprite( itemName );
-
-        sprintf( itemName, "%s_RArrow", PAUSE_SETTINGS_MENU_ITEMS[ i ] );
+        sprintf( itemName, "%s_RArrow", item );
         Scrooby::Sprite* pRArrow = group->GetSprite( itemName );
+
+
 
         m_pMenu->AddMenuItem( pText,
                               pTextValue,
@@ -177,131 +231,45 @@ MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
                               pRArrow,
                               SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
     }
-  */   
- // Buscar el contenedor "Menu" (según el XML: <Group Name="Menu">)
-Scrooby::Group* menu = pPage->GetGroup( "Menu" );
 
-#if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-LOGI("[PauseSettings] page=%p menu=%p", (void*)pPage, (void*)menu);
-#endif
+    #if defined(RAD_ANDROID)
+    //
+    // Dejamos de dibujar la opción tutorial en este menu
+    //
+    Scrooby::Group* pTutorialGroup = pPage->GetGroup( "Tutorial" );
 
-rAssert( menu != NULL );
-                    for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
-                    {
-                        const char* item = PAUSE_SETTINGS_MENU_ITEMS[ i ];
-
-                    #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-                        LOGI("[PauseSettings] item=%d name='%s' page=%p", i, item, (void*)pPage);
-                    #endif
-
-                       Scrooby::Group* group = menu->GetGroup( item );
-
-                    #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-                        if( group == NULL )
-                        {
-                            LOGE("[PauseSettings] MISSING GROUP item=%d name='%s' page=%p screen=%p",
-                                i, item, (void*)pPage, (void*)m_pScroobyScreen);
-                        }
-                        else
-                        {
-                            // Size() existe (lo estás usando en RestoreButtons), nos da pista de layout
-                            LOGI("[PauseSettings] group found item=%d name='%s' group=%p size=%u",
-                                i, item, (void*)group, (unsigned)group->Size());
-                        }
-                    #endif
-
-                    // COdigo extra debug 
-
-#if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-if( group == NULL )
-{
-    const unsigned int n = (unsigned int)menu->Size();
-    LOGE("[PauseSettings] Dump Menu children: menu=%p size=%u", (void*)menu, n);
-
-    for( unsigned int c = 0; c < n; ++c )
+    if( pTutorialGroup == NULL && pMenuGroup != NULL )
     {
-        // OJO: aquí depende de tu API real.
-        // Prueba primero con GetChildDrawable(c) si existe (suele existir en FeParent/Group).
-        Scrooby::Drawable* d = menu->GetChildDrawable( c );
-        if( d )
+        pTutorialGroup = pMenuGroup->GetGroup( "Tutorial" );
+    }
+
+    if( pTutorialGroup != NULL )
+    {
+        Scrooby::Text* pTutorialText = pTutorialGroup->GetText( "Tutorial" );
+        if( pTutorialText != NULL )
         {
-            // si Drawable tiene GetName() o GetID() úsalo
-            LOGE("[PauseSettings]  child[%u]=%p", c, (void*)d);
+            pTutorialText->SetVisible( false );
         }
-        else
+
+        Scrooby::Text* pTutorialValue = pTutorialGroup->GetText( "Tutorial_Value" );
+        if( pTutorialValue != NULL )
         {
-            LOGE("[PauseSettings]  child[%u]=NULL", c);
+            pTutorialValue->SetVisible( false );
+        }
+
+        Scrooby::Sprite* pTutorialLArrow = pTutorialGroup->GetSprite( "Tutorial_LArrow" );
+        if( pTutorialLArrow != NULL )
+        {
+            pTutorialLArrow->SetVisible( false );
+        }
+
+        Scrooby::Sprite* pTutorialRArrow = pTutorialGroup->GetSprite( "Tutorial_RArrow" );
+        if( pTutorialRArrow != NULL )
+        {
+            pTutorialRArrow->SetVisible( false );
         }
     }
-}
 #endif
-
-                    //FIN Codigo extra debug
-                       // rAssert( group != NULL ); //AQUI Se produce el mismo assert, esto nos lo saltamos para poder acceder al mundo3D, habra que revisarlo luego, tiene que ver con que en el Cmake del Code, no se incluye el archivo para settings
-if( group == NULL )
-{
-#if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-    LOGE("[PauseSettings] SKIP missing group '%s' (item=%d). Likely wrong PauseSettings layout for this build.", item, i);
-#endif
-    continue; // temporal para seguir arrancando
-}
-                        Scrooby::Text* pText = group->GetText( item );
-
-                    #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-                        if( pText == NULL )
-                        {
-                            LOGE("[PauseSettings] MISSING TEXT label item=%d name='%s' group=%p",
-                                i, item, (void*)group);
-                        }
-                    #endif
-
-                        rAssert( pText != NULL );
-                        pText->SetTextMode( Scrooby::TEXT_WRAP );
-
-                        // Value text
-                        sprintf( itemName, "%s_Value", item );
-                        Scrooby::Text* pTextValue = group->GetText( itemName );
-
-                   #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-                        if( pTextValue == NULL )
-                        {
-                            LOGE("[PauseSettings] MISSING TEXT value item=%d valueName='%s' base='%s' group=%p",
-                                i, itemName, item, (void*)group);
-                        }
-                    #endif
-
-                        rAssert( pTextValue != NULL );
-                        pTextValue->SetTextMode( Scrooby::TEXT_WRAP );
-
-                        // Left arrow (puede ser NULL “legalmente” según layout, así que LOGI opcional)
-                        sprintf( itemName, "%s_LArrow", item );
-                        Scrooby::Sprite* pLArrow = group->GetSprite( itemName );
-
-                    #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-                        LOGI("[PauseSettings] arrows item=%d base='%s' L='%s' ptr=%p",
-                            i, item, itemName, (void*)pLArrow);
-                    #endif
-
-                        // Right arrow
-                        sprintf( itemName, "%s_RArrow", item );
-                        Scrooby::Sprite* pRArrow = group->GetSprite( itemName );
-
-                    #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
-                        LOGI("[PauseSettings] arrows item=%d base='%s' R='%s' ptr=%p",
-                            i, item, itemName, (void*)pRArrow);
-                    #endif
-
-                        m_pMenu->AddMenuItem( pText,
-                                            pTextValue,
-                                            NULL,
-                                            NULL,
-                                            pLArrow,
-                                            pRArrow,
-                                            SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
-                    }
-
-
-
 
 #ifdef RAD_GAMECUBE
     // change "Vibration" text to "Rumble"
@@ -317,12 +285,16 @@ if( group == NULL )
         m_numCameraSelections[ j ] = 0;
     }
 
+
     m_cameraSelections[ CAMERA_SELECTION_FOR_DRIVING ] = CAMERAS_FOR_DRIVING;
+
 #ifdef RAD_PC
     m_cameraSelections[ CAMERA_SELECTION_FOR_WALKING ] = PC_CAMERAS_FOR_WALKING;
 #else
     m_cameraSelections[ CAMERA_SELECTION_FOR_WALKING ] = CAMERAS_FOR_WALKING;
 #endif
+
+
 
     if( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_UNLOCK_CAMERAS ) )
     {
@@ -337,6 +309,7 @@ if( group == NULL )
     else
     {
         m_numCameraSelections[ CAMERA_SELECTION_FOR_DRIVING ] = NUM_CAMERAS_FOR_DRIVING_WITHOUT_CHEAT;
+
 #ifdef RAD_PC
         m_numCameraSelections[ CAMERA_SELECTION_FOR_WALKING ] = NUM_PC_CAMERAS_FOR_WALKING_WITHOUT_CHEAT;
 #else
@@ -345,10 +318,9 @@ if( group == NULL )
     }
 
     GetCheatInputSystem()->RegisterCallback( this );
-MEMTRACK_POP_GROUP("CGuiScreenPauseSettings");
+
+MEMTRACK_POP_GROUP( "CGuiScreenPauseSettings" );
 }
-
-
 //===========================================================================
 // CGuiScreenPauseSettings::~CGuiScreenPauseSettings
 //===========================================================================
@@ -418,7 +390,7 @@ void CGuiScreenPauseSettings::HandleMessage
                     //
                     GetSuperCamManager()->GetSCC( 0 )->Update( 0 );
                 }
-#ifndef RAD_PC
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
                 else if( param1 == MENU_ITEM_VIBRATION )
                 {
                     if( param2 == 1 ) // vibration turned ON
@@ -426,6 +398,7 @@ void CGuiScreenPauseSettings::HandleMessage
                         // send vibration pulse to controller
                         //
                         int controllerID = GetInputManager()->GetControllerIDforPlayer( 0 );
+
 #ifdef RAD_PS2
                         if ( GetInputManager()->IsControllerInPort( Input::USB0 ) )
                         {
@@ -440,7 +413,6 @@ void CGuiScreenPauseSettings::HandleMessage
                         {
                             GetInputManager()->TriggerRumblePulse( controllerID );
                         }
-
                     }
                 }
 #endif
@@ -490,11 +462,13 @@ CGuiScreenPauseSettings::OnCheatEntered( eCheatID cheatID, bool isEnabled )
 //===========================================================================
 void CGuiScreenPauseSettings::InitIntro()
 {
-    // update camera setting
-    //
+
+
+
     bool allowCameraToggle = GetSuperCamManager()->GetSCC( 0 )->AllowCameraToggle();
 
     rAssert( m_pMenu );
+
     m_pMenu->SetMenuItemEnabled( MENU_ITEM_CAMERA, allowCameraToggle );
 
     if( allowCameraToggle )
@@ -502,6 +476,7 @@ void CGuiScreenPauseSettings::InitIntro()
         // update camera selections
         //
         this->UpdateCameraSelections();
+
     }
     else
     {
@@ -512,29 +487,46 @@ void CGuiScreenPauseSettings::InitIntro()
     //
     bool isSettingOn = false;
 
-#ifndef RAD_PC
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
     isSettingOn = GetSuperCamManager()->GetSCC( 0 )->IsInvertedCameraEnabled();
     m_pMenu->SetSelectionValue( MENU_ITEM_INVERT_CAM_CONTROL,
                                 isSettingOn ? 1 : 0 );
 #endif
 
+
+
     isSettingOn = GetSuperCamManager()->GetSCC( 0 )->JumpCamsEnabled();
+
+
+
     m_pMenu->SetSelectionValue( MENU_ITEM_JUMP_CAMERAS,
                                 isSettingOn ? 1: 0 );
 
+
+
     isSettingOn = GetCharacterSheetManager()->QueryNavSystemSetting();
+
+
+
     m_pMenu->SetSelectionValue( MENU_ITEM_INTERSECT_NAV_SYSTEM,
                                 isSettingOn ? 1 : 0 );
 
+
+
     isSettingOn = GetGuiSystem()->IsRadarEnabled();
+
+
+
     m_pMenu->SetSelectionValue( MENU_ITEM_RADAR,
                                 isSettingOn ? 1 : 0 );
-#ifndef RAD_PC
+
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
     isSettingOn = GetInputManager()->IsRumbleEnabled();
     m_pMenu->SetSelectionValue( MENU_ITEM_VIBRATION,
                                 isSettingOn ? 1 : 0 );
 #endif
 
+#if !defined(RAD_ANDROID)
     isSettingOn = GetTutorialManager()->IsTutorialEventsEnabled();
     m_pMenu->SetSelectionValue( MENU_ITEM_TUTORIAL,
                                 isSettingOn ? 1 : 0 );
@@ -553,9 +545,9 @@ void CGuiScreenPauseSettings::InitIntro()
     {
         m_pMenu->SetMenuItemEnabled( MENU_ITEM_TUTORIAL, false, true );
     }
+#endif
+
 }
-
-
 //===========================================================================
 // CGuiScreenPauseSettings::InitRunning
 //===========================================================================
@@ -592,33 +584,56 @@ void CGuiScreenPauseSettings::InitOutro()
     rAssert( m_pMenu != NULL );
     bool isSettingOn = false;
 
-#ifndef RAD_PC
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
+
+
     isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_INVERT_CAM_CONTROL ) == 1);
+
+
+
     GetSuperCamManager()->GetSCC( 0 )->EnableInvertedCamera( isSettingOn );
 #endif
 
+
+
     isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_JUMP_CAMERAS ) == 1);
+
+
+
     GetSuperCamManager()->GetSCC( 0 )->EnableJumpCams( isSettingOn );
 
+
+
     isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_INTERSECT_NAV_SYSTEM ) == 1);
+
+
+
     GetCharacterSheetManager()->SetNavSystemOn( isSettingOn );
 
+
+
     isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_RADAR ) == 1);
+
+
+
     GetGuiSystem()->SetRadarEnabled( isSettingOn );
 
-#ifndef RAD_PC
+#if !defined(RAD_PC) && !defined(RAD_ANDROID)
     isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_VIBRATION ) == 1);
     GetInputManager()->SetRumbleEnabled( isSettingOn );
 #endif
 
+#if !defined(RAD_ANDROID)
     isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_TUTORIAL ) == 1) 
 #ifdef RAD_PC
                   && !(GetInputManager()->GetController(0)->IsTutorialDisabled())
 #endif                  
                   ;
     GetTutorialManager()->EnableTutorialEvents( isSettingOn );
-}
+#endif
 
+
+}
 
 //---------------------------------------------------------------------
 // Private Functions
@@ -629,16 +644,29 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
 {
     rAssert( m_pMenu );
 
+
+
     // set current camera selection mode
     //
     bool isPlayerInCar = GetAvatarManager()->GetAvatarForPlayer( 0 )->IsInCar();
+
+
+
     m_currentCameraSelectionMode = isPlayerInCar ? CAMERA_SELECTION_FOR_DRIVING : CAMERA_SELECTION_FOR_WALKING;
+
+
 
     // get current active camera
     //
     SuperCam* currentSuperCam = GetSuperCamManager()->GetSCC( 0 )->GetActiveSuperCam();
+
+
+
     rAssert( currentSuperCam );
+
     SuperCam::Type currentSuperCamType = currentSuperCam->GetType();
+
+
 
     int currentCameraIndex = -1;
 
@@ -646,6 +674,8 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
     //
     for( int i = 0; i < m_numCameraSelections[ m_currentCameraSelectionMode ]; i++ )
     {
+
+
         if( m_cameraSelections[ m_currentCameraSelectionMode ][ i ] == currentSuperCamType )
         {
             currentCameraIndex = i;
@@ -656,6 +686,8 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
 
     if( currentCameraIndex == -1 )
     {
+
+
         // current camera not found in selection list, disable camera selection
         //
         m_pMenu->SetMenuItemEnabled( MENU_ITEM_CAMERA, false );
@@ -665,7 +697,11 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
         return;
     }
 
+
+
     m_pMenu->SetMenuItemEnabled( MENU_ITEM_CAMERA, true );
+
+
 
     // set number of camera selections available
     //
@@ -677,20 +713,27 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
     for( int i = 0; i < m_numCameraSelections[ m_currentCameraSelectionMode ]; i++ )
     {
         GuiMenuItem* menuItemCamera = m_pMenu->GetMenuItem( MENU_ITEM_CAMERA );
+
+
         rAssert( menuItemCamera != NULL );
 
         SuperCam* superCam = GetSuperCamManager()->GetSCC( 0 )->GetSuperCam( m_cameraSelections[ m_currentCameraSelectionMode ][ i ] );
+
         rAssert( superCam );
 
         HeapMgr()->PushHeap( GMA_LEVEL_HUD );
 
         P3D_UNICODE* stringBuffer = GetTextBibleString( superCam->GetName() );
+
         rAssert( stringBuffer );
 
         UnicodeString unicodeString;
         unicodeString.ReadUnicode( static_cast<UnicodeChar*>( stringBuffer ) );
 
         Scrooby::Text* menuItemValue = dynamic_cast<Scrooby::Text*>( menuItemCamera->GetItemValue() );
+
+
+
         rAssert( menuItemValue != NULL );
         menuItemValue->SetString( i, unicodeString );
 
@@ -700,5 +743,6 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
     // set current camera selection
     //
     m_pMenu->SetSelectionValue( MENU_ITEM_CAMERA, currentCameraIndex );
-}
 
+
+}
