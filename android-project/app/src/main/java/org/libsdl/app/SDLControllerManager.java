@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -506,32 +505,49 @@ class SDLHapticHandler_API26 extends SDLHapticHandler {
     @Override
     public void run(int device_id, float intensity, int length) {
         SDLHaptic haptic = getHaptic(device_id);
-        if (haptic != null) {
 
-            if (intensity == 0.0f) {
-                stop(device_id);
-                return;
-            }
+        if (haptic == null) {
+            return;
+        }
 
-            int vibeValue = Math.round(intensity * 255);
+        // Never allow the original game rumble path to vibrate the phone itself.
+        if (isSystemVibrator(haptic)) {
+            return;
+        }
 
-            if (vibeValue > 255) {
-                vibeValue = 255;
+        if (intensity == 0.0f) {
+            stop(device_id);
+            return;
+        }
+
+        float scaledIntensity = intensity * GAMEPAD_RUMBLE_INTENSITY_SCALE;
+
+        if (scaledIntensity > 1.0f) {
+            scaledIntensity = 1.0f;
+        }
+
+        if (scaledIntensity < 0.0f) {
+            scaledIntensity = 0.0f;
+        }
+
+        int vibeValue = Math.round(scaledIntensity * 255);
+
+        if (vibeValue > 255) {
+            vibeValue = 255;
+        }
+
+        if (vibeValue < 1) {
+            stop(device_id);
+            return;
+        }
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                haptic.vib.vibrate(VibrationEffect.createOneShot(length, vibeValue));
             }
-            if (vibeValue < 1) {
-                stop(device_id);
-                return;
-            }
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    haptic.vib.vibrate(VibrationEffect.createOneShot(length, vibeValue));
-                }
-            }
-            catch (Exception e) {
-                // Fall back to the generic method, which uses DEFAULT_AMPLITUDE, but works even if
-                // something went horribly wrong with the Android 8.0 APIs.
-                haptic.vib.vibrate(length);
-            }
+        }
+        catch (Exception e) {
+            haptic.vib.vibrate(length);
         }
     }
 }
@@ -545,82 +561,110 @@ class SDLHapticHandler {
     }
 
     private final ArrayList<SDLHaptic> mHaptics;
+    private static final int DEVICE_ID_VIBRATOR_SERVICE = 999999;
+    private static final String HAPTIC_NAME_VIBRATOR_SERVICE = "VIBRATOR_SERVICE";
+
+    // el juego en C++ nos envía la vibración y nosotros como última capa lo reducimos al hardware final 
+
+   protected static final float GAMEPAD_RUMBLE_INTENSITY_SCALE = 0.5f; // intensidad final de vibración
 
     public SDLHapticHandler() {
         mHaptics = new ArrayList<SDLHaptic>();
     }
 
     public void run(int device_id, float intensity, int length) {
-        SDLHaptic haptic = getHaptic(device_id);
-        if (haptic != null) {
-            haptic.vib.vibrate(length);
-        }
+    SDLHaptic haptic = getHaptic(device_id);
+
+    if (haptic == null) {
+        return;
+    }
+
+    // Never allow the original game rumble path to vibrate the phone itself.
+    if (isSystemVibrator(haptic)) {
+        return;
+    }
+
+    haptic.vib.vibrate(length);
     }
 
     public void stop(int device_id) {
-        SDLHaptic haptic = getHaptic(device_id);
-        if (haptic != null) {
+            SDLHaptic haptic = getHaptic(device_id);
+
+            if (haptic == null) {
+                return;
+            }
+
+            if (isSystemVibrator(haptic)) {
+                return;
+            }
+
             haptic.vib.cancel();
-        }
     }
 
-    // Nueva funcion para que los dispositivos 32 bits no tengan vibracion, ya que por errores de drivers tienen muchas posibilidades que no funcionen
-    // y que vibre de forma erronea el propio movil cosa que ahora mismo no queremos luego ya cuando implementemos controles tactiles mas adelante ya se vera
+     protected boolean isSystemVibrator(SDLHaptic haptic) {
+        return haptic != null &&
+               (haptic.device_id == DEVICE_ID_VIBRATOR_SERVICE ||
+                HAPTIC_NAME_VIBRATOR_SERVICE.equals(haptic.name));
+    }
 
     static boolean is32Bit() {
         return Build.SUPPORTED_64_BIT_ABIS.length == 0;
     }
-    public boolean runFallback(float intensity, int length) {
-        if (mHaptics.isEmpty()) {
 
-            return false;
+ 
+    public boolean runFallback(float intensity, int length) {
+    if (mHaptics.isEmpty()) {
+        return false;
+    }
+
+    SDLHaptic target = null;
+
+    for (SDLHaptic h : mHaptics) {
+        if (h == null) {
+            continue;
         }
 
-        SDLHaptic best = null;
-        SDLHaptic system = null;
+        // Only allow real external haptic devices.
+        // Never fall back to the phone vibrator.
+        if (isSystemVibrator(h)) {
+            continue;
+        }
+
+        target = h;
+        break;
+    }
+
+    if (target == null) {
+        return false;
+    }
+
+    run(target.device_id, intensity, length);
+    return true;
+}
+
+
+    public void stopFallback() {
+        if (mHaptics.isEmpty()) {
+            return;
+        }
 
         for (SDLHaptic h : mHaptics) {
             if (h == null) {
                 continue;
             }
 
-            if ("VIBRATOR_SERVICE".equals(h.name)) {
-                system = h;
-            } else {
-                best = h;
-                break;
+            if (isSystemVibrator(h)) {
+                continue;
             }
-        }
 
-        SDLHaptic target = (best != null) ? best : system;
-        if (target == null) {
-
-            return false;
-        }
-
-
-
-        run(target.device_id, intensity, length);
-        return true;
+            stop(h.device_id);
+            }
     }
 
-    public void stopFallback() {
-        if (mHaptics.isEmpty()) {
-
-            return;
-        }
-
-        for (SDLHaptic h : mHaptics) {
-            if (h != null) {
-                stop(h.device_id);
-            }
-        }
-    }
-
+    
     public void pollHapticDevices() {
 
-        final int deviceId_VIBRATOR_SERVICE = 999999;
-        boolean hasVibratorService = false;
+     
 
         int[] deviceIds = InputDevice.getDeviceIds();
         // It helps processing the device ids in reverse order
@@ -629,106 +673,59 @@ class SDLHapticHandler {
         // considers to be the first controller
 
         for (int i = deviceIds.length - 1; i > -1; i--) {
-            SDLHaptic haptic = getHaptic(deviceIds[i]);
-            if (haptic == null) {
-                // FRAGMENTO ORIGINAL
-                /**
-                InputDevice device = InputDevice.getDevice(deviceIds[i]);
-                Vibrator vib = device.getVibrator();
-                if (vib != null) {
-                    if (vib.hasVibrator()) {
-                        haptic = new SDLHaptic();
-                        haptic.device_id = deviceIds[i];
-                        haptic.name = device.getName();
-                        haptic.vib = vib;
-                        mHaptics.add(haptic);
-                        SDLControllerManager.nativeAddHaptic(haptic.device_id, haptic.name);
+
+    // Only register haptics from real controller-like input devices.
+    // This prevents internal/virtual phone devices from being exposed as game rumble devices.
+    if (!SDLControllerManager.isDeviceSDLJoystick(deviceIds[i])) {
+        continue;
+    }
+
+    SDLHaptic haptic = getHaptic(deviceIds[i]);
+    if (haptic == null) {
+        InputDevice device = InputDevice.getDevice(deviceIds[i]);
+
+        if (device != null) {
+            Vibrator vib = device.getVibrator();
+
+            if (vib != null && vib.hasVibrator()) {
+                haptic = new SDLHaptic();
+                haptic.device_id = deviceIds[i];
+                haptic.name = device.getName();
+                haptic.vib = vib;
+                mHaptics.add(haptic);
+
+                SDLControllerManager.nativeAddHaptic(haptic.device_id, haptic.name);
+            }
+        }
+    }
+}
+
+                
+                /* Check removed devices */
+            ArrayList<Integer> removedDevices = null;
+
+            for (SDLHaptic haptic : mHaptics) {
+                if (haptic == null) {
+                    continue;
+                }
+
+                int device_id = haptic.device_id;
+                int i;
+
+                for (i = 0; i < deviceIds.length; i++) {
+                    if (device_id == deviceIds[i]) {
+                        break;
                     }
                 }
-                */
-                // FIN FRAGMENTO ORIGINAL
 
-                //  EL NUEVO FRAGMENTO PARA LOGI
-                InputDevice device = InputDevice.getDevice(deviceIds[i]);
-                if (device != null) {
-
-
-                    Vibrator vib = device.getVibrator();
-
-
-                    if (vib != null && vib.hasVibrator()) {
-                        haptic = new SDLHaptic();
-                        haptic.device_id = deviceIds[i];
-                        haptic.name = device.getName();
-                        haptic.vib = vib;
-                        mHaptics.add(haptic);
-
-                        SDLControllerManager.nativeAddHaptic(haptic.device_id, haptic.name);
-                    }
-                }
-            }
-        }
-
-        // FRAGMENTO ORIGINAL
-
-        /* Check VIBRATOR_SERVICE */
-        /*
-        Vibrator vib = (Vibrator) SDL.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        if (vib != null) {
-            hasVibratorService = vib.hasVibrator();
-
-            if (hasVibratorService) {
-                SDLHaptic haptic = getHaptic(deviceId_VIBRATOR_SERVICE);
-                if (haptic == null) {
-                    haptic = new SDLHaptic();
-                    haptic.device_id = deviceId_VIBRATOR_SERVICE;
-                    haptic.name = "VIBRATOR_SERVICE";
-                    haptic.vib = vib;
-                    mHaptics.add(haptic);
-                    SDLControllerManager.nativeAddHaptic(haptic.device_id, haptic.name);
-                }
-            }
-        }
-        */
-        // FIN FRAGMENTO ORIGINAL
-
-        // PRUEBO ESTE OTRO FRAGMENTO
-        Vibrator vib = (Vibrator) SDL.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        if (vib != null) {
-            hasVibratorService = vib.hasVibrator();
-
-
-            if (hasVibratorService) {
-                SDLHaptic haptic = getHaptic(deviceId_VIBRATOR_SERVICE);
-                if (haptic == null) {
-                    haptic = new SDLHaptic();
-                    haptic.device_id = deviceId_VIBRATOR_SERVICE;
-                    haptic.name = "VIBRATOR_SERVICE";
-                    haptic.vib = vib;
-                    mHaptics.add(haptic);
-
-                    SDLControllerManager.nativeAddHaptic(haptic.device_id, haptic.name);
-                }
-            }
-        }
-        /* Check removed devices */
-        ArrayList<Integer> removedDevices = null;
-        for (SDLHaptic haptic : mHaptics) {
-            int device_id = haptic.device_id;
-            int i;
-            for (i = 0; i < deviceIds.length; i++) {
-                if (device_id == deviceIds[i]) break;
-            }
-
-            if (device_id != deviceId_VIBRATOR_SERVICE || !hasVibratorService) {
                 if (i == deviceIds.length) {
                     if (removedDevices == null) {
                         removedDevices = new ArrayList<Integer>();
                     }
+
                     removedDevices.add(device_id);
                 }
-            }  // else: don't remove the vibrator if it is still present
-        }
+            }
 
         if (removedDevices != null) {
             for (int device_id : removedDevices) {
