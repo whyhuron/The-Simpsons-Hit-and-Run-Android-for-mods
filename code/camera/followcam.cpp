@@ -1031,7 +1031,10 @@ void FollowCam::CalculateRod( rmt::Vector* rod,
 
 #ifdef EXTRA_ROT
     float invertMod = GetSuperCamManager()->GetSCC( GetPlayerID() )->IsInvertedCameraEnabled() ? -1.0f : 1.0f;
-#if defined(RAD_CONSOLE)
+
+#if defined(RAD_ANDROID)
+    float leftRight = mController->GetAxisValue( SuperCamController::stickX );
+#elif defined(RAD_CONSOLE)
     float leftRight = -mController->GetAxisValue( SuperCamController::stickX );
 #elif defined(RAD_PC)
     float left = mController->GetValue( SuperCamController::carLookLeft );

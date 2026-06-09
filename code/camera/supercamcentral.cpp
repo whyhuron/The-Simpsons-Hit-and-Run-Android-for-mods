@@ -68,6 +68,7 @@
 
 #if defined(RAD_ANDROID)
 #include <input/touch/touchcameracontroller.h>
+#include <data/config/androidconfigurationmanager.h>
 #endif
 
 //*****************************************************************************
@@ -359,6 +360,14 @@ SuperCamCentral::~SuperCamCentral()
     radDbgWatchDelete( & mCameraCollisionFudge );
 #endif
 }
+
+// Ajustes de la versión para android en el .txt
+#if defined(RAD_ANDROID)
+static bool GetAndroidInvertCameraSetting()
+{
+    return !GetAndroidConfigurationManager()->IsInvertCameraEnabled();
+}
+#endif
 
 //=============================================================================
 // SuperCamCentral::Init
@@ -2144,8 +2153,11 @@ void SuperCamCentral::LoadData( const GameDataByte* dataBuffer, unsigned int num
      */
 
     mJumpCamsEnabled =          ( (bitmask & 0x01) > 0 );
-    mIsInvertedCameraEnabled =  ( (bitmask & 0x02) > 0 );
-
+    #if defined(RAD_ANDROID)
+        mIsInvertedCameraEnabled = GetAndroidInvertCameraSetting();
+    #else
+        mIsInvertedCameraEnabled = ( (bitmask & 0x02) > 0 );
+    #endif
     GameDataByte preferredFollowCam = (bitmask >> 2);
     if( preferredFollowCam == 0 )
     {
@@ -2215,8 +2227,14 @@ void SuperCamCentral::SaveData( GameDataByte* dataBuffer, unsigned int numBytes 
 void SuperCamCentral::ResetData()
 {
     mJumpCamsEnabled = true;
-    mIsInvertedCameraEnabled = false;
+    #if defined(RAD_ANDROID)
+        mIsInvertedCameraEnabled = GetAndroidInvertCameraSetting();
+    #else
+        mIsInvertedCameraEnabled = false;
+    #endif
     mPreferredFollowCam = FollowCam::FAR_FOLLOW_CAM;
+
+    
 }
 
 //=============================================================================

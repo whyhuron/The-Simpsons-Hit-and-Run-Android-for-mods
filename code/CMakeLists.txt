@@ -93,6 +93,7 @@ set(SRR2_SOURCES
 	"data/memcard/memorycardmanager.cpp"
 	"data/PersistentWorldManager.cpp"
 	"data/savegameinfo.cpp"
+	"data/config/androidconfigurationmanager.cpp"
 	"debug/debuginfo.cpp"
 	"debug/profiler.cpp"
 	"debug/section.cpp"

@@ -63,6 +63,7 @@
 #include <input/touch/touchassetextractor.h>
 #include <input/touch/touchassetmanager.h>
 #include <input/touch/touchhudrenderer.h>
+#include <data/config/androidconfigurationmanager.h>
 #endif
 
 #if defined(RAD_ANDROID)
@@ -704,6 +705,9 @@ void Game::Initialize()
     TouchAssetManager::GetInstance().Initialize();
     // Realizamos inicializacion del render, pero aqui no es donde solicitamos el renderizado,solo iniciamos el sistema de render
     TouchHudRenderer::GetInstance().Initialize();
+
+    // hacemos que se utilice en el ciclo del juego al arrancar la configuración del archivo Simpsons_configuration.txt
+    GetAndroidConfigurationManager()->Initialize();
     #endif
 
     //
