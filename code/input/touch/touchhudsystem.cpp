@@ -1284,44 +1284,49 @@ void TouchHudSystem::ApplyMovementActions()
     }
 
     float stickX = mMovement.direction.x;
+    // Si hemos tenido que invertir y para que el jostick virtual funcione como corresponde
     float stickY = -mMovement.direction.y;
 
-    /*
-     * IMPORTANTE:
-     *
-     * No invertimos Y de inicio.
-     *
-     * En pantalla:
-     *   mover dedo hacia arriba => y negativo
-     *   mover dedo hacia abajo  => y positivo
-     *
-     * En muchos sticks físicos:
-     *   stick arriba => Y negativo
-     *   stick abajo  => Y positivo
-     *
-     * Por eso empezamos usando el mismo signo.
-     *
-     * Si al probar ocurre que:
-     *   arrastras arriba y el personaje baja,
-     * entonces cambia la línea de arriba por:
-     *
-     *   float stickY = -mMovement.direction.y;
-     */
-    const float deadZone = 0.10f;
-    const float deadZoneSq = deadZone * deadZone;
+  
+    const float deadZone = 0.04f;
+    const float antiDeadZone = 0.30f;
 
-    const float lengthSq = ( stickX * stickX ) + ( stickY * stickY );
+    float lengthSq = ( stickX * stickX ) + ( stickY * stickY );
 
-    /*
-     * Deadzone radial:
-     *
-     * Si el dedo está muy cerca del centro, mandamos 0.
-     * Esto evita micro-movimientos indeseados.
-     */
-    if ( lengthSq < deadZoneSq )
+    if ( lengthSq < deadZone * deadZone )
     {
         stickX = 0.0f;
         stickY = 0.0f;
+    }
+    else
+    {
+        float length = sqrtf( lengthSq );
+
+        if ( length > 0.0f )
+        {
+            float dirX = stickX / length;
+            float dirY = stickY / length;
+
+            /*
+            * Reescala la magnitud:
+            *
+            * Antes:
+            *   salir del centro podía mandar 0.05, 0.10, 0.15...
+            *
+            * Ahora:
+            *   al salir de la deadzone, empieza ya en antiDeadZone.
+            *
+            * Esto compensa la deadzone/sensibilidad interna del juego original.
+            */
+            float normalizedLength = ( length - deadZone ) / ( 1.0f - deadZone );
+            normalizedLength = rmt::Clamp( normalizedLength, 0.0f, 1.0f );
+
+            float outputLength = antiDeadZone +
+                ( normalizedLength * ( 1.0f - antiDeadZone ) );
+
+            stickX = dirX * outputLength;
+            stickY = dirY * outputLength;
+        }
     }
 
     TouchInputAdapter::GetInstance().QueueInputManagerAxis(
