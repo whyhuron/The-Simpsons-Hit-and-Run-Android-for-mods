@@ -37,7 +37,7 @@ AndroidConfigurationManager::AndroidConfigurationManager()
 :
     m_initialized( false ),
     m_invertCamera( true ),
-    m_gamepadVibration( false ),
+    m_gamepadVibration( true ),
     m_phoneVibration( false )
 {
 #if defined(RAD_ANDROID)
@@ -257,13 +257,13 @@ void AndroidConfigurationManager::WriteConfigurationFile()
     }
 
     fprintf( file, "# Simpsons Hit & Run Android - Configuration\n" );
-    fprintf( file, "# Change only true/false values.\n" );
+    fprintf( file, "# Change only 1/0 values.\n" );
+    fprintf( file, "# U can put true/false values too.\n" );
     fprintf( file, "# Restart the game after changing this file.\n" );
     fprintf( file, "\n" );
 
-    fprintf( file, "invert_camera=%s\n", m_invertCamera ? "true" : "false" );
-    fprintf( file, "gamepad_vibration=%s\n", m_gamepadVibration ? "true" : "false" );
-    fprintf( file, "phone_vibration=%s\n", m_phoneVibration ? "true" : "false" );
+    fprintf( file, "invert_camera=%s\n", m_invertCamera ? 1 : 0 );
+    fprintf( file, "gamepad_vibration=%s\n", m_gamepadVibration ? 1 : 0 );
 
     fclose( file );
 }

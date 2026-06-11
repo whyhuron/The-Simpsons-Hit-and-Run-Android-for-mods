@@ -566,7 +566,7 @@ class SDLHapticHandler {
 
     // el juego en C++ nos envía la vibración y nosotros como última capa lo reducimos al hardware final 
 
-   protected static final float GAMEPAD_RUMBLE_INTENSITY_SCALE = 0.75f; // intensidad final de vibración
+   protected static final float GAMEPAD_RUMBLE_INTENSITY_SCALE = 0.5f; // intensidad final de vibración
 
     public SDLHapticHandler() {
         mHaptics = new ArrayList<SDLHaptic>();
