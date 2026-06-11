@@ -308,16 +308,6 @@ void InputManager::Update( unsigned int timeinms )
 
 void InputManager::OnControllerConnectionStatusChange( IRadController * pIController2 )
 {
-    #if defined(RAD_ANDROID)
-        if ( pIController2 != NULL && pIController2->IsConnected() )
-        {
-            TouchInputModeManager::GetInstance().NotifyGamepadConnected();
-        }
-        else
-        {
-            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
-        }
-    #endif
     mConnectStateChanged = true;
 }
 
