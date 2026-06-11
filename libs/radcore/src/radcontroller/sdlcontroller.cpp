@@ -150,12 +150,38 @@ static SDLInputPoint g_SDLPoints[] =
 static class radControllerSystemSDL* s_pTheSDLControllerSystem2 = NULL;
 static radMemoryAllocator g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
 
-// Es decir el touch entrará como mando principal respetando la estructura del juego de puertos, en este caso puerto 0
-#if defined(RAD_ANDROID)
-static const char* ANDROID_TOUCH_CONTROLLER_LOCATION = "Port0\\Slot0";
-#endif
+
+
+
+
 
 #if defined(RAD_ANDROID)
+// Es decir el touch entrará como mando principal respetando la estructura del juego de puertos, en este caso puerto 0
+static const char* ANDROID_TOUCH_CONTROLLER_LOCATION = "Port0\\Slot0";
+
+typedef bool (*AndroidRumblePolicyCallback)();
+
+static AndroidRumblePolicyCallback sAndroidRumblePolicyCallback = NULL;
+
+extern "C" void radControllerSDLSetAndroidRumblePolicyCallback(
+    AndroidRumblePolicyCallback callback
+)
+{
+    sAndroidRumblePolicyCallback = callback;
+}
+
+static bool AndroidIsGamepadRumbleAllowed()
+{
+    if ( sAndroidRumblePolicyCallback == NULL )
+    {
+        return false;
+    }
+
+    return sAndroidRumblePolicyCallback();
+}
+
+
+
 static bool AndroidJavaRumbleFallback(float intensity, int length)
 {
     JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
@@ -1189,6 +1215,18 @@ virtual void iPoll( unsigned int virtualTime )
             uint16_t newLeftGain  = (uint16_t)( pICop2_Left->GetGain()  * 65535.0f );
             uint16_t newRightGain = (uint16_t)( pICop2_Right->GetGain() * 65535.0f );
 
+            #if defined(RAD_ANDROID)
+            // Comprobamos si la fuente de verdad del archivo txt nos da permiso para vibrar el mando, 
+            // en caso de poner false el mando no vibrará lo ponemos a 0
+                const bool androidRumbleAllowed = AndroidIsGamepadRumbleAllowed();
+
+                if ( !androidRumbleAllowed )
+                {
+                    newLeftGain = 0;
+                    newRightGain = 0;
+                }
+            #endif
+
             if
             (
                 ( newLeftGain  != m_LeftGain ) ||
@@ -1222,14 +1260,20 @@ virtual void iPoll( unsigned int virtualTime )
                     );
 #endif
 
+                    #if defined(RAD_ANDROID)
+                    if ( !androidRumbleAllowed )
+                    {
+                        AndroidJavaStopRumbleFallback();
+                    }
+                    #endif
                     if ( result != 0 )
                     {
 
 
 							#if defined(RAD_ANDROID)
 							float strength = ( ( m_LeftGain > m_RightGain ) ? m_LeftGain : m_RightGain ) / 65535.0f;
-							// Aumento  global de vibración para Android Java fallback
-							strength *= 1.5f;
+							
+							//strength *= 1.5f;
 
 							if ( strength > 1.0f )
 							{

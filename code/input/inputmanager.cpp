@@ -52,6 +52,9 @@
 #ifdef RAD_ANDROID
 #include <input/touch/touchcameracontroller.h>
 #include <input/touch/touchinputadapter.h>
+#include <input/touch/touchinputmodemanager.h>
+#include <data/config/androidconfigurationmanager.h>
+extern "C" void radControllerSDLSetAndroidRumblePolicyCallback( bool (*callback)() );
 #endif
 
 #if defined(RAD_ANDROID)
@@ -83,6 +86,45 @@ const int NUM_RESET_BUTTONS = 0;
 #endif
 
 const unsigned int RESET_TIMEOUT = 2000;
+
+#if defined(RAD_ANDROID)
+static bool AndroidInputManagerRumblePolicy()
+{
+    if ( !GetAndroidConfigurationManager()->IsGamepadVibrationEnabled() )
+    {
+        return false;
+    }
+
+    if ( !TouchInputModeManager::GetInstance().IsGamepadConnected() )
+    {
+        return false;
+    }
+
+    return true;
+}
+#endif
+
+#if defined(RAD_ANDROID)
+static bool IsAndroidRumbleAllowed( bool rumbleEnabled )
+{
+    if ( !rumbleEnabled )
+    {
+        return false;
+    }
+
+    if ( !GetAndroidConfigurationManager()->IsGamepadVibrationEnabled() )
+    {
+        return false;
+    }
+
+    if ( !TouchInputModeManager::GetInstance().IsGamepadConnected() )
+    {
+        return false;
+    }
+
+    return true;
+}
+#endif
 
 //******************************************************************************
 // Global Data, Local Data, Local Classes
@@ -137,6 +179,10 @@ MEMTRACK_PUSH_GROUP( "InputManager" );
     ::radControllerInitialize( this, GMA_DEFAULT );
 
     mxIControllerSystem2 = radControllerSystemGet();
+
+    #if defined(RAD_ANDROID)
+        radControllerSDLSetAndroidRumblePolicyCallback( &AndroidInputManagerRumblePolicy );
+    #endif
 
 #ifdef RAD_PS2
     // On PS2, check for initial button pushes.
@@ -262,6 +308,16 @@ void InputManager::Update( unsigned int timeinms )
 
 void InputManager::OnControllerConnectionStatusChange( IRadController * pIController2 )
 {
+    #if defined(RAD_ANDROID)
+        if ( pIController2 != NULL && pIController2->IsConnected() )
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+        }
+        else
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+        }
+    #endif
     mConnectStateChanged = true;
 }
 
@@ -300,13 +356,20 @@ void InputManager::ToggleRumble( bool on )
 //=============================================================================
 void InputManager::SetRumbleEnabled( bool isEnabled )
 {
+    #if defined(RAD_ANDROID)
+    mIsRumbleEnabled = GetAndroidConfigurationManager()->IsGamepadVibrationEnabled();
+#else
     mIsRumbleEnabled = isEnabled;
+#endif
 }
 
 void InputManager::SetRumbleForDevice( int controllerId, bool bRumbleOn )
 {
     if ( (unsigned int)controllerId < Input::MaxControllers)
     {
+        #if defined(RAD_ANDROID)
+            bRumbleOn = bRumbleOn && IsAndroidRumbleAllowed( mIsRumbleEnabled );
+        #endif
         mControllerArray[controllerId].SetRumble( bRumbleOn );
     }
 }
@@ -325,6 +388,12 @@ void InputManager::TriggerRumblePulse( int controllerId )
 {
     if ( (unsigned int)controllerId < Input::MaxControllers)
     {
+        #if defined(RAD_ANDROID)
+            if ( !IsAndroidRumbleAllowed( mIsRumbleEnabled ) )
+            {
+                return;
+            }
+        #endif
         mControllerArray[ controllerId ].PulseRumble();
     }
 }
@@ -400,7 +469,11 @@ void InputManager::UnregisterMappable( Mappable *pMappable  )
 
 void InputManager::LoadData( const GameDataByte* dataBuffer, unsigned int numBytes )
 {
+    #if defined(RAD_ANDROID)
+    mIsRumbleEnabled = GetAndroidConfigurationManager()->IsGamepadVibrationEnabled();
+#else
     mIsRumbleEnabled = ( dataBuffer[ 0 ] != 0 );
+#endif
 }
 
 void InputManager::SaveData( GameDataByte* dataBuffer, unsigned int numBytes )
@@ -452,6 +525,9 @@ InputManager::~InputManager()
 #ifndef RAD_PC
     mxIControllerSystem2->UnRegisterConnectionChangeCallback( this );
 #endif
+    #if defined(RAD_ANDROID)
+        radControllerSDLSetAndroidRumblePolicyCallback( NULL );
+    #endif
     ::radControllerTerminate();
 #ifdef RAD_PC
     delete m_pFEMouse;
@@ -564,7 +640,7 @@ void InputManager::EnumerateControllers( void )
                 controller->Initialize( xIC2 );
                 controller->NotifyConnect( );
                 controller->LoadControllerMappings( );
-                controller->SetRumble( IsRumbleEnabled() );
+                SetRumbleForDevice( i, IsRumbleEnabled() ); // Originalmente como esta arriba para ps2
 
                 xIC2 = NULL;
 #endif
