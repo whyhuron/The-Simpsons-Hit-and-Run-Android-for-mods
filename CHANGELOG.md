@@ -8,6 +8,75 @@
 
 # 🇪🇸 Español
 
+## 🚀 Versión 0.87.2
+
+La versión **0.87.2** es una actualización centrada en mejorar la comodidad de los controles táctiles, añadir nuevas opciones de configuración y corregir algunos comportamientos no deseados detectados tras la versión 0.87.
+
+Aunque se trata de una actualización menor, incluye cambios importantes para hacer que la experiencia de juego en Android sea más cómoda, precisa y configurable.
+
+---
+
+## 🎮 Mejoras en el joystick virtual a pie
+
+Se ha mejorado el comportamiento del **joystick virtual cuando el personaje va a pie**.
+
+En versiones anteriores, el joystick táctil tenía una zona muerta demasiado grande, lo que podía hacer que el movimiento del personaje se sintiera menos preciso o algo incómodo en determinadas situaciones.
+
+En esta versión se ha reducido esa zona muerta excesiva, consiguiendo que el control a pie sea más cómodo, más sensible y más preciso al jugar directamente desde la pantalla táctil.
+
+---
+
+## ⚙️ Nueva opción de configuración en la pantalla de pausa
+
+Se ha añadido una nueva opción de **configuración** dentro de la pantalla de pausa in-game.
+
+Desde esta nueva sección, el usuario puede modificar algunos ajustes del port a su gusto sin necesidad de salir completamente de la experiencia de juego.
+
+Esto permite que la versión de Android sea más flexible y se adapte mejor a las preferencias de cada jugador.
+
+---
+
+## 📝 Configuración adicional mediante archivo externo
+
+Debido a que el usuario aporta los assets de la versión original de PC, y dicha versión de 2003 no incluía opciones de menú para activar o desactivar la vibración ni para invertir la cámara, estos ajustes se han añadido mediante un archivo de configuración externo.
+
+El archivo se encuentra en la siguiente ruta:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Desde este archivo, antes de iniciar el juego, el usuario puede elegir:
+
+* Activar o desactivar la vibración del gamepad.
+* Invertir o no la cámara en el eje X.
+
+De esta forma, se añaden opciones modernas de configuración respetando las limitaciones de los assets originales de la versión de PC.
+
+---
+
+## 📳 Corrección de vibración no deseada del teléfono
+
+Se ha corregido un bug que provocaba que el teléfono vibrase en algunos dispositivos.
+
+Este comportamiento no era intencionado ni formaba parte de ninguna función prevista del port. La vibración del teléfono era un efecto no deseado que solo ocurría en ciertos dispositivos, por lo que ha sido eliminada.
+
+La vibración configurable se mantiene únicamente para mandos compatibles mediante la opción correspondiente del archivo de configuración.
+
+---
+
+## ✨ Resumen de la versión 0.87.2
+
+* Mejorado el joystick virtual a pie.
+* Reducida la zona muerta excesiva del joystick táctil.
+* Movimiento a pie más cómodo y preciso.
+* Añadida opción de configuración en la pantalla de pausa in-game.
+* Añadido archivo de configuración externo para opciones no disponibles en los assets originales de PC.
+* Añadida opción para activar o desactivar la vibración del gamepad.
+* Añadida opción para invertir la cámara en el eje X.
+* Corregido el bug que provocaba vibración no deseada del teléfono en algunos dispositivos.
+
+
 ## 🚀 Versión 0.87
 
 La versión **0.87** representa una de las actualizaciones más importantes del port de *The Simpsons: Hit & Run* para Android hasta la fecha.
@@ -56,6 +125,75 @@ La versión **0.87** es un paso enorme para hacer que el port sea mucho más có
 ---
 
 # 🇬🇧 English
+
+## 🚀 Version 0.87.2
+
+Version **0.87.2** is an update focused on improving the comfort of touch controls, adding new configuration options, and fixing some unwanted behaviors detected after version 0.87.
+
+Although this is a minor update, it includes important changes to make the Android gameplay experience more comfortable, precise, and configurable.
+
+---
+
+## 🎮 Improvements to the on-foot virtual joystick
+
+The behavior of the **virtual joystick when the character is on foot** has been improved.
+
+In previous versions, the touch joystick had an overly large dead zone, which could make character movement feel less precise or somewhat uncomfortable in certain situations.
+
+In this version, that excessive dead zone has been reduced, making on-foot controls more comfortable, more responsive, and more precise when playing directly from the touchscreen.
+
+---
+
+## ⚙️ New configuration option in the pause screen
+
+A new **configuration** option has been added inside the in-game pause screen.
+
+From this new section, users can modify some port settings to their liking without needing to completely exit the gameplay experience.
+
+This makes the Android version more flexible and better adapted to each player's preferences.
+
+---
+
+## 📝 Additional configuration through an external file
+
+Because the user provides the assets from the original PC version, and that 2003 version did not include menu options to enable or disable vibration or to invert the camera, these settings have been added through an external configuration file.
+
+The file is located at the following path:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+From this file, before launching the game, the user can choose to:
+
+* Enable or disable gamepad vibration.
+* Invert or not invert the camera on the X axis.
+
+This adds modern configuration options while respecting the limitations of the original PC version assets.
+
+---
+
+## 📳 Fix for unwanted phone vibration
+
+A bug that caused the phone to vibrate on some devices has been fixed.
+
+This behavior was not intentional and was not part of any planned feature of the port. The phone vibration was an unwanted effect that only occurred on certain devices, so it has been removed.
+
+Configurable vibration remains available only for compatible controllers through the corresponding option in the configuration file.
+
+---
+
+## ✨ Version 0.87.2 summary
+
+* Improved the on-foot virtual joystick.
+* Reduced the excessive dead zone of the touch joystick.
+* Made on-foot movement more comfortable and precise.
+* Added a configuration option to the in-game pause screen.
+* Added an external configuration file for options not available in the original PC assets.
+* Added an option to enable or disable gamepad vibration.
+* Added an option to invert the camera on the X axis.
+* Fixed the bug that caused unwanted phone vibration on some devices.
+
 
 ## 🚀 Version 0.87
 
@@ -106,6 +244,75 @@ Version **0.87** is a huge step toward making the port feel much more comfortabl
 
 # 🇫🇷 Français
 
+## 🚀 Version 0.87.2
+
+La version **0.87.2** est une mise à jour axée sur l’amélioration du confort des commandes tactiles, l’ajout de nouvelles options de configuration et la correction de certains comportements indésirables détectés après la version 0.87.
+
+Même s’il s’agit d’une mise à jour mineure, elle inclut des changements importants afin de rendre l’expérience de jeu sur Android plus confortable, plus précise et plus configurable.
+
+---
+
+## 🎮 Améliorations du joystick virtuel à pied
+
+Le comportement du **joystick virtuel lorsque le personnage se déplace à pied** a été amélioré.
+
+Dans les versions précédentes, le joystick tactile possédait une zone morte trop importante, ce qui pouvait rendre les déplacements du personnage moins précis ou quelque peu inconfortables dans certaines situations.
+
+Dans cette version, cette zone morte excessive a été réduite, ce qui permet d’obtenir un contrôle à pied plus confortable, plus sensible et plus précis lors du jeu directement depuis l’écran tactile.
+
+---
+
+## ⚙️ Nouvelle option de configuration dans l’écran de pause
+
+Une nouvelle option de **configuration** a été ajoutée dans l’écran de pause en jeu.
+
+Depuis cette nouvelle section, l’utilisateur peut modifier certains paramètres du portage selon ses préférences, sans avoir besoin de quitter complètement l’expérience de jeu.
+
+Cela permet à la version Android d’être plus flexible et de mieux s’adapter aux préférences de chaque joueur.
+
+---
+
+## 📝 Configuration supplémentaire via un fichier externe
+
+Étant donné que l’utilisateur fournit les assets de la version originale PC, et que cette version de 2003 n’incluait pas d’options de menu permettant d’activer ou de désactiver la vibration ni d’inverser la caméra, ces paramètres ont été ajoutés via un fichier de configuration externe.
+
+Le fichier se trouve dans le chemin suivant :
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Depuis ce fichier, avant de lancer le jeu, l’utilisateur peut choisir :
+
+* Activer ou désactiver la vibration de la manette.
+* Inverser ou non la caméra sur l’axe X.
+
+De cette manière, des options de configuration modernes sont ajoutées tout en respectant les limitations des assets originaux de la version PC.
+
+---
+
+## 📳 Correction de la vibration indésirable du téléphone
+
+Un bug qui provoquait la vibration du téléphone sur certains appareils a été corrigé.
+
+Ce comportement n’était pas intentionnel et ne faisait partie d’aucune fonctionnalité prévue du portage. La vibration du téléphone était un effet indésirable qui ne se produisait que sur certains appareils, elle a donc été supprimée.
+
+La vibration configurable est conservée uniquement pour les manettes compatibles via l’option correspondante du fichier de configuration.
+
+---
+
+## ✨ Résumé de la version 0.87.2
+
+* Joystick virtuel à pied amélioré.
+* Zone morte excessive du joystick tactile réduite.
+* Déplacements à pied plus confortables et plus précis.
+* Option de configuration ajoutée dans l’écran de pause en jeu.
+* Fichier de configuration externe ajouté pour les options non disponibles dans les assets originaux PC.
+* Option ajoutée pour activer ou désactiver la vibration de la manette.
+* Option ajoutée pour inverser la caméra sur l’axe X.
+* Bug provoquant une vibration indésirable du téléphone sur certains appareils corrigé.
+
+
 ## 🚀 Version 0.87
 
 La version **0.87** représente l’une des mises à jour les plus importantes à ce jour pour le port Android de *The Simpsons: Hit & Run*.
@@ -154,6 +361,75 @@ La version **0.87** est une énorme avancée pour rendre le port beaucoup plus c
 ---
 
 # 🇩🇪 Deutsch
+
+## 🚀 Version 0.87.2
+
+Die Version **0.87.2** ist ein Update, das sich auf die Verbesserung des Komforts der Touch-Steuerung, das Hinzufügen neuer Konfigurationsoptionen und die Behebung einiger unerwünschter Verhaltensweisen konzentriert, die nach Version 0.87 festgestellt wurden.
+
+Auch wenn es sich um ein kleineres Update handelt, enthält es wichtige Änderungen, um das Spielerlebnis auf Android komfortabler, präziser und besser konfigurierbar zu machen.
+
+---
+
+## 🎮 Verbesserungen am virtuellen Joystick zu Fuß
+
+Das Verhalten des **virtuellen Joysticks, wenn sich die Spielfigur zu Fuß bewegt**, wurde verbessert.
+
+In früheren Versionen hatte der Touch-Joystick eine zu große Totzone, wodurch sich die Bewegung der Spielfigur in bestimmten Situationen weniger präzise oder etwas unbequem anfühlen konnte.
+
+In dieser Version wurde diese übermäßige Totzone reduziert, sodass die Steuerung zu Fuß beim Spielen direkt über den Touchscreen komfortabler, empfindlicher und präziser ist.
+
+---
+
+## ⚙️ Neue Konfigurationsoption im Pausenbildschirm
+
+Im Pausenbildschirm während des Spiels wurde eine neue **Konfigurationsoption** hinzugefügt.
+
+Über diesen neuen Bereich kann der Nutzer einige Einstellungen des Ports nach seinen eigenen Vorlieben ändern, ohne das Spielerlebnis vollständig verlassen zu müssen.
+
+Dadurch wird die Android-Version flexibler und kann besser an die Vorlieben jedes Spielers angepasst werden.
+
+---
+
+## 📝 Zusätzliche Konfiguration über eine externe Datei
+
+Da der Nutzer die Assets der originalen PC-Version bereitstellt und diese Version aus dem Jahr 2003 keine Menüoptionen zum Aktivieren oder Deaktivieren der Vibration oder zum Invertieren der Kamera enthielt, wurden diese Einstellungen über eine externe Konfigurationsdatei hinzugefügt.
+
+Die Datei befindet sich unter folgendem Pfad:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Über diese Datei kann der Nutzer vor dem Start des Spiels Folgendes auswählen:
+
+* Die Vibration des Gamepads aktivieren oder deaktivieren.
+* Die Kamera auf der X-Achse invertieren oder nicht.
+
+Auf diese Weise werden moderne Konfigurationsoptionen hinzugefügt, während die Einschränkungen der ursprünglichen Assets der PC-Version respektiert werden.
+
+---
+
+## 📳 Behebung unerwünschter Telefonvibration
+
+Ein Fehler wurde behoben, der auf einigen Geräten dazu führte, dass das Telefon vibrierte.
+
+Dieses Verhalten war nicht beabsichtigt und gehörte zu keiner geplanten Funktion des Ports. Die Telefonvibration war ein unerwünschter Effekt, der nur auf bestimmten Geräten auftrat, und wurde daher entfernt.
+
+Die konfigurierbare Vibration bleibt ausschließlich für kompatible Controller über die entsprechende Option in der Konfigurationsdatei erhalten.
+
+---
+
+## ✨ Zusammenfassung der Version 0.87.2
+
+* Virtueller Joystick zu Fuß verbessert.
+* Übermäßige Totzone des Touch-Joysticks reduziert.
+* Bewegung zu Fuß komfortabler und präziser gemacht.
+* Konfigurationsoption im Pausenbildschirm während des Spiels hinzugefügt.
+* Externe Konfigurationsdatei für Optionen hinzugefügt, die in den ursprünglichen PC-Assets nicht verfügbar waren.
+* Option zum Aktivieren oder Deaktivieren der Gamepad-Vibration hinzugefügt.
+* Option zum Invertieren der Kamera auf der X-Achse hinzugefügt.
+* Fehler behoben, der auf einigen Geräten eine unerwünschte Telefonvibration verursachte.
+
 
 ## 🚀 Version 0.87
 

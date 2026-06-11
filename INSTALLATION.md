@@ -15,7 +15,7 @@ Hola, esto es un **port del videojuego *The Simpsons: Hit & Run* para Android**.
 Por favor, lee este pequeño documento en tu idioma correspondiente **de principio a fin**, ya que es de **vital importancia para una correcta instalación**.
 
  
-**Actualmente solo es jugable con mando externo.**(**Version 0.86**)
+
 
 En el futuro se incorporarán **controles táctiles con sus respectivos iconos**.
 
@@ -115,11 +115,6 @@ Espero que disfrutes el port.
 Hello, this is an **Android port of the game *The Simpsons: Hit & Run***.
 
 Please read this short document **from start to finish in your corresponding language**, as it is **very important for a proper installation**.
-
-This is **still a beta version**.  
-**Currently it is only playable using an external controller.**
-
-Touch controls with proper icons **will be added in the future**.
 
 ### Installation
 
@@ -221,11 +216,6 @@ Bonjour, ceci est **un port Android du jeu *The Simpsons: Hit & Run***.
 
 Veuillez lire ce document **du début à la fin dans votre langue**, car il est **très important pour une installation correcte**.
 
-Il s'agit **encore d'une version bêta**.  
-**Actuellement jouable uniquement avec une manette externe.**
-
-Les **contrôles tactiles avec leurs icônes seront ajoutés dans le futur**.
-
 ### Installation
 
 1. Choisissez correctement la **version APK** que vous souhaitez installer :
@@ -326,11 +316,6 @@ J’espère que vous apprécierez le portage.
 Hallo, dies ist **ein Android-Port des Spiels *The Simpsons: Hit & Run***.
 
 Bitte lies dieses Dokument **vollständig in deiner Sprache**, da es **sehr wichtig für eine korrekte Installation** ist.
-
-Dies ist **noch eine Beta-Version**.  
-**Derzeit nur mit einem externen Controller spielbar.**
-
-Touch-Steuerung mit Icons **wird in Zukunft hinzugefügt**.
 
 ### Installation
 
