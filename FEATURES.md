@@ -12,7 +12,7 @@
 
 ## 📊 Características del Port
 
-## Features versión **0.87**
+## Características última versión
 
 ---
 
@@ -105,7 +105,7 @@
 
 ## 📊 Port Features
 
-## Features version **0.87**
+## Features Latest Version
 
 ---
 
@@ -198,7 +198,7 @@
 
 ## 📊 Fonctionnalités du Port
 
-## Fonctionnalités version **0.87**
+## Fonctionnalités Dernière version
 
 ---
 
@@ -291,7 +291,7 @@
 
 ## 📊 Port-Funktionalitäten
 
-## Features Version **0.87**
+## Features Neueste Version
 
 ---
 

@@ -58,23 +58,36 @@ Si no sabes qué versión de assets tienes, puedes diferenciarlos fácilmente po
 * Si tus assets contienen un archivo llamado **dialogf.rcf** → tienes **assets PAL en francés**.
 * Si tus assets contienen un archivo llamado **dialogg.rcf** → tienes **assets PAL en alemán**.
 
-### Resolución de renderizado adaptativa
+
+## ⚙️ Configuración extra para el usuario
+
+El port de Android incluye varias opciones de configuración extra que pueden ser modificadas por el usuario final mediante archivos externos.
+
+---
+
+## 🖥️ Resolución de renderizado adaptativa
 
 El port incluye un sistema de **resolución de renderizado adaptativa** para Android.
 
-Una vez instalada la aplicación y después de abrirla al menos una vez, la app generará automáticamente un archivo llamado:
+Una vez instalada la aplicación y después de abrirla al menos una vez, se generará automáticamente un archivo llamado:
 
-`Simpsons_resolution.txt`
+```txt
+Simpsons_resolution.txt
+```
 
 Este archivo se generará en la siguiente ruta:
 
-`Android/data/com.c4rlox.simpsons/files`
+```txt
+Android/data/com.c4rlox.simpsons/files
+```
 
-Desde este archivo puedes cambiar la resolución interna de renderizado del juego **antes de iniciarlo**.
+Desde este archivo, puedes cambiar la resolución interna de renderizado del juego **antes de iniciarlo**.
 
-Solo necesitas modificar el valor:
+Solo necesitas modificar el siguiente valor:
 
-`target_height`
+```txt
+target_height
+```
 
 La anchura de renderizado se calcula automáticamente para respetar la relación de aspecto del dispositivo.
 
@@ -85,28 +98,57 @@ Valores recomendados:
 * `850`
 * `900`
 * `1080`
+
 ---
-## 📱 Controles táctiles
 
-La versión **0.87** incluye controles táctiles integrados para poder jugar directamente desde la pantalla del dispositivo Android.
+## 📱 Configuración de los controles táctiles
 
-Por defecto, el juego utiliza el **Modo 1** para las coordenadas táctiles, que debería funcionar correctamente en la mayoría de dispositivos.
+La versión **0.87** introdujo controles táctiles integrados, permitiendo jugar directamente desde la pantalla del dispositivo Android.
 
-Si al iniciar el juego notas que los botones táctiles no responden correctamente, que los toques no coinciden con la posición de los iconos o que la zona táctil parece desplazada, cambia al **Modo 2** modificando este archivo:
+Por defecto, el juego utiliza el **Modo 1** para las coordenadas táctiles. Este modo debería funcionar correctamente en la mayoría de dispositivos.
+
+Si, después de iniciar el juego, notas que los botones táctiles no responden correctamente, que los toques no coinciden con la posición de los iconos o que la zona táctil parece desplazada, cambia al **Modo 2** modificando este archivo:
 
 ```txt
 Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
 ```
 
-En resumen:
+Resumen:
 
-Modo 1: modo por defecto recomendado.
+* **Modo 1:** modo por defecto recomendado.
+* **Modo 2:** modo alternativo si los controles táctiles no funcionan correctamente en tu dispositivo.
 
-Modo 2: modo alternativo si los controles táctiles no funcionan correctamente en tu dispositivo.
+Para más información, consulta el archivo **[TOUCH_CONTROLS.md](TOUCH_CONTROLS.md)**.
 
-Para más información, consulta el archivo [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+---
+
+## 📝 Configuración adicional de gameplay
+
+El port también incluye un archivo de configuración adicional llamado:
+
+```txt
+Simpsons_configuration.txt
+```
+
+Este archivo se encuentra en la siguiente ruta:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Cualquier cambio en este archivo debe realizarse **antes de iniciar el juego**.
+
+A través de este archivo, puedes configurar las siguientes opciones:
+
+* Activar o desactivar la vibración del gamepad.
+* Elegir si quieres invertir la cámara en el eje X.
+
+Estas opciones no estaban disponibles originalmente en la versión de PC del juego. Como no formaban parte de los assets originales de PC, se ofrecen mediante este archivo de configuración externo en lugar de estar integradas directamente en el menú de configuración del juego.
+
+---
 
 Espero que disfrutes el port.
+
 
 ---
 
@@ -155,25 +197,38 @@ If you are not sure which version of assets you have, you can identify them thro
 * If your assets contain a file named **dialogf.rcf** → you have **PAL French assets**.
 * If your assets contain a file named **dialogg.rcf** → you have **PAL German assets**.
 
-### Adaptive render resolution
 
-The port includes an **adaptive render resolution** system for Android.
+## ⚙️ Extra User Configuration
 
-Once the application is installed and opened at least once, the app will automatically generate a file named:
+The Android port includes several extra configuration options that can be modified by the final user through external files.
 
-`Simpsons_resolution.txt`
+---
+
+## 🖥️ Adaptive Rendering Resolution
+
+The port includes an **adaptive rendering resolution** system for Android.
+
+Once the application has been installed and opened at least once, it will automatically generate a file called:
+
+```txt
+Simpsons_resolution.txt
+```
 
 This file will be generated in the following path:
 
-`Android/data/com.c4rlox.simpsons/files`
+```txt
+Android/data/com.c4rlox.simpsons/files
+```
 
-From this file, you can change the game’s internal render resolution **before launching it**.
+From this file, you can change the internal rendering resolution of the game **before launching it**.
 
-You only need to modify the value:
+You only need to modify the following value:
 
-`target_height`
+```txt
+target_height
+```
 
-The render width is calculated automatically to preserve the device aspect ratio.
+The rendering width is calculated automatically in order to preserve the aspect ratio of the device.
 
 Recommended values:
 
@@ -183,15 +238,15 @@ Recommended values:
 * `900`
 * `1080`
 
-
 ---
-## 📱 Touch controls
 
-Version **0.87** includes built-in touch controls so you can play directly from your Android device’s screen.
+## 📱 Touch Controls Configuration
 
-By default, the game uses **Mode 1** for touch coordinates, which should work correctly on most devices.
+Version **0.87** introduced integrated touch controls, allowing the game to be played directly from the Android device screen.
 
-If, when starting the game, you notice that the touch buttons do not respond correctly, that taps do not match the position of the icons, or that the touch area seems shifted, switch to **Mode 2** by modifying this file:
+By default, the game uses **Mode 1** for touch coordinates. This mode should work correctly on most devices.
+
+If, after launching the game, you notice that the touch buttons do not respond correctly, the touch input does not match the icon positions, or the touch area seems displaced, change to **Mode 2** by modifying this file:
 
 ```txt
 Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
@@ -199,11 +254,37 @@ Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
 
 Summary:
 
-Mode 1: recommended default mode.
+* **Mode 1:** recommended default mode.
+* **Mode 2:** alternative mode if the touch controls do not work correctly on your device.
 
-Mode 2: alternative mode if the touch controls do not work correctly on your device.
+For more information, check the **[TOUCH_CONTROLS.md](TOUCH_CONTROLS.md)** file.
 
-For more information, check the [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+---
+
+## 📝 Additional Gameplay Configuration
+
+The port also includes an additional configuration file called:
+
+```txt
+Simpsons_configuration.txt
+```
+
+This file is located in the following path:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Any changes to this file must be made **before launching the game**.
+
+Through this file, you can configure the following options:
+
+* Enable or disable gamepad vibration.
+* Choose whether to invert the camera on the X axis.
+
+These options were not originally available in the PC version of the game. Since they were not part of the original PC assets, they are provided through this external configuration file instead of being directly integrated into the in-game settings menu.
+
+---
 
 I hope you enjoy the port.
 
@@ -256,26 +337,37 @@ Si vous ne savez pas quelle version d'assets vous avez, vous pouvez l'identifier
 * Si vos assets contiennent un fichier nommé **dialogg.rcf** → vous avez des **assets PAL allemands**.
 
 
+## ⚙️ Configuration supplémentaire pour l’utilisateur
 
-### Résolution de rendu adaptative
+Le port Android inclut plusieurs options de configuration supplémentaires qui peuvent être modifiées par l’utilisateur final à l’aide de fichiers externes.
+
+---
+
+## 🖥️ Résolution de rendu adaptative
 
 Le port inclut un système de **résolution de rendu adaptative** pour Android.
 
-Une fois l’application installée et ouverte au moins une fois, elle générera automatiquement un fichier nommé :
+Une fois l’application installée et après l’avoir ouverte au moins une fois, un fichier appelé sera automatiquement généré :
 
-`Simpsons_resolution.txt`
+```txt
+Simpsons_resolution.txt
+```
 
 Ce fichier sera généré dans le chemin suivant :
 
-`Android/data/com.c4rlox.simpsons/files`
+```txt
+Android/data/com.c4rlox.simpsons/files
+```
 
 Depuis ce fichier, vous pouvez modifier la résolution interne de rendu du jeu **avant de le lancer**.
 
-Il vous suffit de modifier la valeur :
+Il vous suffit de modifier la valeur suivante :
 
-`target_height`
+```txt
+target_height
+```
 
-La largeur de rendu est calculée automatiquement afin de préserver le rapport d’aspect de l’appareil.
+La largeur de rendu est calculée automatiquement afin de respecter le format d’image de l’appareil.
 
 Valeurs recommandées :
 
@@ -287,27 +379,55 @@ Valeurs recommandées :
 
 ---
 
-## 📱 Commandes tactiles
+## 📱 Configuration des contrôles tactiles
 
-La version **0.87** inclut des commandes tactiles intégrées afin de pouvoir jouer directement depuis l’écran de votre appareil Android.
+La version **0.87** a introduit des contrôles tactiles intégrés, permettant de jouer directement depuis l’écran de l’appareil Android.
 
-Par défaut, le jeu utilise le **Mode 1** pour les coordonnées tactiles, ce qui devrait fonctionner correctement sur la plupart des appareils.
+Par défaut, le jeu utilise le **Mode 1** pour les coordonnées tactiles. Ce mode devrait fonctionner correctement sur la plupart des appareils.
 
-Si, au lancement du jeu, vous remarquez que les boutons tactiles ne répondent pas correctement, que les pressions ne correspondent pas à la position des icônes ou que la zone tactile semble décalée, passez au **Mode 2** en modifiant ce fichier :
+Si, après avoir lancé le jeu, vous remarquez que les boutons tactiles ne répondent pas correctement, que les touches ne correspondent pas à la position des icônes ou que la zone tactile semble décalée, passez au **Mode 2** en modifiant ce fichier :
 
 ```txt
 Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
 ```
 
-En résumé :
+Résumé :
 
-Mode 1 : mode par défaut recommandé.
+* **Mode 1 :** mode par défaut recommandé.
+* **Mode 2 :** mode alternatif si les contrôles tactiles ne fonctionnent pas correctement sur votre appareil.
 
-Mode 2 : mode alternatif si les commandes tactiles ne fonctionnent pas correctement sur votre appareil.
+Pour plus d’informations, consultez le fichier **[TOUCH_CONTROLS.md](TOUCH_CONTROLS.md)**.
 
-Pour plus d’informations, consultez le fichier [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+---
 
-J’espère que vous apprécierez le portage.
+## 📝 Configuration supplémentaire du gameplay
+
+Le port inclut également un fichier de configuration supplémentaire appelé :
+
+```txt
+Simpsons_configuration.txt
+```
+
+Ce fichier se trouve dans le chemin suivant :
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Toute modification de ce fichier doit être effectuée **avant de lancer le jeu**.
+
+Grâce à ce fichier, vous pouvez configurer les options suivantes :
+
+* Activer ou désactiver la vibration de la manette.
+* Choisir si vous souhaitez inverser la caméra sur l’axe X.
+
+Ces options n’étaient pas disponibles à l’origine dans la version PC du jeu. Comme elles ne faisaient pas partie des assets originaux de la version PC, elles sont proposées via ce fichier de configuration externe au lieu d’être directement intégrées dans le menu de configuration du jeu.
+
+---
+
+J’espère que vous apprécierez le port.
+
+
 
 ---
 
@@ -356,23 +476,36 @@ Wenn du nicht sicher bist, welche Asset-Version du hast, kannst du sie über die
 * Wenn deine Assets eine Datei namens **dialogf.rcf** enthalten → hast du **PAL-Assets auf Französisch**.
 * Wenn deine Assets eine Datei namens **dialogg.rcf** enthalten → hast du **PAL-Assets auf Deutsch**.
 
-### Adaptive Renderauflösung
+
+## ⚙️ Zusätzliche Benutzerkonfiguration
+
+Der Android-Port enthält mehrere zusätzliche Konfigurationsoptionen, die vom Endbenutzer über externe Dateien geändert werden können.
+
+---
+
+## 🖥️ Adaptive Renderauflösung
 
 Der Port enthält ein System für **adaptive Renderauflösung** auf Android.
 
-Nachdem die Anwendung installiert und mindestens einmal geöffnet wurde, erstellt sie automatisch eine Datei mit dem Namen:
+Nachdem die Anwendung installiert und mindestens einmal geöffnet wurde, wird automatisch eine Datei mit folgendem Namen erstellt:
 
-`Simpsons_resolution.txt`
+```txt
+Simpsons_resolution.txt
+```
 
 Diese Datei wird im folgenden Pfad erstellt:
 
-`Android/data/com.c4rlox.simpsons/files`
+```txt
+Android/data/com.c4rlox.simpsons/files
+```
 
-Über diese Datei kannst du die interne Renderauflösung des Spiels **vor dem Starten** ändern.
+Über diese Datei können Sie die interne Renderauflösung des Spiels **vor dem Starten des Spiels** ändern.
 
-Du musst nur den folgenden Wert ändern:
+Sie müssen nur den folgenden Wert ändern:
 
-`target_height`
+```txt
+target_height
+```
 
 Die Renderbreite wird automatisch berechnet, um das Seitenverhältnis des Geräts beizubehalten.
 
@@ -386,13 +519,13 @@ Empfohlene Werte:
 
 ---
 
-## 📱 Touch-Steuerung
+## 📱 Konfiguration der Touch-Steuerung
 
-Version **0.87** enthält integrierte Touch-Steuerungen, damit du direkt über den Bildschirm deines Android-Geräts spielen kannst.
+Version **0.87** führte integrierte Touch-Steuerungen ein, mit denen das Spiel direkt über den Bildschirm des Android-Geräts gespielt werden kann.
 
-Standardmäßig verwendet das Spiel **Modus 1** für die Touch-Koordinaten, was auf den meisten Geräten korrekt funktionieren sollte.
+Standardmäßig verwendet das Spiel **Modus 1** für die Touch-Koordinaten. Dieser Modus sollte auf den meisten Geräten korrekt funktionieren.
 
-Wenn du beim Starten des Spiels bemerkst, dass die Touch-Buttons nicht richtig reagieren, dass die Berührungen nicht mit der Position der Symbole übereinstimmen oder dass der Touch-Bereich verschoben wirkt, wechsle zu **Modus 2**, indem du diese Datei änderst:
+Wenn Sie nach dem Starten des Spiels feststellen, dass die Touch-Buttons nicht richtig reagieren, die Berührungen nicht mit der Position der Symbole übereinstimmen oder der Touch-Bereich verschoben wirkt, wechseln Sie zu **Modus 2**, indem Sie diese Datei ändern:
 
 ```txt
 Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
@@ -400,10 +533,37 @@ Android/data/com.c4rlox.simpsons/touch_controls/Simpsons_touch_mode.txt
 
 Zusammenfassung:
 
-Modus 1: empfohlener Standardmodus.
+* **Modus 1:** empfohlener Standardmodus.
+* **Modus 2:** alternativer Modus, falls die Touch-Steuerung auf Ihrem Gerät nicht korrekt funktioniert.
 
-Modus 2: alternativer Modus, falls die Touch-Steuerung auf deinem Gerät nicht korrekt funktioniert.
+Weitere Informationen finden Sie in der Datei **[TOUCH_CONTROLS.md](TOUCH_CONTROLS.md)**.
 
-Weitere Informationen findest du in der Datei [TOUCH_CONTROLS.md.](TOUCH_CONTROLS.md)
+---
 
-Ich hoffe, dir gefällt der Port.
+## 📝 Zusätzliche Gameplay-Konfiguration
+
+Der Port enthält außerdem eine zusätzliche Konfigurationsdatei mit dem Namen:
+
+```txt
+Simpsons_configuration.txt
+```
+
+Diese Datei befindet sich im folgenden Pfad:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+Alle Änderungen an dieser Datei müssen **vor dem Starten des Spiels** vorgenommen werden.
+
+Über diese Datei können Sie die folgenden Optionen konfigurieren:
+
+* Gamepad-Vibration aktivieren oder deaktivieren.
+* Auswählen, ob die Kamera auf der X-Achse invertiert werden soll.
+
+Diese Optionen waren ursprünglich in der PC-Version des Spiels nicht verfügbar. Da sie nicht Teil der originalen PC-Assets waren, werden sie über diese externe Konfigurationsdatei bereitgestellt, anstatt direkt in das Konfigurationsmenü des Spiels integriert zu sein.
+
+---
+
+Ich hoffe, Sie genießen den Port.
+
