@@ -436,6 +436,13 @@ void SuperCamCentral::Init( bool shutdown )
 
     if ( !shutdown )
     {
+
+        #if defined(RAD_ANDROID)
+       // Esto es necesario para cuando iniciamos una nueva partida 
+       // Y no existen partidas guardadas que se establezca lo que tengamos en el fichero de configuracion .txt
+            mIsInvertedCameraEnabled = GetAndroidInvertCameraSetting();
+        #endif
+
         // find mCollisionAreaIndex we can use:
         mCollisionAreaIndex = GetWorldPhysicsManager()->GetCameraCollisionAreaIndex();
         rAssert(mCollisionAreaIndex != -1);
