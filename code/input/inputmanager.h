@@ -255,6 +255,11 @@ public:
     void StopRumbleEffects();
 #endif
 
+#if defined(RAD_ANDROID)
+    bool IsAndroidPhysicalGamepadConnected() const;
+    void SyncAndroidInputModeWithPhysicalGamepad();
+#endif
+
     // Returns the value of the input point 'inputIndex' owned by the controller at
     // controllerIndex.
     float GetValue( unsigned int controllerIndex, unsigned int inputIndex ) const;

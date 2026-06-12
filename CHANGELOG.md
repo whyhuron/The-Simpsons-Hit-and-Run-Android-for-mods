@@ -26,6 +26,19 @@ En esta versión se ha reducido esa zona muerta excesiva, consiguiendo que el co
 
 ---
 
+## 🎮 Mejoras en la detección entre mando externo y controles táctiles
+
+Se ha mejorado el sistema de detección del mando externo, tardando ahora menos tiempo en ser reconocido y mapeado, por lo tanto el usuario al conectar el mando a mitad de partida puede empezar a usarlo unos segunos antes que anteriormente en otras versiones.
+
+Esto ha sido posible por una mejora en todo el sistema que se encarga de detectar si existe mando externo o no, para de esa forma 
+decidir si mostramos controles táctiles en pantalla o por si lo contrario desabilitamos los controles táctiles y le damos prioridad al mando externo.
+
+Esta mejora en la arquitectura también produjo que al iniciar partida con mando no tengamos que ver los controles táctiles hasta que pulsemos por primera vez un botón como ocurría antes.
+
+Se corrigió un bug que existía de si entrabamos al juego con el mando conectado y despues tocabamos, los controles táctiles aparecían y respondían a los inputs táctiles, esto era no deseado cuando ya existe un mando conectado.
+
+---
+
 ## ⚙️ Nueva opción de configuración en la pantalla de pausa
 
 Se ha añadido una nueva opción de **configuración** dentro de la pantalla de pausa in-game.
@@ -75,7 +88,7 @@ La vibración configurable se mantiene únicamente para mandos compatibles media
 * Añadida opción para activar o desactivar la vibración del gamepad.
 * Añadida opción para invertir la cámara en el eje X.
 * Corregido el bug que provocaba vibración no deseada del teléfono en algunos dispositivos.
-
+* Corregido el bug de estar habilitado controles táctiles y mando externo cuando el mando externo era conectado antes de entrar al juego.
 
 ## 🚀 Versión 0.87
 
@@ -128,35 +141,47 @@ La versión **0.87** es un paso enorme para hacer que el port sea mucho más có
 
 ## 🚀 Version 0.87.2
 
-Version **0.87.2** is an update focused on improving the comfort of touch controls, adding new configuration options, and fixing some unwanted behaviors detected after version 0.87.
+Version **0.87.2** is an update focused on improving the comfort of the touch controls, adding new configuration options, and fixing some unwanted behaviors detected after version 0.87.
 
 Although this is a minor update, it includes important changes to make the Android gameplay experience more comfortable, precise, and configurable.
 
 ---
 
-## 🎮 Improvements to the on-foot virtual joystick
+## 🎮 Improvements to the Virtual Joystick on Foot
 
 The behavior of the **virtual joystick when the character is on foot** has been improved.
 
-In previous versions, the touch joystick had an overly large dead zone, which could make character movement feel less precise or somewhat uncomfortable in certain situations.
+In previous versions, the touch joystick had an excessively large dead zone, which could make character movement feel less precise or somewhat uncomfortable in certain situations.
 
-In this version, that excessive dead zone has been reduced, making on-foot controls more comfortable, more responsive, and more precise when playing directly from the touchscreen.
+In this version, that excessive dead zone has been reduced, making on-foot controls more comfortable, more responsive, and more precise when playing directly from the touch screen.
 
 ---
 
-## ⚙️ New configuration option in the pause screen
+## 🎮 Improvements to Detection Between External Gamepad and Touch Controls
+
+The external gamepad detection system has been improved, allowing the controller to be recognized and mapped more quickly. As a result, when the user connects a gamepad during gameplay, it can now be used a few seconds earlier than in previous versions.
+
+This was made possible by improving the entire system responsible for detecting whether an external gamepad is available. Based on that detection, the game decides whether to show the touch controls on screen or disable them and give priority to the external gamepad.
+
+This architectural improvement also prevents the touch controls from appearing when starting the game with a gamepad already connected, instead of waiting until the user presses a gamepad button for the first time as happened before.
+
+A bug has also been fixed where, if the player entered the game with a gamepad already connected and then touched the screen, the touch controls would appear and respond to touch input. This behavior was not intended when an external gamepad was already available.
+
+---
+
+## ⚙️ New Configuration Option in the Pause Screen
 
 A new **configuration** option has been added inside the in-game pause screen.
 
-From this new section, users can modify some port settings to their liking without needing to completely exit the gameplay experience.
+From this new section, users can modify some port settings according to their preferences without having to completely leave the gameplay experience.
 
-This makes the Android version more flexible and better adapted to each player's preferences.
+This makes the Android version more flexible and better adapted to each player’s preferences.
 
 ---
 
-## 📝 Additional configuration through an external file
+## 📝 Additional Configuration Through an External File
 
-Because the user provides the assets from the original PC version, and that 2003 version did not include menu options to enable or disable vibration or to invert the camera, these settings have been added through an external configuration file.
+Because the user provides the assets from the original PC version, and that 2003 version did not include menu options to enable or disable vibration or invert the camera, these settings have been added through an external configuration file.
 
 The file is located at the following path:
 
@@ -164,35 +189,37 @@ The file is located at the following path:
 Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
 ```
 
-From this file, before launching the game, the user can choose to:
+From this file, before launching the game, the user can choose:
 
 * Enable or disable gamepad vibration.
 * Invert or not invert the camera on the X axis.
 
-This adds modern configuration options while respecting the limitations of the original PC version assets.
+This allows modern configuration options to be added while respecting the limitations of the original PC version assets.
 
 ---
 
-## 📳 Fix for unwanted phone vibration
+## 📳 Fix for Unwanted Phone Vibration
 
-A bug that caused the phone to vibrate on some devices has been fixed.
+A bug has been fixed that caused the phone itself to vibrate on some devices.
 
-This behavior was not intentional and was not part of any planned feature of the port. The phone vibration was an unwanted effect that only occurred on certain devices, so it has been removed.
+This behavior was not intentional and was not part of any planned feature of the port. The phone vibration was an unwanted effect that only occurred on certain devices, so it has now been removed.
 
-Configurable vibration remains available only for compatible controllers through the corresponding option in the configuration file.
+Configurable vibration remains available only for compatible gamepads through the corresponding option in the configuration file.
 
 ---
 
-## ✨ Version 0.87.2 summary
+## ✨ Version 0.87.2 Summary
 
-* Improved the on-foot virtual joystick.
+* Improved the virtual joystick when playing on foot.
 * Reduced the excessive dead zone of the touch joystick.
 * Made on-foot movement more comfortable and precise.
-* Added a configuration option to the in-game pause screen.
+* Added a configuration option in the in-game pause screen.
 * Added an external configuration file for options not available in the original PC assets.
 * Added an option to enable or disable gamepad vibration.
 * Added an option to invert the camera on the X axis.
-* Fixed the bug that caused unwanted phone vibration on some devices.
+* Fixed a bug that caused unwanted phone vibration on some devices.
+* Fixed a bug where touch controls and an external gamepad could both remain active when the gamepad was connected before entering the game.
+
 
 
 ## 🚀 Version 0.87
@@ -246,19 +273,31 @@ Version **0.87** is a huge step toward making the port feel much more comfortabl
 
 ## 🚀 Version 0.87.2
 
-La version **0.87.2** est une mise à jour axée sur l’amélioration du confort des commandes tactiles, l’ajout de nouvelles options de configuration et la correction de certains comportements indésirables détectés après la version 0.87.
+La version **0.87.2** est une mise à jour centrée sur l’amélioration du confort des contrôles tactiles, l’ajout de nouvelles options de configuration et la correction de certains comportements indésirables détectés après la version 0.87.
 
-Même s’il s’agit d’une mise à jour mineure, elle inclut des changements importants afin de rendre l’expérience de jeu sur Android plus confortable, plus précise et plus configurable.
+Bien qu’il s’agisse d’une mise à jour mineure, elle inclut des changements importants afin de rendre l’expérience de jeu sur Android plus confortable, plus précise et plus configurable.
 
 ---
 
 ## 🎮 Améliorations du joystick virtuel à pied
 
-Le comportement du **joystick virtuel lorsque le personnage se déplace à pied** a été amélioré.
+Le comportement du **joystick virtuel lorsque le personnage est à pied** a été amélioré.
 
-Dans les versions précédentes, le joystick tactile possédait une zone morte trop importante, ce qui pouvait rendre les déplacements du personnage moins précis ou quelque peu inconfortables dans certaines situations.
+Dans les versions précédentes, le joystick tactile avait une zone morte trop importante, ce qui pouvait rendre les déplacements du personnage moins précis ou quelque peu inconfortables dans certaines situations.
 
-Dans cette version, cette zone morte excessive a été réduite, ce qui permet d’obtenir un contrôle à pied plus confortable, plus sensible et plus précis lors du jeu directement depuis l’écran tactile.
+Dans cette version, cette zone morte excessive a été réduite, ce qui rend le contrôle à pied plus confortable, plus réactif et plus précis lorsque l’on joue directement depuis l’écran tactile.
+
+---
+
+## 🎮 Améliorations de la détection entre manette externe et contrôles tactiles
+
+Le système de détection de la manette externe a été amélioré, ce qui permet désormais à la manette d’être reconnue et mappée plus rapidement. Ainsi, lorsque l’utilisateur connecte une manette en pleine partie, il peut commencer à l’utiliser quelques secondes plus tôt que dans les versions précédentes.
+
+Cela a été possible grâce à une amélioration de l’ensemble du système chargé de détecter si une manette externe est disponible ou non. En fonction de cette détection, le jeu décide s’il doit afficher les contrôles tactiles à l’écran ou les désactiver afin de donner la priorité à la manette externe.
+
+Cette amélioration de l’architecture permet également d’éviter que les contrôles tactiles apparaissent au lancement d’une partie avec une manette déjà connectée, au lieu d’attendre que l’utilisateur appuie pour la première fois sur un bouton de la manette, comme cela se produisait auparavant.
+
+Un bug a également été corrigé : lorsque le joueur entrait dans le jeu avec une manette déjà connectée puis touchait l’écran, les contrôles tactiles apparaissaient et répondaient aux entrées tactiles. Ce comportement n’était pas souhaité lorsqu’une manette externe était déjà disponible.
 
 ---
 
@@ -266,15 +305,15 @@ Dans cette version, cette zone morte excessive a été réduite, ce qui permet d
 
 Une nouvelle option de **configuration** a été ajoutée dans l’écran de pause en jeu.
 
-Depuis cette nouvelle section, l’utilisateur peut modifier certains paramètres du portage selon ses préférences, sans avoir besoin de quitter complètement l’expérience de jeu.
+Depuis cette nouvelle section, l’utilisateur peut modifier certains paramètres du port selon ses préférences sans avoir à quitter complètement l’expérience de jeu.
 
-Cela permet à la version Android d’être plus flexible et de mieux s’adapter aux préférences de chaque joueur.
+Cela rend la version Android plus flexible et mieux adaptée aux préférences de chaque joueur.
 
 ---
 
 ## 📝 Configuration supplémentaire via un fichier externe
 
-Étant donné que l’utilisateur fournit les assets de la version originale PC, et que cette version de 2003 n’incluait pas d’options de menu permettant d’activer ou de désactiver la vibration ni d’inverser la caméra, ces paramètres ont été ajoutés via un fichier de configuration externe.
+Étant donné que l’utilisateur fournit les assets de la version PC originale, et que cette version de 2003 n’incluait pas d’options de menu pour activer ou désactiver la vibration ni pour inverser la caméra, ces paramètres ont été ajoutés via un fichier de configuration externe.
 
 Le fichier se trouve dans le chemin suivant :
 
@@ -287,30 +326,32 @@ Depuis ce fichier, avant de lancer le jeu, l’utilisateur peut choisir :
 * Activer ou désactiver la vibration de la manette.
 * Inverser ou non la caméra sur l’axe X.
 
-De cette manière, des options de configuration modernes sont ajoutées tout en respectant les limitations des assets originaux de la version PC.
+De cette manière, des options de configuration modernes sont ajoutées tout en respectant les limites des assets originaux de la version PC.
 
 ---
 
 ## 📳 Correction de la vibration indésirable du téléphone
 
-Un bug qui provoquait la vibration du téléphone sur certains appareils a été corrigé.
+Un bug provoquant la vibration du téléphone sur certains appareils a été corrigé.
 
-Ce comportement n’était pas intentionnel et ne faisait partie d’aucune fonctionnalité prévue du portage. La vibration du téléphone était un effet indésirable qui ne se produisait que sur certains appareils, elle a donc été supprimée.
+Ce comportement n’était pas intentionnel et ne faisait partie d’aucune fonctionnalité prévue du port. La vibration du téléphone était un effet indésirable qui ne se produisait que sur certains appareils, elle a donc été supprimée.
 
-La vibration configurable est conservée uniquement pour les manettes compatibles via l’option correspondante du fichier de configuration.
+La vibration configurable reste disponible uniquement pour les manettes compatibles via l’option correspondante du fichier de configuration.
 
 ---
 
 ## ✨ Résumé de la version 0.87.2
 
-* Joystick virtuel à pied amélioré.
-* Zone morte excessive du joystick tactile réduite.
-* Déplacements à pied plus confortables et plus précis.
-* Option de configuration ajoutée dans l’écran de pause en jeu.
-* Fichier de configuration externe ajouté pour les options non disponibles dans les assets originaux PC.
-* Option ajoutée pour activer ou désactiver la vibration de la manette.
-* Option ajoutée pour inverser la caméra sur l’axe X.
-* Bug provoquant une vibration indésirable du téléphone sur certains appareils corrigé.
+* Amélioration du joystick virtuel lorsque le personnage est à pied.
+* Réduction de la zone morte excessive du joystick tactile.
+* Déplacement à pied plus confortable et plus précis.
+* Ajout d’une option de configuration dans l’écran de pause en jeu.
+* Ajout d’un fichier de configuration externe pour les options non disponibles dans les assets originaux de la version PC.
+* Ajout d’une option pour activer ou désactiver la vibration de la manette.
+* Ajout d’une option pour inverser la caméra sur l’axe X.
+* Correction du bug provoquant une vibration indésirable du téléphone sur certains appareils.
+* Correction du bug où les contrôles tactiles et une manette externe pouvaient rester actifs en même temps lorsque la manette était connectée avant d’entrer dans le jeu.
+
 
 
 ## 🚀 Version 0.87
@@ -364,35 +405,47 @@ La version **0.87** est une énorme avancée pour rendre le port beaucoup plus c
 
 ## 🚀 Version 0.87.2
 
-Die Version **0.87.2** ist ein Update, das sich auf die Verbesserung des Komforts der Touch-Steuerung, das Hinzufügen neuer Konfigurationsoptionen und die Behebung einiger unerwünschter Verhaltensweisen konzentriert, die nach Version 0.87 festgestellt wurden.
+Version **0.87.2** ist ein Update, das sich auf die Verbesserung des Komforts der Touch-Steuerung, das Hinzufügen neuer Konfigurationsoptionen und die Behebung einiger unerwünschter Verhaltensweisen konzentriert, die nach Version 0.87 festgestellt wurden.
 
-Auch wenn es sich um ein kleineres Update handelt, enthält es wichtige Änderungen, um das Spielerlebnis auf Android komfortabler, präziser und besser konfigurierbar zu machen.
+Obwohl es sich um ein kleineres Update handelt, enthält es wichtige Änderungen, um das Spielerlebnis auf Android komfortabler, präziser und besser konfigurierbar zu machen.
 
 ---
 
 ## 🎮 Verbesserungen am virtuellen Joystick zu Fuß
 
-Das Verhalten des **virtuellen Joysticks, wenn sich die Spielfigur zu Fuß bewegt**, wurde verbessert.
+Das Verhalten des **virtuellen Joysticks, wenn sich die Figur zu Fuß bewegt**, wurde verbessert.
 
-In früheren Versionen hatte der Touch-Joystick eine zu große Totzone, wodurch sich die Bewegung der Spielfigur in bestimmten Situationen weniger präzise oder etwas unbequem anfühlen konnte.
+In früheren Versionen hatte der Touch-Joystick eine zu große Totzone, wodurch sich die Bewegung der Figur in bestimmten Situationen weniger präzise oder etwas unangenehm anfühlen konnte.
 
-In dieser Version wurde diese übermäßige Totzone reduziert, sodass die Steuerung zu Fuß beim Spielen direkt über den Touchscreen komfortabler, empfindlicher und präziser ist.
+In dieser Version wurde diese übermäßige Totzone reduziert, wodurch die Steuerung zu Fuß komfortabler, reaktionsschneller und präziser ist, wenn direkt über den Touchscreen gespielt wird.
 
 ---
 
-## ⚙️ Neue Konfigurationsoption im Pausenbildschirm
+## 🎮 Verbesserungen bei der Erkennung zwischen externem Gamepad und Touch-Steuerung
 
-Im Pausenbildschirm während des Spiels wurde eine neue **Konfigurationsoption** hinzugefügt.
+Das Erkennungssystem für externe Gamepads wurde verbessert, sodass der Controller nun schneller erkannt und zugeordnet wird. Dadurch kann der Benutzer ein während des Spiels verbundenes Gamepad einige Sekunden früher verwenden als in vorherigen Versionen.
 
-Über diesen neuen Bereich kann der Nutzer einige Einstellungen des Ports nach seinen eigenen Vorlieben ändern, ohne das Spielerlebnis vollständig verlassen zu müssen.
+Dies wurde durch eine Verbesserung des gesamten Systems ermöglicht, das dafür zuständig ist, zu erkennen, ob ein externes Gamepad verfügbar ist oder nicht. Auf Grundlage dieser Erkennung entscheidet das Spiel, ob die Touch-Steuerung auf dem Bildschirm angezeigt oder deaktiviert wird, um dem externen Gamepad Vorrang zu geben.
 
-Dadurch wird die Android-Version flexibler und kann besser an die Vorlieben jedes Spielers angepasst werden.
+Diese Verbesserung der Architektur verhindert außerdem, dass die Touch-Steuerung beim Starten eines Spiels mit bereits verbundenem Gamepad angezeigt wird, anstatt erst zu warten, bis der Benutzer zum ersten Mal eine Taste auf dem Gamepad drückt, wie es zuvor der Fall war.
+
+Außerdem wurde ein Fehler behoben, bei dem die Touch-Steuerung erschien und auf Touch-Eingaben reagierte, wenn der Spieler das Spiel mit bereits verbundenem Gamepad startete und anschließend den Bildschirm berührte. Dieses Verhalten war nicht beabsichtigt, wenn bereits ein externes Gamepad verfügbar war.
+
+---
+
+## ⚙️ Neue Konfigurationsoption im Pause-Bildschirm
+
+Im Pause-Bildschirm während des Spiels wurde eine neue **Konfigurationsoption** hinzugefügt.
+
+Über diesen neuen Abschnitt kann der Benutzer einige Einstellungen des Ports nach seinen eigenen Vorlieben anpassen, ohne das Spielerlebnis vollständig verlassen zu müssen.
+
+Dadurch wird die Android-Version flexibler und besser an die Vorlieben jedes Spielers angepasst.
 
 ---
 
 ## 📝 Zusätzliche Konfiguration über eine externe Datei
 
-Da der Nutzer die Assets der originalen PC-Version bereitstellt und diese Version aus dem Jahr 2003 keine Menüoptionen zum Aktivieren oder Deaktivieren der Vibration oder zum Invertieren der Kamera enthielt, wurden diese Einstellungen über eine externe Konfigurationsdatei hinzugefügt.
+Da der Benutzer die Assets der originalen PC-Version bereitstellt und diese Version aus dem Jahr 2003 keine Menüoptionen zum Aktivieren oder Deaktivieren der Vibration oder zum Invertieren der Kamera enthielt, wurden diese Einstellungen über eine externe Konfigurationsdatei hinzugefügt.
 
 Die Datei befindet sich unter folgendem Pfad:
 
@@ -400,35 +453,37 @@ Die Datei befindet sich unter folgendem Pfad:
 Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
 ```
 
-Über diese Datei kann der Nutzer vor dem Start des Spiels Folgendes auswählen:
+Über diese Datei kann der Benutzer vor dem Start des Spiels Folgendes auswählen:
 
-* Die Vibration des Gamepads aktivieren oder deaktivieren.
-* Die Kamera auf der X-Achse invertieren oder nicht.
+* Gamepad-Vibration aktivieren oder deaktivieren.
+* Kamera auf der X-Achse invertieren oder nicht invertieren.
 
-Auf diese Weise werden moderne Konfigurationsoptionen hinzugefügt, während die Einschränkungen der ursprünglichen Assets der PC-Version respektiert werden.
+Auf diese Weise werden moderne Konfigurationsoptionen hinzugefügt, während die Einschränkungen der originalen PC-Version-Assets respektiert werden.
 
 ---
 
 ## 📳 Behebung unerwünschter Telefonvibration
 
-Ein Fehler wurde behoben, der auf einigen Geräten dazu führte, dass das Telefon vibrierte.
+Ein Fehler wurde behoben, der auf einigen Geräten dazu führte, dass das Telefon selbst vibrierte.
 
-Dieses Verhalten war nicht beabsichtigt und gehörte zu keiner geplanten Funktion des Ports. Die Telefonvibration war ein unerwünschter Effekt, der nur auf bestimmten Geräten auftrat, und wurde daher entfernt.
+Dieses Verhalten war nicht beabsichtigt und gehörte zu keiner geplanten Funktion des Ports. Die Telefonvibration war ein unerwünschter Effekt, der nur auf bestimmten Geräten auftrat und daher entfernt wurde.
 
-Die konfigurierbare Vibration bleibt ausschließlich für kompatible Controller über die entsprechende Option in der Konfigurationsdatei erhalten.
+Die konfigurierbare Vibration bleibt ausschließlich für kompatible Gamepads über die entsprechende Option in der Konfigurationsdatei verfügbar.
 
 ---
 
 ## ✨ Zusammenfassung der Version 0.87.2
 
-* Virtueller Joystick zu Fuß verbessert.
+* Virtueller Joystick beim Spielen zu Fuß verbessert.
 * Übermäßige Totzone des Touch-Joysticks reduziert.
 * Bewegung zu Fuß komfortabler und präziser gemacht.
-* Konfigurationsoption im Pausenbildschirm während des Spiels hinzugefügt.
-* Externe Konfigurationsdatei für Optionen hinzugefügt, die in den ursprünglichen PC-Assets nicht verfügbar waren.
+* Konfigurationsoption im Pause-Bildschirm während des Spiels hinzugefügt.
+* Externe Konfigurationsdatei für Optionen hinzugefügt, die in den originalen PC-Assets nicht verfügbar sind.
 * Option zum Aktivieren oder Deaktivieren der Gamepad-Vibration hinzugefügt.
 * Option zum Invertieren der Kamera auf der X-Achse hinzugefügt.
 * Fehler behoben, der auf einigen Geräten eine unerwünschte Telefonvibration verursachte.
+* Fehler behoben, bei dem Touch-Steuerung und externes Gamepad gleichzeitig aktiv bleiben konnten, wenn das Gamepad vor dem Betreten des Spiels verbunden war.
+
 
 
 ## 🚀 Version 0.87

@@ -95,16 +95,14 @@ static bool AndroidInputManagerRumblePolicy()
         return false;
     }
 
-    if ( !TouchInputModeManager::GetInstance().IsGamepadConnected() )
+    if ( !InputManager::GetInstance()->IsAndroidPhysicalGamepadConnected() )
     {
         return false;
     }
 
     return true;
 }
-#endif
 
-#if defined(RAD_ANDROID)
 static bool IsAndroidRumbleAllowed( bool rumbleEnabled )
 {
     if ( !rumbleEnabled )
@@ -117,14 +115,46 @@ static bool IsAndroidRumbleAllowed( bool rumbleEnabled )
         return false;
     }
 
-    if ( !TouchInputModeManager::GetInstance().IsGamepadConnected() )
+    if ( !InputManager::GetInstance()->IsAndroidPhysicalGamepadConnected() )
     {
         return false;
     }
 
     return true;
 }
-#endif
+
+bool InputManager::IsAndroidPhysicalGamepadConnected() const
+{
+    if ( mxIControllerSystem2 == NULL )
+    {
+        return false;
+    }
+
+    /*
+     * On Android, the SDL controller system stores real physical SDL
+     * controllers in its internal controller list.
+     *
+     * The Android touch controller is only returned as a fallback from
+     * GetControllerAtLocation("Port0\\Slot0") and should not count as a
+     * physical gamepad.
+     */
+    return mxIControllerSystem2->GetNumberOfControllers() > 0;
+}
+
+void InputManager::SyncAndroidInputModeWithPhysicalGamepad()
+{
+    if ( this->IsAndroidPhysicalGamepadConnected() )
+    {
+        TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+    }
+    else
+    {
+        TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+    }
+}
+
+
+#endif // RAD ANDROID
 
 //******************************************************************************
 // Global Data, Local Data, Local Classes
@@ -198,9 +228,17 @@ MEMTRACK_PUSH_GROUP( "InputManager" );
         mControllerArray[ i ].Create(i);
     }
     #if defined(__ANDROID__)
-    // este fix fue antes de añadir los cambios al sdlController.cpp
-    // convendria revisar si sigue siendo estrictamente necesario mantenerlo 
-    // Por el momento lo dejamos porque funciona 
+            /*
+        * Android touch input is injected into controller 0 as virtual input.
+        *
+        * This keeps controller 0 updateable even when no physical gamepad is
+        * connected, allowing the touch HUD/frontend/gameplay controls to work.
+        *
+        * Important:
+        * This does NOT mean that a physical gamepad is connected.
+        * Physical gamepad detection must use IsAndroidPhysicalGamepadConnected(),
+        * not IsInputAvailable().
+        */
     mControllerArray[ 0 ].SetVirtualInputAvailable( true );
     #endif
 #ifndef RAD_PC
@@ -209,6 +247,9 @@ MEMTRACK_PUSH_GROUP( "InputManager" );
     rDebugString( "Just created User controller system\n" );
 
     EnumerateControllers( );
+    #if defined(RAD_ANDROID)
+        SyncAndroidInputModeWithPhysicalGamepad();
+    #endif
 MEMTRACK_POP_GROUP("InputManager");
 
 }
@@ -231,6 +272,9 @@ void InputManager::Update( unsigned int timeinms )
     {
         mConnectStateChanged = false;
         EnumerateControllers( );
+        #if defined(RAD_ANDROID)
+            SyncAndroidInputModeWithPhysicalGamepad();
+        #endif
     }
     
 
@@ -825,4 +869,5 @@ void InputManager::StopRumbleEffects()
 }
 
 #endif
+
 
