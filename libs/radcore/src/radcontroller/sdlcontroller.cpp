@@ -170,6 +170,18 @@ extern "C" void radControllerSDLSetAndroidRumblePolicyCallback(
     sAndroidRumblePolicyCallback = callback;
 }
 
+typedef void (*AndroidGamepadInputCallback)(float magnitude);
+
+static AndroidGamepadInputCallback sAndroidGamepadInputCallback = NULL;
+
+extern "C" void radControllerSDLSetAndroidGamepadInputCallback(
+    AndroidGamepadInputCallback callback
+)
+{
+    sAndroidGamepadInputCallback = callback;
+}
+
+
 static bool AndroidIsGamepadRumbleAllowed()
 {
     if ( sAndroidRumblePolicyCallback == NULL )
@@ -178,6 +190,48 @@ static bool AndroidIsGamepadRumbleAllowed()
     }
 
     return sAndroidRumblePolicyCallback();
+}
+
+static void AndroidNotifyPhysicalGamepadInputFromPoint
+(
+    const char* pType,
+    float oldValue,
+    float newValue
+)
+{
+    if ( sAndroidGamepadInputCallback == NULL )
+    {
+        return;
+    }
+
+    float magnitude = 0.0f;
+
+    /*
+     * Safest first version:
+     * Confirm the gamepad only from real button/trigger input.
+     *
+     * We intentionally do not confirm from stick axes here, because some
+     * Android devices may expose noisy internal axes.
+     */
+    if ( pType == g_Sdlipt[ 0 ] ) // Button
+    {
+        if ( oldValue <= 0.5f && newValue > 0.5f )
+        {
+            magnitude = 1.0f;
+        }
+    }
+    else if ( pType == g_Sdlipt[ 1 ] ) // AnalogButton / trigger
+    {
+        if ( oldValue <= 0.5f && newValue > 0.5f )
+        {
+            magnitude = newValue;
+        }
+    }
+
+    if ( magnitude > 0.0f )
+    {
+        sAndroidGamepadInputCallback( magnitude );
+    }
 }
 
 
@@ -473,7 +527,9 @@ class radControllerInputPointSDL
 		// Get a new value from the pData structure
 
 		float newValue = CalculateNewValue( );
-        
+        #if defined(RAD_ANDROID)
+            float oldValue = m_Value;
+        #endif
         //
         // Check tolerance
         //
@@ -489,6 +545,13 @@ class radControllerInputPointSDL
             //
 
             m_Value = newValue;
+            #if defined(RAD_ANDROID)
+                AndroidNotifyPhysicalGamepadInputFromPoint(
+                    m_pType,
+                    oldValue,
+                    newValue
+                );
+            #endif
 
             m_TimeOfStateChange = virtualTime;
             m_TimeInState = 0; // Just changed

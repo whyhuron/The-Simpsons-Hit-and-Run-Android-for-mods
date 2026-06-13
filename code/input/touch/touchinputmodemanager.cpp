@@ -9,6 +9,7 @@ TouchInputModeManager& TouchInputModeManager::GetInstance()
 TouchInputModeManager::TouchInputModeManager()
     :
     mCurrentMode( TOUCH_INPUT_MODE_TOUCH ),
+    mGamepadCandidate(false),
     mGamepadConnected( false ),
     mTouchHudEnabled( true ),
     mGamepadInputThreshold( 0.20f ),
@@ -25,6 +26,7 @@ TouchInputModeManager::~TouchInputModeManager()
 void TouchInputModeManager::Reset()
 {
     mCurrentMode = TOUCH_INPUT_MODE_TOUCH;
+    mGamepadCandidate = false;
     mGamepadConnected = false;
     mTouchHudEnabled = true;
     mGamepadInputThreshold = 0.20f;
@@ -42,10 +44,10 @@ void TouchInputModeManager::NotifyTouchInput()
 {
     mLastTouchInputTimeMs = mTimeMs;
 
-    /*
-     * Physical gamepad has priority.
-     * Touch input should not steal the active mode while a real gamepad
-     * is connected.
+     /*
+     * Confirmed physical gamepad has priority.
+     * Touch input must not steal the active mode while a real gamepad
+     * is confirmed and connected.
      */
     if ( mGamepadConnected )
     {
@@ -55,14 +57,47 @@ void TouchInputModeManager::NotifyTouchInput()
     mCurrentMode = TOUCH_INPUT_MODE_TOUCH;
 }
 
+void TouchInputModeManager::NotifyGamepadCandidateConnected()
+{
+    /*
+     * SDL/Android detected something that may be a physical gamepad.
+     *
+     * Important:
+     * A candidate must NOT hide the touch HUD.
+     * A candidate must NOT block touch input.
+     * A candidate must NOT enable rumble.
+     *
+     * Only real input from the physical controller confirms the gamepad.
+     */
+    mGamepadCandidate = true;
+
+    if ( !mGamepadConnected )
+    {
+        mCurrentMode = TOUCH_INPUT_MODE_TOUCH;
+    }
+}
+
 void TouchInputModeManager::NotifyGamepadConnected()
 {
+      /*
+     * This now means:
+     * A physical gamepad has been CONFIRMED by real input.
+     *
+     * Do not call this just because SDL enumerated a device.
+     */
+    if ( mGamepadConnected )
+    {
+        return;
+    }
+    mGamepadCandidate = true;
     mGamepadConnected = true;
     mCurrentMode = TOUCH_INPUT_MODE_GAMEPAD;
+    mLastGamepadInputTimeMs = mTimeMs;
 }
 
 void TouchInputModeManager::NotifyGamepadDisconnected()
 {
+    mGamepadCandidate = false;
     mGamepadConnected = false;
 
     // On Android, if the external gamepad is gone, touch should become the
@@ -82,11 +117,19 @@ void TouchInputModeManager::NotifyGamepadInput( float magnitude )
         return;
     }
 
-    mCurrentMode = TOUCH_INPUT_MODE_GAMEPAD;
-    mLastGamepadInputTimeMs = mTimeMs;
+    // Nos confirma una pulsación real del mando
+    // por lo que bloqueamos el tactil hasta que se nos envie que dicho mando se desconecte
+    NotifyGamepadConnected();
 }
 
 void TouchInputModeManager::ForceMode( TouchInputMode mode )
 {
+    // mmm... Esto es una capa extra de seguridad  la cual no se si es estrictamente necesaria...
+    // la dejo por el momento luego pruebo el sistema sin este if de seguridad
+    // temo porque hay muchos telefonos distintos
+    if ( mGamepadConnected && mode == TOUCH_INPUT_MODE_TOUCH )
+    {
+        return;
+    }
     mCurrentMode = mode;
 }

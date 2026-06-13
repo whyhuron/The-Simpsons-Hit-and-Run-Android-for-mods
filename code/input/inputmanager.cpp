@@ -55,6 +55,7 @@
 #include <input/touch/touchinputmodemanager.h>
 #include <data/config/androidconfigurationmanager.h>
 extern "C" void radControllerSDLSetAndroidRumblePolicyCallback( bool (*callback)() );
+extern "C" void radControllerSDLSetAndroidGamepadInputCallback( void (*callback)(float) );
 #endif
 
 #if defined(RAD_ANDROID)
@@ -88,6 +89,40 @@ const int NUM_RESET_BUTTONS = 0;
 const unsigned int RESET_TIMEOUT = 2000;
 
 #if defined(RAD_ANDROID)
+static void AndroidInputManagerGamepadInputCallback( float magnitude )
+{
+    TouchInputModeManager& inputMode =
+        TouchInputModeManager::GetInstance();
+
+    /*
+     * Option B:
+     * InputManager ignores repeated physical gamepad input if the gamepad
+     * is already confirmed.
+     */
+    if ( inputMode.IsGamepadConfirmed() )
+    {
+        return;
+    }
+
+    inputMode.NotifyGamepadInput( magnitude );
+
+    if ( inputMode.IsGamepadConfirmed() )
+    {
+        TouchInputAdapter::GetInstance().ClearQueuedInputs();
+        TouchInputAdapter::GetInstance().ClearActiveInputs();
+
+        InputManager* inputManager = InputManager::GetInstance();
+
+        for ( unsigned int i = 0; i < Input::MaxControllers; ++i )
+        {
+            inputManager->SetRumbleForDevice(
+                static_cast<int>( i ),
+                inputManager->IsRumbleEnabled()
+            );
+        }
+    }
+}
+
 static bool AndroidInputManagerRumblePolicy()
 {
     if ( !GetAndroidConfigurationManager()->IsGamepadVibrationEnabled() )
@@ -123,7 +158,7 @@ static bool IsAndroidRumbleAllowed( bool rumbleEnabled )
     return true;
 }
 
-bool InputManager::IsAndroidPhysicalGamepadConnected() const
+bool InputManager::IsAndroidPhysicalGamepadCandidateConnected() const
 {
     if ( mxIControllerSystem2 == NULL )
     {
@@ -131,21 +166,38 @@ bool InputManager::IsAndroidPhysicalGamepadConnected() const
     }
 
     /*
-     * On Android, the SDL controller system stores real physical SDL
-     * controllers in its internal controller list.
+     * This only means SDL has enumerated at least one physical controller
+     * object.
      *
-     * The Android touch controller is only returned as a fallback from
-     * GetControllerAtLocation("Port0\\Slot0") and should not count as a
-     * physical gamepad.
+     * On Android this must be treated as a candidate, not as a confirmed
+     * external gamepad, because some devices can expose false positives.
      */
     return mxIControllerSystem2->GetNumberOfControllers() > 0;
 }
 
+bool InputManager::IsAndroidPhysicalGamepadConnected() const
+{
+    /*
+     * From now on, Android "physical gamepad connected" means:
+     * confirmed by real physical gamepad input.
+     *
+     * This is the value used for rumble and for blocking touch.
+     */
+    return TouchInputModeManager::GetInstance().IsGamepadConfirmed();
+}
+
 void InputManager::SyncAndroidInputModeWithPhysicalGamepad()
 {
-    if ( this->IsAndroidPhysicalGamepadConnected() )
+    if ( this->IsAndroidPhysicalGamepadCandidateConnected() )
     {
-        TouchInputModeManager::GetInstance().NotifyGamepadConnected();
+        /*
+         * SDL detected something that could be a gamepad.
+         *
+         * Do NOT hide the touch HUD yet.
+         * Do NOT enable rumble yet.
+         * Wait until real physical input confirms the gamepad.
+         */
+        TouchInputModeManager::GetInstance().NotifyGamepadCandidateConnected();
     }
     else
     {
@@ -212,6 +264,7 @@ MEMTRACK_PUSH_GROUP( "InputManager" );
 
     #if defined(RAD_ANDROID)
         radControllerSDLSetAndroidRumblePolicyCallback( &AndroidInputManagerRumblePolicy );
+        radControllerSDLSetAndroidGamepadInputCallback( &AndroidInputManagerGamepadInputCallback );
     #endif
 
 #ifdef RAD_PS2
@@ -262,11 +315,6 @@ void InputManager::Update( unsigned int timeinms )
 
     ::radControllerSystemService();
 
-    #ifdef RAD_ANDROID
-    TouchCameraController::GetInstance().Update( timeinms );
-    TouchInputAdapter::GetInstance().FlushQueuedInputs();
-    #endif
-
     // if controllers have been disconnected, change the state
     if(mConnectStateChanged)
     {
@@ -276,7 +324,11 @@ void InputManager::Update( unsigned int timeinms )
             SyncAndroidInputModeWithPhysicalGamepad();
         #endif
     }
-    
+
+    #ifdef RAD_ANDROID
+    TouchCameraController::GetInstance().Update( timeinms );
+    TouchInputAdapter::GetInstance().FlushQueuedInputs();
+    #endif
 
     unsigned int i = 0;
 
@@ -561,6 +613,7 @@ InputManager::~InputManager()
 #endif
     #if defined(RAD_ANDROID)
         radControllerSDLSetAndroidRumblePolicyCallback( NULL );
+        radControllerSDLSetAndroidGamepadInputCallback( NULL );
     #endif
     ::radControllerTerminate();
 #ifdef RAD_PC

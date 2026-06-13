@@ -25,6 +25,7 @@ public:
     void Update( unsigned int elapsedMs );
 
     void NotifyTouchInput();
+    void NotifyGamepadCandidateConnected();
     void NotifyGamepadConnected();
     void NotifyGamepadDisconnected();
     void NotifyGamepadInput( float magnitude = 1.0f );
@@ -37,6 +38,10 @@ public:
     bool IsGamepadMode() const;
 
     bool IsGamepadConnected() const;
+
+    bool IsGamepadCandidate() const;
+    bool IsGamepadConfirmed() const;
+    bool IsTouchInputBlockedByGamepad() const;
 
     void SetTouchHudEnabled( bool enabled );
     bool IsTouchHudEnabled() const;
@@ -58,6 +63,7 @@ private:
 
     TouchInputMode mCurrentMode;
 
+    bool mGamepadCandidate;
     bool mGamepadConnected;
     bool mTouchHudEnabled;
 
@@ -88,6 +94,21 @@ inline bool TouchInputModeManager::IsGamepadConnected() const
     return mGamepadConnected;
 }
 
+inline bool TouchInputModeManager::IsGamepadCandidate() const
+{
+    return mGamepadCandidate;
+}
+
+inline bool TouchInputModeManager::IsGamepadConfirmed() const
+{
+    return mGamepadConnected;
+}
+
+inline bool TouchInputModeManager::IsTouchInputBlockedByGamepad() const
+{
+    return mGamepadConnected;
+}
+
 inline void TouchInputModeManager::SetTouchHudEnabled( bool enabled )
 {
     mTouchHudEnabled = enabled;
@@ -100,7 +121,9 @@ inline bool TouchInputModeManager::IsTouchHudEnabled() const
 
 inline bool TouchInputModeManager::ShouldShowTouchHud() const
 {
-    return mTouchHudEnabled && !mGamepadConnected && IsTouchMode();
+     return mTouchHudEnabled &&
+           !IsTouchInputBlockedByGamepad() &&
+           IsTouchMode();
 }
 
 inline void TouchInputModeManager::SetGamepadInputThreshold( float threshold )

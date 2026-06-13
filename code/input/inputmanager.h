@@ -256,6 +256,7 @@ public:
 #endif
 
 #if defined(RAD_ANDROID)
+    bool IsAndroidPhysicalGamepadCandidateConnected() const;
     bool IsAndroidPhysicalGamepadConnected() const;
     void SyncAndroidInputModeWithPhysicalGamepad();
 #endif

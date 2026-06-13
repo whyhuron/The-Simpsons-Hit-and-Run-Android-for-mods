@@ -1,7 +1,10 @@
 #include <input/touch/touchinputadapter.h>
 #include <input/touch/touchactionregistry.h>
+#include <input/touch/touchinputmodemanager.h>
 
 #include <input/inputmanager.h>
+
+
 
 TouchInputAdapter& TouchInputAdapter::GetInstance()
 {
@@ -27,6 +30,11 @@ void TouchInputAdapter::Reset()
     ClearQueuedInputs();
     mEnabled = false;
     mTargetControllerIndex = 0;
+}
+
+static bool IsTouchInputBlockedByConfirmedGamepad()
+{
+    return TouchInputModeManager::GetInstance().IsTouchInputBlockedByGamepad();
 }
 
 void TouchInputAdapter::SetEnabled( bool enabled )
@@ -98,6 +106,11 @@ bool TouchInputAdapter::ApplyAction( TouchActionId actionId, float value, bool f
 
 bool TouchInputAdapter::ApplyInputManagerButton( int inputManagerButtonId, float value, bool forceChange )
 {
+    if ( IsTouchInputBlockedByConfirmedGamepad() )
+    {
+        return false;
+    }
+
     if ( !mEnabled )
     {
         return false;
@@ -201,6 +214,10 @@ bool TouchInputAdapter::QueueAction( TouchActionId actionId, float value )
 
 bool TouchInputAdapter::QueueInputManagerButton( int inputManagerButtonId, float value )
 {
+    if ( IsTouchInputBlockedByConfirmedGamepad() )
+    {
+        return false;
+    }
     if ( !mEnabled )
     {
         return false;
@@ -238,6 +255,12 @@ bool TouchInputAdapter::QueueInputManagerAxis( int inputManagerAxisId, float val
 
 void TouchInputAdapter::FlushQueuedInputs()
 {
+     if ( IsTouchInputBlockedByConfirmedGamepad() )
+    {
+        ClearQueuedInputs();
+        return;
+    }
+
     if ( !mEnabled )
     {
         ClearQueuedInputs();
