@@ -55,7 +55,9 @@
 #include <input/touch/touchinputmodemanager.h>
 #include <data/config/androidconfigurationmanager.h>
 extern "C" void radControllerSDLSetAndroidRumblePolicyCallback( bool (*callback)() );
-extern "C" void radControllerSDLSetAndroidGamepadInputCallback( void (*callback)(float) );
+extern "C" void radControllerSDLSetAndroidGamepadCandidateConnectedCallback(void (*callback)(int));
+extern "C" void radControllerSDLSetAndroidGamepadInputCallback( void (*callback)(int,float) );
+extern "C" void radControllerSDLSetAndroidGamepadDisconnectedCallback(void (*callback)(int));
 #endif
 
 #if defined(RAD_ANDROID)
@@ -89,38 +91,31 @@ const int NUM_RESET_BUTTONS = 0;
 const unsigned int RESET_TIMEOUT = 2000;
 
 #if defined(RAD_ANDROID)
-static void AndroidInputManagerGamepadInputCallback( float magnitude )
+
+static void AndroidInputManagerGamepadCandidateConnectedCallback( int instanceId )
 {
-    TouchInputModeManager& inputMode =
-        TouchInputModeManager::GetInstance();
+    InputManager::GetInstance()->NotifyAndroidPhysicalGamepadCandidateConnected(
+        instanceId
+    );
+}
 
-    /*
-     * Option B:
-     * InputManager ignores repeated physical gamepad input if the gamepad
-     * is already confirmed.
-     */
-    if ( inputMode.IsGamepadConfirmed() )
-    {
-        return;
-    }
+static void AndroidInputManagerGamepadInputCallback
+(
+    int instanceId,
+    float magnitude
+)
+{
+    InputManager::GetInstance()->NotifyAndroidPhysicalGamepadInput(
+        instanceId,
+        magnitude
+    );
+}
 
-    inputMode.NotifyGamepadInput( magnitude );
-
-    if ( inputMode.IsGamepadConfirmed() )
-    {
-        TouchInputAdapter::GetInstance().ClearQueuedInputs();
-        TouchInputAdapter::GetInstance().ClearActiveInputs();
-
-        InputManager* inputManager = InputManager::GetInstance();
-
-        for ( unsigned int i = 0; i < Input::MaxControllers; ++i )
-        {
-            inputManager->SetRumbleForDevice(
-                static_cast<int>( i ),
-                inputManager->IsRumbleEnabled()
-            );
-        }
-    }
+static void AndroidInputManagerGamepadDisconnectedCallback( int instanceId )
+{
+    InputManager::GetInstance()->NotifyAndroidPhysicalGamepadDisconnected(
+        instanceId
+    );
 }
 
 static bool AndroidInputManagerRumblePolicy()
@@ -158,53 +153,335 @@ static bool IsAndroidRumbleAllowed( bool rumbleEnabled )
     return true;
 }
 
-bool InputManager::IsAndroidPhysicalGamepadCandidateConnected() const
-{
-    if ( mxIControllerSystem2 == NULL )
+    bool InputManager::AndroidContainsGamepadId (const int* ids, unsigned int count,  int instanceId ) const
     {
+        if ( instanceId < 0 )
+        {
+            return false;
+        }
+
+        for ( unsigned int i = 0; i < count; ++i )
+        {
+            if ( ids[ i ] == instanceId )
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
-    /*
-     * This only means SDL has enumerated at least one physical controller
-     * object.
-     *
-     * On Android this must be treated as a candidate, not as a confirmed
-     * external gamepad, because some devices can expose false positives.
-     */
-    return mxIControllerSystem2->GetNumberOfControllers() > 0;
-}
+    bool InputManager::AndroidAddGamepadId ( int* ids,  unsigned int& count, int instanceId )
+    {
+        if ( instanceId < 0 )
+        {
+            return false;
+        }
 
-bool InputManager::IsAndroidPhysicalGamepadConnected() const
-{
-    /*
-     * From now on, Android "physical gamepad connected" means:
-     * confirmed by real physical gamepad input.
-     *
-     * This is the value used for rumble and for blocking touch.
-     */
-    return TouchInputModeManager::GetInstance().IsGamepadConfirmed();
-}
+        if ( AndroidContainsGamepadId( ids, count, instanceId ) )
+        {
+            return false;
+        }
 
-void InputManager::SyncAndroidInputModeWithPhysicalGamepad()
-{
-    if ( this->IsAndroidPhysicalGamepadCandidateConnected() )
+        if ( count >= ANDROID_MAX_TRACKED_GAMEPADS )
+        {
+            return false;
+        }
+
+        ids[ count ] = instanceId;
+        ++count;
+
+        return true;
+    }
+
+    bool InputManager::AndroidRemoveGamepadId( int* ids,unsigned int& count,int instanceId )
+    {
+        if ( instanceId < 0 )
+        {
+            return false;
+        }
+
+        for ( unsigned int i = 0; i < count; ++i )
+        {
+            if ( ids[ i ] == instanceId )
+            {
+                for ( unsigned int j = i; j + 1 < count; ++j )
+                {
+                    ids[ j ] = ids[ j + 1 ];
+                }
+
+                --count;
+
+                if ( count < ANDROID_MAX_TRACKED_GAMEPADS )
+                {
+                    ids[ count ] = -1;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void InputManager::AndroidClearPhysicalGamepadTracking()
+    {
+        mAndroidConnectedGamepadCount = 0;
+        mAndroidConfirmedGamepadCount = 0;
+
+        for ( unsigned int i = 0; i < ANDROID_MAX_TRACKED_GAMEPADS; ++i )
+        {
+            mAndroidConnectedGamepadIds[ i ] = -1;
+            mAndroidConfirmedGamepadIds[ i ] = -1;
+        }
+    }
+
+    void InputManager::AndroidApplyRumbleStateToAllControllers()
+    {
+        for ( unsigned int i = 0; i < Input::MaxControllers; ++i )
+        {
+            SetRumbleForDevice(
+                static_cast<int>( i ),
+                IsRumbleEnabled()
+            );
+        }
+    }
+
+    bool InputManager::IsAndroidPhysicalGamepadCandidateConnected() const
+    {
+        if ( mxIControllerSystem2 == NULL )
+        {
+            return false;
+        }
+
+        /*
+        * This only means SDL has enumerated at least one physical controller
+        * object.
+        *
+        * On Android this must be treated as a candidate, not as a confirmed
+        * external gamepad, because some devices can expose false positives.
+        */
+        return mxIControllerSystem2->GetNumberOfControllers() > 0;
+    }
+
+    bool InputManager::IsAndroidPhysicalGamepadConnected() const
     {
         /*
-         * SDL detected something that could be a gamepad.
-         *
-         * Do NOT hide the touch HUD yet.
-         * Do NOT enable rumble yet.
-         * Wait until real physical input confirms the gamepad.
-         */
-        TouchInputModeManager::GetInstance().NotifyGamepadCandidateConnected();
+        * From now on, Android "physical gamepad connected" means:
+        * confirmed by real physical gamepad input.
+        *
+        * This is the value used for rumble and for blocking touch.
+        */
+        return mAndroidConfirmedGamepadCount > 0;
     }
-    else
+
+    void InputManager::SyncAndroidInputModeWithPhysicalGamepad()
     {
-        TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+        if ( this->IsAndroidPhysicalGamepadCandidateConnected() )
+        {
+            /*
+            * SDL detected something that could be a gamepad.
+            *
+            * Do NOT hide the touch HUD yet.
+            * Do NOT enable rumble yet.
+            * Wait until real physical input confirms the gamepad.
+            */
+            TouchInputModeManager::GetInstance().NotifyGamepadCandidateConnected();
+        }
+        else
+        {
+                /*
+            * Recovery path:
+            * If SDL says no physical controller exists, clear all Android
+            * physical gamepad tracking.
+            */
+            AndroidClearPhysicalGamepadTracking();
+
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+
+            TouchInputAdapter::GetInstance().ClearQueuedInputs();
+            TouchInputAdapter::GetInstance().ClearActiveInputs();
+
+            AndroidApplyRumbleStateToAllControllers();
+        }
+    }
+
+
+    void InputManager::NotifyAndroidPhysicalGamepadCandidateConnected
+(
+    int instanceId
+)
+{
+    if ( instanceId < 0 )
+    {
+        return;
+    }
+
+    AndroidAddGamepadId(
+        mAndroidConnectedGamepadIds,
+        mAndroidConnectedGamepadCount,
+        instanceId
+    );
+
+    /*
+     * Candidate only:
+     * - Do not hide touch HUD.
+     * - Do not block touch input.
+     * - Do not enable rumble.
+     */
+    TouchInputModeManager::GetInstance().NotifyGamepadCandidateConnected();
+}
+
+void InputManager::NotifyAndroidPhysicalGamepadInput
+(
+    int instanceId,
+    float magnitude
+)
+{
+    if ( instanceId < 0 )
+    {
+        return;
+    }
+
+    if ( magnitude < 0.0f )
+    {
+        magnitude = -magnitude;
+    }
+
+    TouchInputModeManager& inputMode =
+        TouchInputModeManager::GetInstance();
+
+    if ( magnitude < inputMode.GetGamepadInputThreshold() )
+    {
+        return;
+    }
+
+    /*
+     * If we receive real input from this ID, it is definitely at least
+     * a connected physical candidate.
+     */
+    AndroidAddGamepadId(
+        mAndroidConnectedGamepadIds,
+        mAndroidConnectedGamepadCount,
+        instanceId
+    );
+
+    /*
+     * Important for multiplayer:
+     * Do not return just because some other gamepad is already confirmed.
+     * Return only if THIS instanceId is already confirmed.
+     */
+    if
+    (
+        AndroidContainsGamepadId(
+            mAndroidConfirmedGamepadIds,
+            mAndroidConfirmedGamepadCount,
+            instanceId
+        )
+    )
+    {
+        return;
+    }
+
+    const bool hadConfirmedGamepad =
+        ( mAndroidConfirmedGamepadCount > 0 );
+
+    const bool added =
+        AndroidAddGamepadId(
+            mAndroidConfirmedGamepadIds,
+            mAndroidConfirmedGamepadCount,
+            instanceId
+        );
+
+    if ( !added )
+    {
+        return;
+    }
+
+    /*
+     * Only the transition 0 -> 1 should do the strong cleanup.
+     * If this is a second/third/fourth gamepad, the HUD is already hidden.
+     */
+    if ( !hadConfirmedGamepad )
+    {
+        inputMode.NotifyGamepadConnected();
+
+        TouchInputAdapter::GetInstance().ClearQueuedInputs();
+        TouchInputAdapter::GetInstance().ClearActiveInputs();
+
+        AndroidApplyRumbleStateToAllControllers();
     }
 }
 
+void InputManager::NotifyAndroidPhysicalGamepadDisconnected
+(
+    int instanceId
+)
+{
+    if ( instanceId < 0 )
+    {
+        return;
+    }
+
+    AndroidRemoveGamepadId(
+        mAndroidConnectedGamepadIds,
+        mAndroidConnectedGamepadCount,
+        instanceId
+    );
+
+    const bool removedConfirmed =
+        AndroidRemoveGamepadId(
+            mAndroidConfirmedGamepadIds,
+            mAndroidConfirmedGamepadCount,
+            instanceId
+        );
+
+    /*
+     * If the disconnected device was not confirmed, it was only a candidate.
+     * In that case, do not change touch/gamepad mode unless no candidates remain.
+     */
+    if ( !removedConfirmed )
+    {
+        if
+        (
+            mAndroidConfirmedGamepadCount == 0 &&
+            !IsAndroidPhysicalGamepadCandidateConnected()
+        )
+        {
+            TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+        }
+
+        return;
+    }
+
+    /*
+     * If at least one confirmed gamepad remains, keep touch blocked.
+     */
+    if ( mAndroidConfirmedGamepadCount > 0 )
+    {
+        return;
+    }
+
+    /*
+     * Last confirmed gamepad disconnected:
+     * restore touch as fast as possible.
+     */
+    TouchInputModeManager::GetInstance().NotifyGamepadDisconnected();
+
+    /*
+     * If SDL still has other candidate devices, keep the candidate flag,
+     * but do not block touch.
+     */
+    if ( IsAndroidPhysicalGamepadCandidateConnected() )
+    {
+        TouchInputModeManager::GetInstance().NotifyGamepadCandidateConnected();
+    }
+
+    TouchInputAdapter::GetInstance().ClearQueuedInputs();
+    TouchInputAdapter::GetInstance().ClearActiveInputs();
+
+    AndroidApplyRumbleStateToAllControllers();
+}
 
 #endif // RAD ANDROID
 
@@ -264,7 +541,9 @@ MEMTRACK_PUSH_GROUP( "InputManager" );
 
     #if defined(RAD_ANDROID)
         radControllerSDLSetAndroidRumblePolicyCallback( &AndroidInputManagerRumblePolicy );
+        radControllerSDLSetAndroidGamepadCandidateConnectedCallback(&AndroidInputManagerGamepadCandidateConnectedCallback);
         radControllerSDLSetAndroidGamepadInputCallback( &AndroidInputManagerGamepadInputCallback );
+        radControllerSDLSetAndroidGamepadDisconnectedCallback(&AndroidInputManagerGamepadDisconnectedCallback);
     #endif
 
 #ifdef RAD_PS2
@@ -591,8 +870,11 @@ m_isProScanButtonsPressed( false )
     {
         m_registeredControllerID[ i ] = -1;
     }
-
     GetGameDataManager()->RegisterGameData( this, 1, "Input Manager" );
+
+#ifdef RAD_ANDROID
+    AndroidClearPhysicalGamepadTracking();
+#endif
 #ifdef RAD_PC
     m_pFEMouse = new FEMouse;
 #endif
@@ -601,6 +883,8 @@ m_isProScanButtonsPressed( false )
     mCurMultitapStatus[0] = mCurMultitapStatus[1] = 0;
 
 #endif
+
+
 }
 
 
@@ -613,7 +897,11 @@ InputManager::~InputManager()
 #endif
     #if defined(RAD_ANDROID)
         radControllerSDLSetAndroidRumblePolicyCallback( NULL );
+        radControllerSDLSetAndroidGamepadCandidateConnectedCallback( NULL );
         radControllerSDLSetAndroidGamepadInputCallback( NULL );
+        radControllerSDLSetAndroidGamepadDisconnectedCallback( NULL );
+
+        AndroidClearPhysicalGamepadTracking();
     #endif
     ::radControllerTerminate();
 #ifdef RAD_PC

@@ -259,6 +259,10 @@ public:
     bool IsAndroidPhysicalGamepadCandidateConnected() const;
     bool IsAndroidPhysicalGamepadConnected() const;
     void SyncAndroidInputModeWithPhysicalGamepad();
+
+    void NotifyAndroidPhysicalGamepadCandidateConnected( int instanceId );
+    void NotifyAndroidPhysicalGamepadInput( int instanceId, float magnitude );
+    void NotifyAndroidPhysicalGamepadDisconnected( int instanceId );
 #endif
 
     // Returns the value of the input point 'inputIndex' owned by the controller at
@@ -344,6 +348,38 @@ private:
     int mLastMultitapStatus[2];
     int mCurMultitapStatus[2];
 #endif
+
+#if defined(RAD_ANDROID)
+    static const unsigned int ANDROID_MAX_TRACKED_GAMEPADS = 4;
+
+    bool AndroidContainsGamepadId(
+        const int* ids,
+        unsigned int count,
+        int instanceId
+    ) const;
+
+    bool AndroidAddGamepadId(
+        int* ids,
+        unsigned int& count,
+        int instanceId
+    );
+
+    bool AndroidRemoveGamepadId(
+        int* ids,
+        unsigned int& count,
+        int instanceId
+    );
+
+    void AndroidClearPhysicalGamepadTracking();
+    void AndroidApplyRumbleStateToAllControllers();
+
+    int mAndroidConnectedGamepadIds[ ANDROID_MAX_TRACKED_GAMEPADS ];
+    unsigned int mAndroidConnectedGamepadCount;
+
+    int mAndroidConfirmedGamepadIds[ ANDROID_MAX_TRACKED_GAMEPADS ];
+    unsigned int mAndroidConfirmedGamepadCount;
+#endif // RAD_ANDROID 
+
 };
 
 

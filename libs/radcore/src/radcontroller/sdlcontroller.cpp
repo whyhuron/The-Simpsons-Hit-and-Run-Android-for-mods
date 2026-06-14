@@ -170,15 +170,109 @@ extern "C" void radControllerSDLSetAndroidRumblePolicyCallback(
     sAndroidRumblePolicyCallback = callback;
 }
 
-typedef void (*AndroidGamepadInputCallback)(float magnitude);
+typedef void (*AndroidGamepadCandidateConnectedCallback)(int instanceId);
+typedef void (*AndroidGamepadInputCallback)(int instanceId, float magnitude);
+typedef void (*AndroidGamepadDisconnectedCallback)(int instanceId);
 
-static AndroidGamepadInputCallback sAndroidGamepadInputCallback = NULL;
+static AndroidGamepadCandidateConnectedCallback
+    sAndroidGamepadCandidateConnectedCallback = NULL;
 
-extern "C" void radControllerSDLSetAndroidGamepadInputCallback(
+static AndroidGamepadInputCallback
+    sAndroidGamepadInputCallback = NULL;
+
+static AndroidGamepadDisconnectedCallback
+    sAndroidGamepadDisconnectedCallback = NULL;
+
+extern "C" void radControllerSDLSetAndroidGamepadCandidateConnectedCallback
+(
+    AndroidGamepadCandidateConnectedCallback callback
+)
+{
+    sAndroidGamepadCandidateConnectedCallback = callback;
+}
+
+extern "C" void radControllerSDLSetAndroidGamepadInputCallback
+(
     AndroidGamepadInputCallback callback
 )
 {
     sAndroidGamepadInputCallback = callback;
+}
+
+extern "C" void radControllerSDLSetAndroidGamepadDisconnectedCallback
+(
+    AndroidGamepadDisconnectedCallback callback
+)
+{
+    sAndroidGamepadDisconnectedCallback = callback;
+}
+
+#if SDL_MAJOR_VERSION < 3
+static int AndroidGetGamepadInstanceId( SDL_GameController* pController )
+{
+    if ( pController == NULL )
+    {
+        return -1;
+    }
+
+    SDL_Joystick* pJoystick =
+        SDL_GameControllerGetJoystick( pController );
+
+    if ( pJoystick == NULL )
+    {
+        return -1;
+    }
+
+    return static_cast<int>( SDL_JoystickInstanceID( pJoystick ) );
+}
+#else
+static int AndroidGetGamepadInstanceId( SDL_Gamepad* pController )
+{
+    if ( pController == NULL )
+    {
+        return -1;
+    }
+
+    SDL_Joystick* pJoystick =
+        SDL_GetGamepadJoystick( pController );
+
+    if ( pJoystick == NULL )
+    {
+        return -1;
+    }
+
+    return static_cast<int>( SDL_GetJoystickID( pJoystick ) );
+}
+#endif
+
+static void AndroidNotifyPhysicalGamepadCandidateConnected
+(
+    int instanceId
+)
+{
+    if
+    (
+        instanceId >= 0 &&
+        sAndroidGamepadCandidateConnectedCallback != NULL
+    )
+    {
+        sAndroidGamepadCandidateConnectedCallback( instanceId );
+    }
+}
+
+static void AndroidNotifyPhysicalGamepadDisconnected
+(
+    int instanceId
+)
+{
+    if
+    (
+        instanceId >= 0 &&
+        sAndroidGamepadDisconnectedCallback != NULL
+    )
+    {
+        sAndroidGamepadDisconnectedCallback( instanceId );
+    }
 }
 
 
@@ -194,6 +288,11 @@ static bool AndroidIsGamepadRumbleAllowed()
 
 static void AndroidNotifyPhysicalGamepadInputFromPoint
 (
+#if SDL_MAJOR_VERSION < 3
+    SDL_GameController* pController,
+#else
+    SDL_Gamepad* pController,
+#endif
     const char* pType,
     float oldValue,
     float newValue
@@ -204,14 +303,19 @@ static void AndroidNotifyPhysicalGamepadInputFromPoint
         return;
     }
 
+    const int instanceId = AndroidGetGamepadInstanceId( pController );
+
+    if ( instanceId < 0 )
+    {
+        return;
+    }
+
     float magnitude = 0.0f;
 
     /*
-     * Safest first version:
      * Confirm the gamepad only from real button/trigger input.
-     *
-     * We intentionally do not confirm from stick axes here, because some
-     * Android devices may expose noisy internal axes.
+     * Do not confirm from stick axes, because some Android devices can
+     * expose noisy internal axes.
      */
     if ( pType == g_Sdlipt[ 0 ] ) // Button
     {
@@ -230,7 +334,7 @@ static void AndroidNotifyPhysicalGamepadInputFromPoint
 
     if ( magnitude > 0.0f )
     {
-        sAndroidGamepadInputCallback( magnitude );
+        sAndroidGamepadInputCallback( instanceId, magnitude );
     }
 }
 
@@ -547,6 +651,7 @@ class radControllerInputPointSDL
             m_Value = newValue;
             #if defined(RAD_ANDROID)
                 AndroidNotifyPhysicalGamepadInputFromPoint(
+                    m_pController,
                     m_pType,
                     oldValue,
                     newValue
@@ -1093,6 +1198,8 @@ class radControllerSDL
 
     IMPLEMENT_REFCOUNTED( "radControllerSDL" )
 
+    
+
     //========================================================================
     // radControllerSDL::iPoll
     //========================================================================
@@ -1166,7 +1273,15 @@ class radControllerSDL
 
 */
 
-// NUEVOS METODOS 
+// NUEVOS METODOS
+
+    #if defined(RAD_ANDROID)
+    int GetAndroidInstanceId() const
+    {
+        return mAndroidInstanceId;
+    }
+    #endif
+
     bool EnsureHapticReady( void )
     {
         if ( m_HapticReady && m_pHaptic != NULL )
@@ -1743,10 +1858,16 @@ else
         m_pController( pController ),
 		m_pHaptic( NULL ),
 		m_HapticReady( false )
+        #if defined(RAD_ANDROID)
+        ,mAndroidInstanceId( -1 )
+        #endif
     {
         radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerSDL" );
 
         m_LeftGain = m_RightGain = 0;
+        #if defined(RAD_ANDROID)
+        mAndroidInstanceId = AndroidGetGamepadInstanceId( m_pController );
+        #endif
 
         //
         // Get an object list to store our input points
@@ -1843,6 +1964,9 @@ else
 #endif
 	SDL_Haptic *                      m_pHaptic; // nuevas lineas para hacer fallback a SDL haptic y de esta forma tener vibracion
     bool                              m_HapticReady; // nueva linea para el mismo proposito de arriba
+    #if defined(RAD_ANDROID)
+    int                               mAndroidInstanceId;
+    #endif
 
     ref< IRadObjectList >             m_xIOl_InputPoints;
     ref< IRadObjectList >             m_xIOl_OutputPoints;
@@ -2207,33 +2331,112 @@ class radControllerSystemSDL
         return NULL;
     }
 
+    #if defined(RAD_ANDROID)
+        IRadController* FindPhysicalControllerByAndroidInstanceId
+        (
+            int instanceId
+        )
+        {
+            if ( instanceId < 0 )
+            {
+                return NULL;
+            }
+
+            m_xIOl_Controllers->Reset();
+
+            IRadController* pController;
+
+            while
+            (
+                ( pController =
+                    reinterpret_cast< IRadControllerSDL* >(
+                        m_xIOl_Controllers->GetNext()
+                    )
+                )
+            )
+            {
+                radControllerSDL* pSDLController =
+                    reinterpret_cast< radControllerSDL* >( pController );
+
+                if
+                (
+                    pSDLController != NULL &&
+                    pSDLController->GetAndroidInstanceId() == instanceId
+                )
+                {
+                    return pController;
+                }
+            }
+
+            return NULL;
+        }
+#endif
+
      //========================================================================
     // radControllerSystemSDL::CheckDeviceConnectionStatus
     //========================================================================
-#if SDL_MAJOR_VERSION < 3
-    static int CheckDeviceConnectionStatus( void * userdata, SDL_Event * event )
-#else
-    static bool CheckDeviceConnectionStatus( void * userdata, SDL_Event * event )
-#endif
-    {
-        //
-        // Check if devices have been inserted or removed
-        //
-#if SDL_MAJOR_VERSION < 3
-        SDL_GameController * pController;
-        if( event->type == SDL_CONTROLLERDEVICEADDED )
-            pController = SDL_GameControllerOpen( event->cdevice.which );
-        else if( event->type == SDL_CONTROLLERDEVICEREMOVED )
-            pController = SDL_GameControllerFromInstanceID( event->cdevice.which );
-#else
-        SDL_Gamepad * pController;
-        if( event->type == SDL_EVENT_GAMEPAD_ADDED )
-            pController = SDL_OpenGamepad( event->cdevice.which );
-        else if( event->type == SDL_EVENT_GAMEPAD_REMOVED )
-            pController = SDL_GetGamepadFromID( event->cdevice.which );
-#endif
-        else
-            return true;
+        #if SDL_MAJOR_VERSION < 3
+        static int CheckDeviceConnectionStatus( void * userdata, SDL_Event * event )
+        #else
+        static bool CheckDeviceConnectionStatus( void * userdata, SDL_Event * event )
+        #endif
+        {
+            //
+            // Check if devices have been inserted or removed
+            //
+
+        #if SDL_MAJOR_VERSION < 3
+            SDL_GameController* pController = NULL;
+        #else
+            SDL_Gamepad* pController = NULL;
+        #endif
+
+        #if defined(RAD_ANDROID)
+            int androidInstanceId = -1;
+        #endif
+
+        #if SDL_MAJOR_VERSION < 3
+            if( event->type == SDL_CONTROLLERDEVICEADDED )
+            {
+                pController = SDL_GameControllerOpen( event->cdevice.which );
+            }
+            else if( event->type == SDL_CONTROLLERDEVICEREMOVED )
+            {
+                pController = SDL_GameControllerFromInstanceID( event->cdevice.which );
+            }
+        #else
+            if( event->type == SDL_EVENT_GAMEPAD_ADDED )
+            {
+                pController = SDL_OpenGamepad( event->cdevice.which );
+            }
+            else if( event->type == SDL_EVENT_GAMEPAD_REMOVED )
+            {
+                pController = SDL_GetGamepadFromID( event->cdevice.which );
+            }
+        #endif
+            else
+            {
+                return true;
+            }
+
+        #if defined(RAD_ANDROID)
+        #if SDL_MAJOR_VERSION < 3
+            if ( event->type == SDL_CONTROLLERDEVICEREMOVED )
+        #else
+            if ( event->type == SDL_EVENT_GAMEPAD_REMOVED )
+        #endif
+            {
+                /*
+                * In SDL removed events, event->cdevice.which is already the
+                * controller instance id.
+                */
+                androidInstanceId = static_cast<int>( event->cdevice.which );
+            }
+            else
+            {
+                androidInstanceId = AndroidGetGamepadInstanceId( pController );
+            }
+        #endif
 
         radControllerSystemSDL* sys = (radControllerSystemSDL*)userdata;
         sys->AddRef( );
@@ -2246,15 +2449,31 @@ class radControllerSystemSDL
 
         char location[255];
 
-#if SDL_MAJOR_VERSION < 3
-        int iController = std::max( SDL_GameControllerGetPlayerIndex( pController ), 0 );
-#else
-        int iController = std::max( SDL_GetGamepadPlayerIndex( pController ), 0 );
-#endif
-        sprintf( location, "Port%d\\Slot0", iController );
+        #if defined(RAD_ANDROID)
+        xIController2 =
+            sys->FindPhysicalControllerByAndroidInstanceId(
+                androidInstanceId
+            );
+        #endif
 
-        // con esta liena de abajo el touch no bloqueará el puerto 0, por si luego se conecta un mando físico no existan problemas
-        xIController2 = sys->FindPhysicalControllerAtLocation( location ); 
+        if ( xIController2 == NULL && pController != NULL )
+        {
+        #if SDL_MAJOR_VERSION < 3
+            int iController =
+                std::max( SDL_GameControllerGetPlayerIndex( pController ), 0 );
+        #else
+            int iController =
+                std::max( SDL_GetGamepadPlayerIndex( pController ), 0 );
+        #endif
+
+            sprintf( location, "Port%d\\Slot0", iController );
+
+            /*
+            * Fallback by location.
+            * Useful for ADDED events or if instance id lookup is not available.
+            */
+            xIController2 = sys->FindPhysicalControllerAtLocation( location );
+        }
 
         if ( xIController2 != NULL )
         {
@@ -2274,6 +2493,11 @@ class radControllerSystemSDL
 
             if( xISDLController2 == NULL )
             {
+                 if ( pController == NULL )
+                {
+                    sys->Release();
+                    return false;
+                }
                 //
                 // Here the controller at this location has not yet been
                 // constructed, so construct a new controller
@@ -2302,6 +2526,9 @@ class radControllerSystemSDL
                 (
                     xIController2
                 );
+                #if defined(RAD_ANDROID)
+                AndroidNotifyPhysicalGamepadCandidateConnected(androidInstanceId);
+                #endif
             }
             else
             {
@@ -2309,21 +2536,34 @@ class radControllerSystemSDL
                 return false;
             }
         }
-#if SDL_MAJOR_VERSION < 3
+        #if SDL_MAJOR_VERSION < 3
         else if( event->type == SDL_CONTROLLERDEVICEREMOVED )
-#else
+        #else
         else if( event->type == SDL_EVENT_GAMEPAD_REMOVED )
-#endif
+        #endif
         {
-			//
+            //
             // Here a device has been removed
             //
             if ( xIController2 != NULL )
             {
-                //We need to remove this from the set as the next thing to
-                //plug in could be a new type of controller.
+                /*
+                * Remove the physical SDL controller from the controller list.
+                */
                 sys->m_xIOl_Controllers->RemoveObject( xIController2 );
             }
+
+        #if defined(RAD_ANDROID)
+            /*
+            * Direct Android notification.
+            *
+            * This is the fast path that lets InputManager restore touch as soon
+            * as SDL reports that the confirmed physical gamepad was removed.
+            */
+            AndroidNotifyPhysicalGamepadDisconnected(
+                androidInstanceId
+            );
+        #endif
         }
 
         IRadWeakInterfaceWrapper * pIWir;
