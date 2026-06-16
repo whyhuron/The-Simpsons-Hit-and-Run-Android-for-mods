@@ -33,6 +33,8 @@ void TouchHudFingerState::Reset()
     delta = TouchVector2( 0.0f, 0.0f );
 
     pressure = 0.0f;
+    
+    
 }
 
 //=============================================================================
@@ -118,7 +120,7 @@ TouchHudSystem& TouchHudSystem::GetInstance()
 //=============================================================================
 
 TouchHudSystem::TouchHudSystem():mEnabled( true ),mCurrentProfile( TOUCH_PROFILE_HIDDEN ),mControlCount( 0 ),mCharacterTouchSplitX( 0.32f ),
-mCurrentInteractionType( TOUCH_INTERACTION_NONE ),mCurrentInteractionIcon( TOUCH_INTERACTION_ICON_NONE )
+mCurrentInteractionType( TOUCH_INTERACTION_NONE ),mCurrentInteractionIcon( TOUCH_INTERACTION_ICON_NONE ),mTouchInputWasSuppressed (false)
 {
     InitializeDefaultControls();
     ClearActiveTouches();
@@ -146,7 +148,7 @@ void TouchHudSystem::Reset()
     {
         InitializeDefaultControls();
     }
-    
+    mTouchInputWasSuppressed = false;
 }
 
 void TouchHudSystem::SetEnabled( bool enabled )
@@ -255,18 +257,51 @@ void TouchHudSystem::Update( unsigned int elapsedMs )
 }
 
 //Bloquea input tactil en caso de existir mando conectado
+// primer frame limpia fuerte 
+// los siguientes una vez esta suprimido el touch simplemente retorna true 
 
 bool TouchHudSystem::RejectTouchInputIfSuppressed()
 {
 #if defined(RAD_ANDROID)
-    if ( !TouchInputModeManager::GetInstance().ShouldShowTouchHud() )
-    {
-        ClearActiveTouches();
+    const bool touchSuppressed =
+        !TouchInputModeManager::GetInstance().ShouldShowTouchHud();
 
-        TouchInputAdapter::GetInstance().ClearQueuedInputs();
-        TouchInputAdapter::GetInstance().ClearActiveInputs();
+    if ( touchSuppressed )
+    {
+        /*
+         * First frame entering suppressed state.
+         *
+         * This is the only moment where we need the expensive/full cleanup:
+         * - remove active touches
+         * - clear queued touch inputs
+         * - release virtual buttons/axes currently held by touch
+         */
+        if ( !mTouchInputWasSuppressed )
+        {
+            ClearActiveTouches();
+
+            TouchInputAdapter::GetInstance().ClearQueuedInputs();
+            TouchInputAdapter::GetInstance().ClearActiveInputs();
+
+            mTouchInputWasSuppressed = true;
+        }
 
         return true;
+    }
+
+    /*
+     * Touch input is no longer suppressed.
+     *
+     * Reset the transition flag and make sure the touch system resumes from
+     * a clean state. We do not need to clear active virtual inputs here because
+     * they were already released when suppression started.
+     */
+    if ( mTouchInputWasSuppressed )
+    {
+        ClearActiveTouches();
+        TouchInputAdapter::GetInstance().ClearQueuedInputs();
+
+        mTouchInputWasSuppressed = false;
     }
 #endif
 

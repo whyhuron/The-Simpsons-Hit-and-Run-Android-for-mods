@@ -217,7 +217,9 @@ private:
     bool IsInsideCharacterMovementArea( float x, float y ) const;
     bool IsInsideCharacterCameraArea( float x, float y ) const;
 
+    bool mTouchInputWasSuppressed;
     bool RejectTouchInputIfSuppressed();
+    
     
     float Clamp01( float value ) const;
 
