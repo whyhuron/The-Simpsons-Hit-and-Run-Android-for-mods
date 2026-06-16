@@ -47,6 +47,8 @@ private:
 
     bool mQueuedInputActive[ Input::MaxPhysicalButtons ];
     float mQueuedInputValue[ Input::MaxPhysicalButtons ];
+    
+    bool mQueuedInputDirty;
 
     TouchInputAdapter( const TouchInputAdapter& );
     TouchInputAdapter& operator=( const TouchInputAdapter& );

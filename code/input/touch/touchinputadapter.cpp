@@ -15,9 +15,14 @@ TouchInputAdapter& TouchInputAdapter::GetInstance()
 TouchInputAdapter::TouchInputAdapter()
 :
 mEnabled( false ),
-mTargetControllerIndex( 0 )
+mTargetControllerIndex( 0 ),
+mQueuedInputDirty(false)
 {
-    ClearQueuedInputs();
+    for ( unsigned int i = 0; i < Input::MaxPhysicalButtons; ++i )
+    {
+        mQueuedInputActive[ i ] = false;
+        mQueuedInputValue[ i ] = 0.0f;
+    }
 }
 
 TouchInputAdapter::~TouchInputAdapter()
@@ -27,9 +32,14 @@ TouchInputAdapter::~TouchInputAdapter()
 void TouchInputAdapter::Reset()
 {
     ClearActiveInputs();
-    ClearQueuedInputs();
+      for ( unsigned int i = 0; i < Input::MaxPhysicalButtons; ++i )
+    {
+        mQueuedInputActive[ i ] = false;
+        mQueuedInputValue[ i ] = 0.0f;
+    }
     mEnabled = false;
     mTargetControllerIndex = 0;
+    mQueuedInputDirty = false;
 }
 
 static bool IsTouchInputBlockedByConfirmedGamepad()
@@ -53,6 +63,7 @@ void TouchInputAdapter::SetEnabled( bool enabled )
 
         if ( !mEnabled )
         {
+            ClearQueuedInputs();
             controller->ClearVirtualInputs();
         }
     }
@@ -66,6 +77,7 @@ void TouchInputAdapter::SetTargetControllerIndex( unsigned int controllerIndex )
     }
 
     ClearActiveInputs();
+    ClearQueuedInputs();
 
     UserController* oldController = GetTargetController();
     if ( oldController )
@@ -245,6 +257,8 @@ bool TouchInputAdapter::QueueInputManagerButton( int inputManagerButtonId, float
     mQueuedInputValue[ index ] = ClampInputValue( value );
     mQueuedInputActive[ index ] = true;
 
+    mQueuedInputDirty = true;
+
     return true;
 }
 
@@ -264,6 +278,11 @@ void TouchInputAdapter::FlushQueuedInputs()
     if ( !mEnabled )
     {
         ClearQueuedInputs();
+        return;
+    }
+
+    if(!mQueuedInputDirty)
+    {
         return;
     }
 
@@ -289,6 +308,7 @@ void TouchInputAdapter::FlushQueuedInputs()
             mQueuedInputActive[ i ] = false;
         }
     }
+    mQueuedInputDirty=false;
 }
 
 int TouchInputAdapter::ResolveInputManagerButtonToControllerIndex( int inputManagerButtonId ) const
@@ -398,9 +418,15 @@ int TouchInputAdapter::ResolveInputManagerButtonToControllerIndex( int inputMana
 
 void TouchInputAdapter::ClearQueuedInputs()
 {
+    if ( !mQueuedInputDirty )
+    {
+        return;
+    }
+
     for ( unsigned int i = 0; i < Input::MaxPhysicalButtons; ++i )
     {
         mQueuedInputActive[ i ] = false;
         mQueuedInputValue[ i ] = 0.0f;
     }
+     mQueuedInputDirty = false;
 }
