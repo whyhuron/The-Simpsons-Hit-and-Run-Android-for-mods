@@ -37,6 +37,10 @@
 #include <strings/unicodeString.h>
 
 
+#if defined(RAD_ANDROID)
+#include <data/config/androidconfigurationmanager.h>
+#endif
+
 
 #if defined(RAD_ANDROID)
   #include <android/log.h>
@@ -60,36 +64,19 @@
 // Global Data, Local Data, Local Classes
 //===========================================================================
 
-enum ePauseSettingsMenuItem
-{
-    MENU_ITEM_CAMERA,
-    MENU_ITEM_JUMP_CAMERAS,
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)// he encontrado que como estamos usando en android los assets de pc, pues claro no encontramos esta opcion es lógico
-    MENU_ITEM_INVERT_CAM_CONTROL,
-#endif
-    MENU_ITEM_INTERSECT_NAV_SYSTEM,
-    MENU_ITEM_RADAR,
-#if !defined(RAD_PC) && !defined(RAD_ANDROID) // temporalmente desactivado la opcion del menu vibracion en android
-    MENU_ITEM_VIBRATION,
-#endif
-    #if !defined(RAD_ANDROID)
-    MENU_ITEM_TUTORIAL,
-    #endif
 
-    NUM_PAUSE_SETTINGS_MENU_ITEMS
-};
 
 
 const char* PAUSE_SETTINGS_MENU_ITEMS[] =
 {
     "Camera",
     "JumpCamera",
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)
+#if !defined(RAD_PC)// && !defined(RAD_ANDROID)
     "InvertCamControl",
 #endif
     "IntersectNavSystem",
     "Radar",
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)
+#if !defined(RAD_PC) //&& !defined(RAD_ANDROID)
     "Vibration",
 #endif
     #if !defined(RAD_ANDROID)
@@ -154,6 +141,15 @@ MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
 
     rAssert( m_pMenu != NULL );
 
+    #if defined(RAD_ANDROID)
+
+    for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
+    {
+        mMenuItemToGuiMenuIndex[ i ] = -1;
+        mGuiMenuIndexToMenuItem[ i ] = -1;
+    }
+    #endif
+
     // Add menu items.
     //
     char itemName[ 32 ];
@@ -165,7 +161,30 @@ MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
     //
     Scrooby::Group* pMenuGroup = pPage->GetGroup( "Menu" );
 
+#if defined(RAD_ANDROID)
 
+    for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
+    {
+        const char* item = PAUSE_SETTINGS_MENU_ITEMS[ i ];
+
+        const bool added = AddPauseSettingsMenuItemIfAvailable
+        (
+            pPage,
+            item,
+            i
+        );
+
+        if( i == MENU_ITEM_INVERT_CAM_CONTROL )
+        {
+            mHasInvertCamControl = added;
+        }
+        else if( i == MENU_ITEM_VIBRATION )
+        {
+            mHasGamepadVibration = added;
+        }
+    }
+
+#else
 
     for( int i = 0; i < NUM_PAUSE_SETTINGS_MENU_ITEMS; i++ )
     {
@@ -231,6 +250,7 @@ MEMTRACK_PUSH_GROUP( "CGuiScreenPauseSettings" );
                               pRArrow,
                               SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
     }
+#endif
 
     #if defined(RAD_ANDROID)
     //
@@ -379,12 +399,26 @@ void CGuiScreenPauseSettings::HandleMessage
 
             case GUI_MSG_MENU_SELECTION_VALUE_CHANGED:
             {
-                if( param1 == MENU_ITEM_CAMERA )
+            #if defined(RAD_ANDROID)
+                const int logicalMenuItem =
+                    GetMenuItemFromGuiMenuIndex( static_cast<int>( param1 ) );
+            #else
+                const int logicalMenuItem = static_cast<int>( param1 );
+            #endif
+
+                if( logicalMenuItem == MENU_ITEM_CAMERA )
                 {
                     // set new super cam
                     //
-                    SuperCam::Type superCamType = m_cameraSelections[ m_currentCameraSelectionMode ][ param2 ];
-                    GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( superCamType, SuperCamCentral::CUT, 0 );
+                    SuperCam::Type superCamType =
+                        m_cameraSelections[ m_currentCameraSelectionMode ][ param2 ];
+
+                    GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam
+                    (
+                        superCamType,
+                        SuperCamCentral::CUT,
+                        0
+                    );
 
                     // and apply it right away
                     //
@@ -469,7 +503,16 @@ void CGuiScreenPauseSettings::InitIntro()
 
     rAssert( m_pMenu );
 
+    #if defined(RAD_ANDROID)
+    const int cameraMenuIndex =
+        GetGuiMenuIndexFromMenuItem( MENU_ITEM_CAMERA );
+
+    rAssert( cameraMenuIndex != -1 );
+
+    m_pMenu->SetMenuItemEnabled( cameraMenuIndex, allowCameraToggle );
+#else
     m_pMenu->SetMenuItemEnabled( MENU_ITEM_CAMERA, allowCameraToggle );
+#endif
 
     if( allowCameraToggle )
     {
@@ -487,10 +530,36 @@ void CGuiScreenPauseSettings::InitIntro()
     //
     bool isSettingOn = false;
 
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)
-    isSettingOn = GetSuperCamManager()->GetSCC( 0 )->IsInvertedCameraEnabled();
-    m_pMenu->SetSelectionValue( MENU_ITEM_INVERT_CAM_CONTROL,
-                                isSettingOn ? 1 : 0 );
+#if !defined(RAD_PC)
+
+#if defined(RAD_ANDROID)
+    {
+        const int invertCamMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_INVERT_CAM_CONTROL );
+
+        if( invertCamMenuIndex != -1 )
+        {
+            const bool realInvertCamera =
+            GetAndroidConfigurationManager()->IsInvertCameraEnabled();
+                
+            m_pMenu->SetSelectionValue
+            (
+                invertCamMenuIndex,
+                realInvertCamera  ? 1 : 0
+            );
+        }
+    }
+#else
+    isSettingOn =
+        GetSuperCamManager()->GetSCC( 0 )->IsInvertedCameraEnabled();
+
+    m_pMenu->SetSelectionValue
+    (
+        MENU_ITEM_INVERT_CAM_CONTROL,
+        isSettingOn ? 1 : 0
+    );
+#endif
+
 #endif
 
 
@@ -499,8 +568,26 @@ void CGuiScreenPauseSettings::InitIntro()
 
 
 
-    m_pMenu->SetSelectionValue( MENU_ITEM_JUMP_CAMERAS,
-                                isSettingOn ? 1: 0 );
+    #if defined(RAD_ANDROID)
+    {
+        const int jumpCamerasMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_JUMP_CAMERAS );
+
+        rAssert( jumpCamerasMenuIndex != -1 );
+
+        m_pMenu->SetSelectionValue
+        (
+            jumpCamerasMenuIndex,
+            isSettingOn ? 1 : 0
+        );
+    }
+#else
+    m_pMenu->SetSelectionValue
+    (
+        MENU_ITEM_JUMP_CAMERAS,
+        isSettingOn ? 1 : 0
+    );
+#endif
 
 
 
@@ -508,8 +595,26 @@ void CGuiScreenPauseSettings::InitIntro()
 
 
 
-    m_pMenu->SetSelectionValue( MENU_ITEM_INTERSECT_NAV_SYSTEM,
-                                isSettingOn ? 1 : 0 );
+    #if defined(RAD_ANDROID)
+    {
+        const int intersectNavMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_INTERSECT_NAV_SYSTEM );
+
+        rAssert( intersectNavMenuIndex != -1 );
+
+        m_pMenu->SetSelectionValue
+        (
+            intersectNavMenuIndex,
+            isSettingOn ? 1 : 0
+        );
+    }
+#else
+    m_pMenu->SetSelectionValue
+    (
+        MENU_ITEM_INTERSECT_NAV_SYSTEM,
+        isSettingOn ? 1 : 0
+    );
+#endif
 
 
 
@@ -517,13 +622,56 @@ void CGuiScreenPauseSettings::InitIntro()
 
 
 
-    m_pMenu->SetSelectionValue( MENU_ITEM_RADAR,
-                                isSettingOn ? 1 : 0 );
+    #if defined(RAD_ANDROID)
+    {
+        const int radarMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_RADAR );
 
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)
+        rAssert( radarMenuIndex != -1 );
+
+        m_pMenu->SetSelectionValue
+        (
+            radarMenuIndex,
+            isSettingOn ? 1 : 0
+        );
+    }
+#else
+    m_pMenu->SetSelectionValue
+    (
+        MENU_ITEM_RADAR,
+        isSettingOn ? 1 : 0
+    );
+#endif
+
+#if !defined(RAD_PC)
+
+#if defined(RAD_ANDROID)
+    {
+        const int vibrationMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_VIBRATION );
+
+        if( vibrationMenuIndex != -1 )
+        {
+            isSettingOn =
+                GetAndroidConfigurationManager()->IsGamepadVibrationEnabled();
+
+            m_pMenu->SetSelectionValue
+            (
+                vibrationMenuIndex,
+                isSettingOn ? 1 : 0
+            );
+        }
+    }
+#else
     isSettingOn = GetInputManager()->IsRumbleEnabled();
-    m_pMenu->SetSelectionValue( MENU_ITEM_VIBRATION,
-                                isSettingOn ? 1 : 0 );
+
+    m_pMenu->SetSelectionValue
+    (
+        MENU_ITEM_VIBRATION,
+        isSettingOn ? 1 : 0
+    );
+#endif
+
 #endif
 
 #if !defined(RAD_ANDROID)
@@ -584,43 +732,118 @@ void CGuiScreenPauseSettings::InitOutro()
     rAssert( m_pMenu != NULL );
     bool isSettingOn = false;
 
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)
+    #if !defined(RAD_PC)
 
+#if defined(RAD_ANDROID)
+    {
+        const int invertCamMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_INVERT_CAM_CONTROL );
 
-    isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_INVERT_CAM_CONTROL ) == 1);
+        if( invertCamMenuIndex != -1 )
+        {
+            const bool menuInvertCamera =( m_pMenu->GetSelectionValue( invertCamMenuIndex ) == 1 );
 
+            const bool runtimeInvertCamera = !menuInvertCamera;
 
+            GetSuperCamManager()->GetSCC( 0 )->EnableInvertedCamera( runtimeInvertCamera );
+
+            GetAndroidConfigurationManager()->SetInvertCameraEnabled( menuInvertCamera );
+         }
+    }
+#else
+    isSettingOn =
+        ( m_pMenu->GetSelectionValue( MENU_ITEM_INVERT_CAM_CONTROL ) == 1 );
 
     GetSuperCamManager()->GetSCC( 0 )->EnableInvertedCamera( isSettingOn );
 #endif
 
+#endif
 
 
-    isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_JUMP_CAMERAS ) == 1);
 
+    #if defined(RAD_ANDROID)
+    {
+        const int jumpCamerasMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_JUMP_CAMERAS );
 
+        rAssert( jumpCamerasMenuIndex != -1 );
+
+        isSettingOn =
+            ( m_pMenu->GetSelectionValue( jumpCamerasMenuIndex ) == 1 );
+
+        GetSuperCamManager()->GetSCC( 0 )->EnableJumpCams( isSettingOn );
+    }
+#else
+    isSettingOn =
+        ( m_pMenu->GetSelectionValue( MENU_ITEM_JUMP_CAMERAS ) == 1 );
 
     GetSuperCamManager()->GetSCC( 0 )->EnableJumpCams( isSettingOn );
+#endif
 
 
 
-    isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_INTERSECT_NAV_SYSTEM ) == 1);
+    #if defined(RAD_ANDROID)
+    {
+        const int intersectNavMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_INTERSECT_NAV_SYSTEM );
 
+        rAssert( intersectNavMenuIndex != -1 );
 
+        isSettingOn =
+            ( m_pMenu->GetSelectionValue( intersectNavMenuIndex ) == 1 );
+
+        GetCharacterSheetManager()->SetNavSystemOn( isSettingOn );
+    }
+#else
+    isSettingOn =
+        ( m_pMenu->GetSelectionValue( MENU_ITEM_INTERSECT_NAV_SYSTEM ) == 1 );
 
     GetCharacterSheetManager()->SetNavSystemOn( isSettingOn );
+#endif
 
 
 
-    isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_RADAR ) == 1);
+    #if defined(RAD_ANDROID)
+    {
+        const int radarMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_RADAR );
 
+        rAssert( radarMenuIndex != -1 );
 
+        isSettingOn =
+            ( m_pMenu->GetSelectionValue( radarMenuIndex ) == 1 );
+
+        GetGuiSystem()->SetRadarEnabled( isSettingOn );
+    }
+#else
+    isSettingOn =
+        ( m_pMenu->GetSelectionValue( MENU_ITEM_RADAR ) == 1 );
 
     GetGuiSystem()->SetRadarEnabled( isSettingOn );
+#endif
 
-#if !defined(RAD_PC) && !defined(RAD_ANDROID)
-    isSettingOn = (m_pMenu->GetSelectionValue( MENU_ITEM_VIBRATION ) == 1);
+#if !defined(RAD_PC)
+
+#if defined(RAD_ANDROID)
+    {
+        const int vibrationMenuIndex =
+            GetGuiMenuIndexFromMenuItem( MENU_ITEM_VIBRATION );
+
+        if( vibrationMenuIndex != -1 )
+        {
+            isSettingOn =
+                ( m_pMenu->GetSelectionValue( vibrationMenuIndex ) == 1 );
+
+            GetAndroidConfigurationManager()->SetGamepadVibrationEnabled( isSettingOn );
+        }
+    }
+#else
+    isSettingOn =
+        ( m_pMenu->GetSelectionValue( MENU_ITEM_VIBRATION ) == 1 );
+
     GetInputManager()->SetRumbleEnabled( isSettingOn );
+#endif
+
 #endif
 
 #if !defined(RAD_ANDROID)
@@ -632,6 +855,9 @@ void CGuiScreenPauseSettings::InitOutro()
     GetTutorialManager()->EnableTutorialEvents( isSettingOn );
 #endif
 
+#if defined(RAD_ANDROID)
+    GetAndroidConfigurationManager()->SaveIfDirty();
+#endif
 
 }
 
@@ -643,8 +869,6 @@ void
 CGuiScreenPauseSettings::UpdateCameraSelections()
 {
     rAssert( m_pMenu );
-
-
 
     // set current camera selection mode
     //
@@ -746,3 +970,136 @@ CGuiScreenPauseSettings::UpdateCameraSelections()
 
 
 }
+
+#if defined(RAD_ANDROID)
+
+bool CGuiScreenPauseSettings::AddPauseSettingsMenuItemIfAvailable
+(
+    Scrooby::Page* pPage,
+    const char* item,
+    int logicalMenuItem
+)
+{
+    char itemName[ 32 ];
+
+    Scrooby::Group* group = pPage->GetGroup( item );
+
+    if( group == NULL )
+    {
+        if( IsAndroidOptionalMenuItem( logicalMenuItem ) )
+        {
+            return false;
+        }
+
+        rAssert( group != NULL );
+        return false;
+    }
+
+    Scrooby::Text* pText = group->GetText( item );
+
+    if( pText == NULL )
+    {
+        if( IsAndroidOptionalMenuItem( logicalMenuItem ) )
+        {
+            return false;
+        }
+
+        rAssert( pText != NULL );
+        return false;
+    }
+
+    pText->SetTextMode( Scrooby::TEXT_WRAP );
+
+    sprintf( itemName, "%s_Value", item );
+    Scrooby::Text* pTextValue = group->GetText( itemName );
+
+    if( pTextValue == NULL )
+    {
+        if( IsAndroidOptionalMenuItem( logicalMenuItem ) )
+        {
+            pText->SetVisible( false );
+            return false;
+        }
+
+        rAssert( pTextValue != NULL );
+        return false;
+    }
+
+    pTextValue->SetTextMode( Scrooby::TEXT_WRAP );
+
+    sprintf( itemName, "%s_LArrow", item );
+    Scrooby::Sprite* pLArrow = group->GetSprite( itemName );
+
+    sprintf( itemName, "%s_RArrow", item );
+    Scrooby::Sprite* pRArrow = group->GetSprite( itemName );
+
+    if( IsAndroidOptionalMenuItem( logicalMenuItem ) &&
+        ( pLArrow == NULL || pRArrow == NULL ) )
+    {
+        pText->SetVisible( false );
+        pTextValue->SetVisible( false );
+
+        if( pLArrow != NULL )
+        {
+            pLArrow->SetVisible( false );
+        }
+
+        if( pRArrow != NULL )
+        {
+            pRArrow->SetVisible( false );
+        }
+
+        return false;
+    }
+
+    mMenuItemToGuiMenuIndex[ logicalMenuItem ] = mNumActiveMenuItems;
+    mGuiMenuIndexToMenuItem[ mNumActiveMenuItems ] = logicalMenuItem;
+
+    m_pMenu->AddMenuItem
+    (
+        pText,
+        pTextValue,
+        NULL,
+        NULL,
+        pLArrow,
+        pRArrow,
+        SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED
+    );
+
+    mNumActiveMenuItems++;
+
+    return true;
+}
+
+bool CGuiScreenPauseSettings::IsAndroidOptionalMenuItem( int logicalMenuItem ) const
+{
+    return logicalMenuItem == MENU_ITEM_INVERT_CAM_CONTROL ||
+           logicalMenuItem == MENU_ITEM_VIBRATION;
+}
+
+bool CGuiScreenPauseSettings::HasMenuItem( int logicalMenuItem ) const
+{
+    return GetGuiMenuIndexFromMenuItem( logicalMenuItem ) != -1;
+}
+
+int CGuiScreenPauseSettings::GetGuiMenuIndexFromMenuItem( int logicalMenuItem ) const
+{
+    if( logicalMenuItem < 0 || logicalMenuItem >= NUM_PAUSE_SETTINGS_MENU_ITEMS )
+    {
+        return -1;
+    }
+
+    return mMenuItemToGuiMenuIndex[ logicalMenuItem ];
+}
+
+int CGuiScreenPauseSettings::GetMenuItemFromGuiMenuIndex( int guiMenuIndex ) const
+{
+    if( guiMenuIndex < 0 || guiMenuIndex >= mNumActiveMenuItems )
+    {
+        return -1;
+    }
+
+    return mGuiMenuIndexToMenuItem[ guiMenuIndex ];
+}
+
+#endif

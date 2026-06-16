@@ -38,7 +38,8 @@ AndroidConfigurationManager::AndroidConfigurationManager()
     m_initialized( false ),
     m_invertCamera( true ),
     m_gamepadVibration( true ),
-    m_phoneVibration( false )
+    m_phoneVibration( false ),
+    m_dirty( false )
 {
 #if defined(RAD_ANDROID)
     m_directoryPath[ 0 ] = '\0';
@@ -52,6 +53,7 @@ void AndroidConfigurationManager::SetDefaults()
     m_invertCamera = true;
     m_gamepadVibration = true;
     m_phoneVibration = false;
+    m_dirty = false;
 }
 
 void AndroidConfigurationManager::Initialize()
@@ -115,6 +117,19 @@ void AndroidConfigurationManager::Save()
     this->EnsureDirectory();
     this->WriteConfigurationFile();
     this->WriteVersionFile();
+    m_dirty=false;
+#endif
+}
+
+void AndroidConfigurationManager::SaveIfDirty()
+{
+#if defined(RAD_ANDROID)
+    if( !m_dirty )
+    {
+        return;
+    }
+
+    this->Save();
 #endif
 }
 
@@ -135,12 +150,24 @@ bool AndroidConfigurationManager::IsPhoneVibrationEnabled() const
 
 void AndroidConfigurationManager::SetInvertCameraEnabled( bool enabled )
 {
+    if( m_invertCamera == enabled )
+    {
+        return;
+    }
+
     m_invertCamera = enabled;
+    m_dirty = true;
 }
 
 void AndroidConfigurationManager::SetGamepadVibrationEnabled( bool enabled )
 {
+    if( m_gamepadVibration == enabled )
+    {
+        return;
+    }
+
     m_gamepadVibration = enabled;
+    m_dirty = true;
 }
 
 void AndroidConfigurationManager::SetPhoneVibrationEnabled( bool enabled )

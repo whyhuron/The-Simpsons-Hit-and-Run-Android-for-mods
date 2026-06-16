@@ -9,6 +9,7 @@ public:
     void Initialize();
     void Reload();
     void Save();
+    void SaveIfDirty();
 
     bool IsInvertCameraEnabled() const;
     bool IsGamepadVibrationEnabled() const;
@@ -30,6 +31,7 @@ private:
     int  LoadVersionFile();
     void WriteConfigurationFile();
     void WriteVersionFile();
+    
 
     bool ParseBool( const char* value, bool defaultValue ) const;
     void TrimLine( char* text ) const;
@@ -42,6 +44,8 @@ private:
     bool m_invertCamera;
     bool m_gamepadVibration;
     bool m_phoneVibration;
+    bool m_dirty;
+    
 
 #if defined(RAD_ANDROID)
     char m_directoryPath[ 512 ];

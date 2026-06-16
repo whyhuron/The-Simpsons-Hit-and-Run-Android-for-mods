@@ -58,7 +58,47 @@ protected:
 
 private:
     void UpdateCameraSelections();
+    
+    enum ePauseSettingsMenuItem
+    {
+        MENU_ITEM_CAMERA,
+        MENU_ITEM_JUMP_CAMERAS,
+    #if !defined(RAD_PC) //&& !defined(RAD_ANDROID)// he encontrado que como estamos usando en android los assets de pc, pues claro no encontramos esta opcion es lógico
+        MENU_ITEM_INVERT_CAM_CONTROL,
+    #endif
+        MENU_ITEM_INTERSECT_NAV_SYSTEM,
+        MENU_ITEM_RADAR,
+    #if !defined(RAD_PC) //&& !defined(RAD_ANDROID) // temporalmente desactivado la opcion del menu vibracion en android
+        MENU_ITEM_VIBRATION,
+    #endif
+        #if !defined(RAD_ANDROID)
+        MENU_ITEM_TUTORIAL,
+        #endif
 
+        NUM_PAUSE_SETTINGS_MENU_ITEMS
+    };
+
+   #if defined(RAD_ANDROID)
+    bool mHasInvertCamControl=false;
+    bool mHasGamepadVibration=false;
+
+    int mMenuItemToGuiMenuIndex[ NUM_PAUSE_SETTINGS_MENU_ITEMS ];
+    int mGuiMenuIndexToMenuItem[ NUM_PAUSE_SETTINGS_MENU_ITEMS ];
+    int mNumActiveMenuItems=0;
+
+    bool AddPauseSettingsMenuItemIfAvailable
+    (
+        Scrooby::Page* pPage,
+        const char* item,
+        int logicalMenuItem
+    );
+
+    bool IsAndroidOptionalMenuItem( int logicalMenuItem ) const;
+    bool HasMenuItem( int logicalMenuItem ) const;
+
+    int GetGuiMenuIndexFromMenuItem( int logicalMenuItem ) const;
+    int GetMenuItemFromGuiMenuIndex( int guiMenuIndex ) const;
+#endif
     CGuiMenu* m_pMenu;
 
     enum eCameraSelectionMode
@@ -70,6 +110,8 @@ private:
 
         NUM_CAMERA_SELECTION_MODES
     };
+
+    
 
     eCameraSelectionMode m_currentCameraSelectionMode;
 
