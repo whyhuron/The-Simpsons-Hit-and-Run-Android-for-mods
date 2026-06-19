@@ -835,6 +835,11 @@ void CGuiScreenPauseSettings::InitOutro()
                 ( m_pMenu->GetSelectionValue( vibrationMenuIndex ) == 1 );
 
             GetAndroidConfigurationManager()->SetGamepadVibrationEnabled( isSettingOn );
+            // FIX BUG:
+            //muy importante esta linea de abajo para que cuando el juego arranque
+            // con Simpsons_configuration.txt en false para vibracion poder activarla in-game 
+            // usando el menuSettings extended de la versión de consolas, contenido en el ingame.p3d
+             GetInputManager()->SetRumbleEnabled( isSettingOn );
         }
     }
 #else
