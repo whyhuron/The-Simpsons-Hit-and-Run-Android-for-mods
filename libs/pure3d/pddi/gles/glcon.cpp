@@ -304,6 +304,12 @@ pglContext::pglContext(pglDevice* dev, pglDisplay* disp) : pddiBaseContext((pddi
     defaultShader = new pglMat(this);
     defaultShader->AddRef();
     SetShaderProgram(colorProgram);
+
+    // gamma a 1.0 en los 3 shaders (sin corrección)
+    // se actualizará cuando el juego llame a SetGamma
+    colorProgram->SetGamma(1.0f, 1.0f, 1.0f);
+    textureProgram->SetGamma(1.0f, 1.0f, 1.0f);
+    alphaTestProgram->SetGamma(1.0f, 1.0f, 1.0f);
 }
 
 pglContext::~pglContext()
@@ -1199,4 +1205,22 @@ void pglContext::SetTextureEnvironment(const pglTextureEnv* texEnv)
     else
         SetShaderProgram(colorProgram);
     currentProgram->SetTextureEnvironment(texEnv);
+}
+void pglContext::SetGammaUniform(float r, float g, float b)
+{
+    // activamos cada programa y seteamos el uniform gamma
+    // hay que activar el programa antes de poder setear su uniform
+
+    colorProgram->UseProgram();
+    colorProgram->SetGamma(r, g, b);
+
+    textureProgram->UseProgram();
+    textureProgram->SetGamma(r, g, b);
+
+    alphaTestProgram->UseProgram();
+    alphaTestProgram->SetGamma(r, g, b);
+
+    // restauramos el programa que estaba activo antes
+    if(currentProgram)
+        currentProgram->UseProgram();
 }
