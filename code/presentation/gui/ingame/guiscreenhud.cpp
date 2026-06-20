@@ -68,6 +68,9 @@
 #include <Screen.h>
 #include <Sprite.h>
 
+#ifdef RAD_ANDROID
+#include <input/touch/touchinputmodemanager.h>
+#endif
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
@@ -95,6 +98,11 @@ const unsigned int MIN_AVATAR_OFF_ROAD_TIME = 0; // in msec
 
 const unsigned int MESSAGE_DISPLAY_TIME = 3000; // in msec
 const unsigned int MESSAGE_TRANSITION_TIME = 200; // in msec
+
+#ifdef RAD_ANDROID
+const int ANDROID_TOUCH_HUD_MAP_OFFSET_X=100;
+const int ANDROID_TOUCH_HUD_MAP_OFFSET_Y=290;
+#endif
 
 Scrooby::Sprite* CGuiScreenHud::s_numCoinsDisplay = NULL;
 
@@ -207,6 +215,11 @@ MEMTRACK_PUSH_GROUP( "CGUIScreenHud" );
     memset( m_hnrSectors, 0, sizeof( m_hnrSectors ) );
 
     int i = 0;
+
+    #ifdef RAD_ANDROID
+    m_androidHudMapLayoutInitialized = false;
+    m_androidHudMapTouchLayoutActive = false;
+    #endif
 /*
     bool enableFadeIn = (GetGameFlow()->GetCurrentContext() == CONTEXT_LOADING_GAMEPLAY );
     this->SetFadingEnabled( enableFadeIn );
@@ -339,6 +352,10 @@ MEMTRACK_PUSH_GROUP( "CGUIScreenHud" );
     //
     m_overlays[ HUD_MAP ]->ResetTransformation();
     m_overlays[ HUD_MAP ]->ScaleAboutCenter( RADAR_SCALE );
+
+    #ifdef RAD_ANDROID
+    ApplyAndroidHudMapLayout();
+    #endif
 
     Scrooby::Group* pGroupHNR = pGroup->GetGroup( "HitNRunMeter" );
     if( pGroupHNR != NULL )
@@ -745,6 +762,9 @@ void CGuiScreenHud::HandleMessage
 //===========================================================================
 void CGuiScreenHud::Update( unsigned int elapsedTime )
 {
+    #ifdef RAD_ANDROID
+    ApplyAndroidHudMapLayout();
+    #endif
     if( m_state == GUI_WINDOW_STATE_RUNNING )
     {
         if( m_elapsedFgdFadeInTime != -1.0f )
@@ -2053,20 +2073,25 @@ CGuiScreenHud::UpdateHudMapPosition( unsigned int elapsedTime )
         }
     }
 }
+#endif
 
+#if defined(SRR2_MOVABLE_HUD_MAP) || defined(RAD_ANDROID)
 void
 CGuiScreenHud::MoveHudMap( int x, int y )
 {
     rAssert( m_hudMap[ 0 ] );
 
-    // clamp HUD map within screen boundaries
+#ifndef RAD_ANDROID
+    // Original desktop/debug behaviour:
+    // clamp HUD map within screen boundaries.
     //
     int mapPosX = 0;
     int mapPosY = 0;
     int mapWidth = 0;
     int mapHeight = 0;
-    m_hudMap[ 0 ]->GetPure3dObject()->GetOriginPosition( mapPosX, mapPosY );
-    m_hudMap[ 0 ]->GetPure3dObject()->GetBoundingBoxSize( mapWidth, mapHeight );
+
+    m_hudMap[ 0 ]->GetMap()->GetOriginPosition( mapPosX, mapPosY );
+    m_hudMap[ 0 ]->GetMap()->GetBoundingBoxSize( mapWidth, mapHeight );
 
     if( (mapPosX + x) < 0 ||
         (mapPosX + x) > (static_cast<int>( Scrooby::App::GetInstance()->GetScreenWidth() ) - mapWidth) )
@@ -2079,8 +2104,11 @@ CGuiScreenHud::MoveHudMap( int x, int y )
     {
         y = 0;
     }
+#endif
 
-    // move the HUD map
+    // Move the HUD map.
+    // On Android we intentionally bypass the clamp because the touch HUD map
+    // can live outside the original 4:3 Scrooby logical bounds.
     //
     m_hudMap[ 0 ]->Translate( x, y );
 }
@@ -2093,6 +2121,96 @@ void CGuiScreenHud::AbortFade()
     m_screenCover->SetAlpha( 0.0f );
     Update( 0 );
 }
+
+
+#ifdef RAD_ANDROID
+
+void CGuiScreenHud::ApplyAndroidHudMapLayout()
+{
+    rAssert( m_overlays[ HUD_MAP ] != NULL );
+
+    const bool useTouchHudMapLayout =
+            TouchInputModeManager::GetInstance().IsTouchMode();
+
+    if( m_androidHudMapLayoutInitialized &&
+        m_androidHudMapTouchLayoutActive == useTouchHudMapLayout )
+    {
+        return;
+    }
+
+    const bool wasInitialized = m_androidHudMapLayoutInitialized;
+    const bool wasTouchLayout = m_androidHudMapTouchLayoutActive;
+
+    m_androidHudMapLayoutInitialized = true;
+    m_androidHudMapTouchLayoutActive = useTouchHudMapLayout;
+
+    const int offsetX = ANDROID_TOUCH_HUD_MAP_OFFSET_X;
+    const int offsetY = ANDROID_TOUCH_HUD_MAP_OFFSET_Y;
+
+    if( !wasInitialized )
+    {
+        m_overlays[ HUD_MAP ]->ResetTransformation();
+        m_overlays[ HUD_MAP ]->ScaleAboutCenter( RADAR_SCALE );
+
+        if( useTouchHudMapLayout )
+        {
+            // Move the 2D HUD map group.
+            m_overlays[ HUD_MAP ]->Translate( offsetX, offsetY );
+
+            if( m_hudMap[ 0 ] != NULL )
+            {
+                // Tell CHudMap that the parent 2D group is translated.
+                // Icons need to compensate for this parent transform.
+                m_hudMap[ 0 ]->SetAndroidHudMapOverlayOffset( offsetX, offsetY );
+            }
+
+            // Move Map0/Hole0 and update CHudMap original position.
+            this->MoveHudMap( offsetX, offsetY );
+        }
+        else
+        {
+            if( m_hudMap[ 0 ] != NULL )
+            {
+                m_hudMap[ 0 ]->SetAndroidHudMapOverlayOffset( 0, 0 );
+            }
+        }
+
+        return;
+    }
+
+    // Runtime transition: gamepad -> touch.
+    //
+    if( !wasTouchLayout && useTouchHudMapLayout )
+    {
+        m_overlays[ HUD_MAP ]->Translate( offsetX, offsetY );
+
+        if( m_hudMap[ 0 ] != NULL )
+        {
+            m_hudMap[ 0 ]->SetAndroidHudMapOverlayOffset( offsetX, offsetY );
+        }
+
+        this->MoveHudMap( offsetX, offsetY );
+
+        return;
+    }
+
+    // Runtime transition: touch -> gamepad.
+    //
+    if( wasTouchLayout && !useTouchHudMapLayout )
+    {
+        m_overlays[ HUD_MAP ]->Translate( -offsetX, -offsetY );
+
+        if( m_hudMap[ 0 ] != NULL )
+        {
+            m_hudMap[ 0 ]->SetAndroidHudMapOverlayOffset( 0, 0 );
+        }
+
+        this->MoveHudMap( -offsetX, -offsetY );
+
+        return;
+    }
+}
+#endif // RAD_ANDROID 
 
 #ifdef DEBUGWATCH
 const char* CGuiScreenHud::GetWatcherName() const
