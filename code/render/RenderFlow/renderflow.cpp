@@ -248,7 +248,7 @@ END_PROFILE("RenderFlow");
 
 }
 
-#ifdef RAD_WIN32
+#if defined(RAD_WIN32) || defined(RAD_ANDROID)
 //==============================================================================
 // RenderFlow::SetGamma
 //==============================================================================
@@ -294,7 +294,7 @@ float RenderFlow::GetGamma() const
     return mGamma;
 }
 
-#endif //rad_win32
+#endif //rad_win32 || rad_android
 
 
 //******************************************************************************
@@ -327,7 +327,7 @@ RenderFlow::RenderFlow() :
 
     mpDebugXBoxGamma = NULL;
 #endif
-#ifdef RAD_WIN32
+#if defined(RAD_WIN32) || defined(RAD_ANDROID)
     mpGammaControl = NULL;
     mGamma = 0.0f;
 #endif
