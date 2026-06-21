@@ -8,7 +8,124 @@
 
 # 🇪🇸 Español
 
-## 🚀 Versión 0.87.2
+##  Versión 0.87.4
+
+La versión **0.87.4** es una actualización centrada en mejorar la experiencia de juego en Android, especialmente para los usuarios que juegan con **controles táctiles**, y en seguir puliendo la convivencia entre controles táctiles, mando externo y opciones de configuración dentro del juego.
+
+Esta actualización incluye cambios importantes relacionados con el **minimapa**, la configuración de vibración del mando, la inversión de cámara y varias optimizaciones internas del sistema táctil/gamepad.
+
+---
+
+## 🗺️ Minimapa desplazado al usar controles táctiles
+
+Una modificación **super importante** de esta actualización es la **implementación de un sistema para mover el minimapa del juego** cuando el usuario juega con controles táctiles.
+
+En versiones anteriores, la posición original del minimapa podía interferir visualmente con algunos iconos de los controles táctiles, haciendo que ciertas zonas de la pantalla se sintieran más cargadas o menos cómodas durante la partida.
+
+En la versión **0.87.4**, el minimapa se desplaza hacia una posición superior derecha de la pantalla cuando se utilizan controles táctiles, ofreciendo una mejor experiencia visual y evitando que los iconos táctiles interfieran con el minimapa.
+
+---
+
+## ⚙️ Opciones de vibración e inversión de cámara dentro del juego
+
+En esta versión se ha añadido la posibilidad de activar o desactivar dentro del propio juego algunas opciones importantes del port:
+
+* Activar o desactivar la **vibración del mando**.
+* Activar o desactivar la opción de **invertir la cámara**.
+
+Para conseguir esto, el usuario debe tener el archivo
+```txt
+ Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d mofidicado
+```
+En concreto la pantalla del menu de **Settings** de la versión de consolas, ya que la versión original de PC de 2003 no incluía estas dos opciones dentro de su menú de configuración.
+
+Esto permite que el usuario pueda modificar estos ajustes de una forma más cómoda, sin depender únicamente de cambios manuales antes de iniciar el juego.
+
+En caso de que el usuario no tenga aplicada esta modificación mencionada del menu settings del archivo ingame.p3d podrá realizar el cambio antes de arrancar el juego modificando este archivo.
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+---
+
+## 🎮 Respeto de la posición original del minimapa al usar mando externo
+
+El sistema ha sido diseñado para respetar al máximo la experiencia original del juego de 2003.
+
+Por este motivo, si el usuario conecta un **mando externo**, el minimapa vuelve a su posición original.
+
+Esto significa que el minimapa solo se desplaza cuando realmente es necesario, es decir, cuando el jugador está usando controles táctiles.
+
+De esta forma, la versión Android adapta la interfaz cuando se juega con pantalla táctil, pero conserva la posición original del HUD al completo cuando se juega con mando externo.
+
+---
+
+## 📱 Ajuste del botón Start táctil
+
+El botón **Start táctil** ha sido movido a la zona izquierda de la pantalla.
+
+Gracias a este ajuste, la distribución de los controles táctiles queda mejor integrada con el nuevo layout del minimapa.
+
+---
+
+
+
+## 🎮 Optimización de los controles táctiles
+
+Esta versión incluye optimizaciones internas en el sistema de controles táctiles.
+
+Aunque probablemente el usuario final no perciba de forma directa la mayoría de estas optimizaciones, son importantes para mantener una arquitectura más limpia, más estable y más eficiente.
+---
+
+## 🎮 Optimización del sistema táctil/gamepad
+
+También se ha optimizado el sistema encargado de gestionar la convivencia entre **controles táctiles** y **mando externo**.
+
+
+Cuando el usuario juega con mando, el sistema puede evitar trabajo innecesario relacionado con los controles táctiles. Esto ayuda a que la lógica interna sea más eficiente y evita que ambos sistemas compitan entre sí.
+
+---
+
+## 🔌 Mejoras al conectar y desconectar mando in-game
+
+Se ha optimizado el sistema de conexión y desconexión de mandos externos dentro del juego.
+
+Esta mejora afecta especialmente a los casos en los que el usuario conecta o desconecta un mando mientras ya está dentro de la partida.
+
+En esta versión, el paso de **modo gamepad** a **modo controles táctiles** al desconectar el mando es más rápido que en versiones anteriores.
+
+Esto permite que el jugador pueda volver a usar los controles táctiles con menos espera después de desconectar el mando externo.
+
+---
+
+## ⚡ Mejoras pensadas para dispositivos más limitados
+
+Cabe mencionar que estas optimizaciones, salvo la mejora relacionada con la rapidez al desconectar el mando y volver al modo táctil, probablemente no sean muy visibles para el usuario final en dispositivos potentes.
+
+Sin embargo, son cambios importantes para seguir puliendo el port poco a poco.
+
+La idea es que pequeñas optimizaciones acumuladas puedan acabar beneficiando especialmente a dispositivos más limitados, como algunas **Smart TV**, teléfonos antiguos o dispositivos Android con menos potencia.
+
+Aunque cada mejora por separado pueda parecer pequeña, mantener el sistema cada vez más limpio, estable y eficiente ayuda a mejorar la calidad general del port a largo plazo.
+
+---
+
+## ✨ Resumen de la versión 0.87.4
+
+* ✔ Añadida la posibilidad de activar o desactivar la vibración del mando desde el juego.
+* ✔ Añadida la posibilidad de activar o desactivar la inversión de cámara desde el juego.
+* ✔ **Minimapa desplazado** cuando se utilizan controles táctiles. [**Controles táctiles**](TOUCH_CONTROLS.md)
+* ✔ El minimapa vuelve a su posición original cuando se juega con mando externo.
+* ✔ Movido el botón **Start táctil** a la zona izquierda para no interferir con el minimapa.
+* ✔ Movido ligeramente a la derecha el botón de **freno** en vehículo.
+* ✔ Aumentado el tamaño del botón de **freno** en vehículo.
+* ✔ Optimizados los controles táctiles.
+* ✔ Optimizado el sistema táctil/gamepad cuando el usuario juega con mando externo.
+* ✔ Optimizado el sistema de conexión y desconexión de mando in-game.
+* ✔ Mayor rapidez al pasar de modo gamepad a modo controles táctiles al desconectar el mando dentro del juego.
+* ✔ Mejoras internas pensadas para seguir puliendo el rendimiento en dispositivos Android más limitados.
+
+##  Versión 0.87.2
 
 La versión **0.87.2** es una actualización centrada en mejorar la comodidad de los controles táctiles, añadir nuevas opciones de configuración y corregir algunos comportamientos no deseados detectados tras la versión 0.87.
 
@@ -90,7 +207,8 @@ La vibración configurable se mantiene únicamente para mandos compatibles media
 * Corregido el bug que provocaba vibración no deseada del teléfono en algunos dispositivos.
 * Corregido el bug de estar habilitado controles táctiles y mando externo cuando el mando externo era conectado antes de entrar al juego.
 
-## 🚀 Versión 0.87
+---
+##  Versión 0.87
 
 La versión **0.87** representa una de las actualizaciones más importantes del port de *The Simpsons: Hit & Run* para Android hasta la fecha.
 
@@ -139,7 +257,128 @@ La versión **0.87** es un paso enorme para hacer que el port sea mucho más có
 
 # 🇬🇧 English
 
-## 🚀 Version 0.87.2
+
+##  Version 0.87.4
+
+Version **0.87.4** is an update focused on improving the gameplay experience on Android, especially for users who play with **touch controls**, while continuing to polish the coexistence between touch controls, external gamepads and in-game configuration options.
+
+This update includes important changes related to the **minimap**, gamepad vibration settings, camera inversion and several internal optimizations to the touch/gamepad system.
+
+---
+
+## 🗺️ Minimap moved when using touch controls
+
+A **very important** modification in this update is the **implementation of a system to move the in-game minimap** when the user plays with touch controls.
+
+In previous versions, the original position of the minimap could visually interfere with some touch control icons, making certain areas of the screen feel more crowded or less comfortable during gameplay.
+
+In version **0.87.4**, the minimap is moved to the upper-right area of the screen when touch controls are used, providing a better visual experience and preventing the touch icons from interfering with the minimap.
+
+---
+
+## ⚙️ Gamepad vibration and camera inversion options inside the game
+
+In this version, the ability to enable or disable some important port options directly inside the game has been added:
+
+* Enable or disable **gamepad vibration**.
+* Enable or disable the option to **invert the camera**.
+
+To achieve this, the user must have the following file modified:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+More specifically, the **Settings** menu screen from the console version must be used, since the original 2003 PC version did not include these two options inside its configuration menu.
+
+This allows the user to modify these settings in a more convenient way, without relying only on manual changes before starting the game.
+
+If the user does not have this mentioned modification applied to the Settings menu inside the ingame.p3d file, the change can still be made before launching the game by modifying this file:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+---
+
+## 🎮 Respecting the original minimap position when using an external gamepad
+
+The system has been designed to respect the original 2003 game experience as much as possible.
+
+For this reason, if the user connects an **external gamepad**, the minimap returns to its original position.
+
+This means that the minimap is only moved when it is actually necessary, that is, when the player is using touch controls.
+
+In this way, the Android version adapts the interface when playing with the touchscreen, but preserves the full original HUD position when playing with an external gamepad.
+
+---
+
+## 📱 Touch Start button adjustment
+
+The **touch Start** button has been moved to the left side of the screen.
+
+Thanks to this adjustment, the touch control layout is better integrated with the new minimap layout.
+
+---
+
+## 🎮 Touch control optimization
+
+This version includes internal optimizations to the touch control system.
+
+Although the final user will probably not directly notice most of these optimizations, they are important for keeping the architecture cleaner, more stable and more efficient.
+
+---
+
+## 🎮 Touch/gamepad system optimization
+
+The system responsible for managing the coexistence between **touch controls** and an **external gamepad** has also been optimized.
+
+When the user plays with a gamepad, the system can avoid unnecessary work related to touch controls. This helps make the internal logic more efficient and prevents both systems from competing with each other.
+
+---
+
+## 🔌 Improvements when connecting and disconnecting a gamepad in-game
+
+The system for connecting and disconnecting external gamepads inside the game has been optimized.
+
+This improvement especially affects cases where the user connects or disconnects a gamepad while already inside the game.
+
+In this version, switching from **gamepad mode** to **touch controls mode** after disconnecting the gamepad is faster than in previous versions.
+
+This allows the player to use the touch controls again with less waiting time after disconnecting the external gamepad.
+
+---
+
+## ⚡ Improvements designed for more limited devices
+
+It is worth mentioning that these optimizations, except for the improvement related to faster switching back to touch mode after disconnecting the gamepad, will probably not be very noticeable for the final user on powerful devices.
+
+However, they are important changes to keep polishing the port little by little.
+
+The idea is that accumulated small optimizations may eventually benefit more limited devices, such as some **Smart TVs**, older phones or less powerful Android devices.
+
+Even if each improvement may seem small on its own, keeping the system cleaner, more stable and more efficient helps improve the overall quality of the port in the long term.
+
+---
+
+## ✨ Version 0.87.4 summary
+
+* ✔ Added the ability to enable or disable gamepad vibration from inside the game.
+* ✔ Added the ability to enable or disable camera inversion from inside the game.
+* ✔ **Minimap moved** when using touch controls. [**Touch controls**](TOUCH_CONTROLS.md)
+* ✔ The minimap returns to its original position when playing with an external gamepad.
+* ✔ Moved the **touch Start** button to the left side to avoid interfering with the minimap.
+* ✔ Moved the **brake** button in vehicles slightly to the right.
+* ✔ Increased the size of the **brake** button in vehicles.
+* ✔ Optimized touch controls.
+* ✔ Optimized the touch/gamepad system when the user plays with an external gamepad.
+* ✔ Optimized the in-game gamepad connection and disconnection system.
+* ✔ Faster switching from gamepad mode to touch controls mode after disconnecting the gamepad inside the game.
+* ✔ Internal improvements designed to continue polishing performance on more limited Android devices.
+
+
+
+##  Version 0.87.2
 
 Version **0.87.2** is an update focused on improving the comfort of the touch controls, adding new configuration options, and fixing some unwanted behaviors detected after version 0.87.
 
@@ -222,7 +461,7 @@ Configurable vibration remains available only for compatible gamepads through th
 
 
 
-## 🚀 Version 0.87
+##  Version 0.87
 
 Version **0.87** represents one of the most important updates so far for the Android port of *The Simpsons: Hit & Run*.
 
@@ -271,7 +510,127 @@ Version **0.87** is a huge step toward making the port feel much more comfortabl
 
 # 🇫🇷 Français
 
-## 🚀 Version 0.87.2
+
+##  Version 0.87.4
+
+La version **0.87.4** est une mise à jour centrée sur l’amélioration de l’expérience de jeu sur Android, en particulier pour les utilisateurs qui jouent avec les **commandes tactiles**, tout en continuant à améliorer la coexistence entre les commandes tactiles, les manettes externes et les options de configuration dans le jeu.
+
+Cette mise à jour inclut des changements importants liés à la **mini-carte**, à la configuration de la vibration de la manette, à l’inversion de la caméra et à plusieurs optimisations internes du système tactile/manette.
+
+---
+
+## 🗺️ Mini-carte déplacée lors de l’utilisation des commandes tactiles
+
+Une modification **très importante** de cette mise à jour est l’**implémentation d’un système permettant de déplacer la mini-carte du jeu** lorsque l’utilisateur joue avec les commandes tactiles.
+
+Dans les versions précédentes, la position d’origine de la mini-carte pouvait interférer visuellement avec certaines icônes des commandes tactiles, ce qui rendait certaines zones de l’écran plus chargées ou moins confortables pendant la partie.
+
+Dans la version **0.87.4**, la mini-carte est déplacée vers la zone supérieure droite de l’écran lorsque les commandes tactiles sont utilisées, offrant ainsi une meilleure expérience visuelle et empêchant les icônes tactiles d’interférer avec la mini-carte.
+
+---
+
+## ⚙️ Options de vibration de la manette et d’inversion de la caméra dans le jeu
+
+Dans cette version, la possibilité d’activer ou de désactiver directement dans le jeu certaines options importantes du port a été ajoutée :
+
+* Activer ou désactiver la **vibration de la manette**.
+* Activer ou désactiver l’option permettant d’**inverser la caméra**.
+
+Pour cela, l’utilisateur doit disposer du fichier suivant modifié :
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+Plus précisément, il faut utiliser l’écran du menu **Settings** de la version console, car la version PC originale de 2003 n’incluait pas ces deux options dans son menu de configuration.
+
+Cela permet à l’utilisateur de modifier ces paramètres de manière plus confortable, sans dépendre uniquement de modifications manuelles avant de lancer le jeu.
+
+Si l’utilisateur n’a pas appliqué cette modification mentionnée du menu Settings dans le fichier ingame.p3d, le changement peut toujours être effectué avant de lancer le jeu en modifiant ce fichier :
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+---
+
+## 🎮 Respect de la position originale de la mini-carte lors de l’utilisation d’une manette externe
+
+Le système a été conçu pour respecter autant que possible l’expérience originale du jeu de 2003.
+
+Pour cette raison, si l’utilisateur connecte une **manette externe**, la mini-carte revient à sa position d’origine.
+
+Cela signifie que la mini-carte n’est déplacée que lorsque cela est réellement nécessaire, c’est-à-dire lorsque le joueur utilise les commandes tactiles.
+
+Ainsi, la version Android adapte l’interface lorsque l’on joue avec l’écran tactile, mais conserve la position complète du HUD original lorsque l’on joue avec une manette externe.
+
+---
+
+## 📱 Ajustement du bouton Start tactile
+
+Le bouton **Start tactile** a été déplacé vers la partie gauche de l’écran.
+
+Grâce à cet ajustement, la disposition des commandes tactiles s’intègre mieux au nouveau layout de la mini-carte.
+
+---
+
+## 🎮 Optimisation des commandes tactiles
+
+Cette version inclut des optimisations internes du système de commandes tactiles.
+
+Même si l’utilisateur final ne remarquera probablement pas directement la plupart de ces optimisations, elles sont importantes pour maintenir une architecture plus propre, plus stable et plus efficace.
+
+---
+
+## 🎮 Optimisation du système tactile/manette
+
+Le système chargé de gérer la coexistence entre les **commandes tactiles** et une **manette externe** a également été optimisé.
+
+Lorsque l’utilisateur joue avec une manette, le système peut éviter du travail inutile lié aux commandes tactiles. Cela permet de rendre la logique interne plus efficace et d’éviter que les deux systèmes entrent en concurrence.
+
+---
+
+## 🔌 Améliorations lors de la connexion et de la déconnexion d’une manette en jeu
+
+Le système de connexion et de déconnexion des manettes externes dans le jeu a été optimisé.
+
+Cette amélioration concerne surtout les cas où l’utilisateur connecte ou déconnecte une manette alors qu’il est déjà dans la partie.
+
+Dans cette version, le passage du **mode manette** au **mode commandes tactiles** après la déconnexion de la manette est plus rapide que dans les versions précédentes.
+
+Cela permet au joueur de réutiliser les commandes tactiles avec moins d’attente après avoir déconnecté la manette externe.
+
+---
+
+## ⚡ Améliorations pensées pour les appareils plus limités
+
+Il convient de mentionner que ces optimisations, à l’exception de l’amélioration liée au retour plus rapide au mode tactile après la déconnexion de la manette, ne seront probablement pas très visibles pour l’utilisateur final sur des appareils puissants.
+
+Cependant, ce sont des changements importants pour continuer à améliorer le port petit à petit.
+
+L’idée est que l’accumulation de petites optimisations puisse finir par bénéficier particulièrement aux appareils plus limités, comme certaines **Smart TV**, les téléphones anciens ou les appareils Android moins puissants.
+
+Même si chaque amélioration peut sembler petite séparément, maintenir un système de plus en plus propre, stable et efficace aide à améliorer la qualité générale du port sur le long terme.
+
+---
+
+## ✨ Résumé de la version 0.87.4
+
+* ✔ Ajout de la possibilité d’activer ou de désactiver la vibration de la manette depuis le jeu.
+* ✔ Ajout de la possibilité d’activer ou de désactiver l’inversion de la caméra depuis le jeu.
+* ✔ **Mini-carte déplacée** lors de l’utilisation des commandes tactiles. [**Commandes tactiles**](TOUCH_CONTROLS.md)
+* ✔ La mini-carte revient à sa position d’origine lorsque l’on joue avec une manette externe.
+* ✔ Déplacement du bouton **Start tactile** vers la gauche afin de ne pas interférer avec la mini-carte.
+* ✔ Déplacement léger vers la droite du bouton de **frein** en véhicule.
+* ✔ Augmentation de la taille du bouton de **frein** en véhicule.
+* ✔ Optimisation des commandes tactiles.
+* ✔ Optimisation du système tactile/manette lorsque l’utilisateur joue avec une manette externe.
+* ✔ Optimisation du système de connexion et de déconnexion de manette en jeu.
+* ✔ Passage plus rapide du mode manette au mode commandes tactiles après la déconnexion de la manette dans le jeu.
+* ✔ Améliorations internes pensées pour continuer à améliorer les performances sur les appareils Android plus limités.
+
+
+##  Version 0.87.2
 
 La version **0.87.2** est une mise à jour centrée sur l’amélioration du confort des contrôles tactiles, l’ajout de nouvelles options de configuration et la correction de certains comportements indésirables détectés après la version 0.87.
 
@@ -354,7 +713,7 @@ La vibration configurable reste disponible uniquement pour les manettes compatib
 
 
 
-## 🚀 Version 0.87
+##  Version 0.87
 
 La version **0.87** représente l’une des mises à jour les plus importantes à ce jour pour le port Android de *The Simpsons: Hit & Run*.
 
@@ -403,7 +762,126 @@ La version **0.87** est une énorme avancée pour rendre le port beaucoup plus c
 
 # 🇩🇪 Deutsch
 
-## 🚀 Version 0.87.2
+##  Version 0.87.4
+
+Version **0.87.4** ist ein Update, das sich auf die Verbesserung des Spielerlebnisses auf Android konzentriert, insbesondere für Nutzer, die mit **Touch-Steuerung** spielen, und gleichzeitig die Zusammenarbeit zwischen Touch-Steuerung, externem Gamepad und Konfigurationsoptionen im Spiel weiter verbessert.
+
+Dieses Update enthält wichtige Änderungen an der **Minikarte**, den Vibrationseinstellungen des Gamepads, der Kamerainvertierung sowie mehrere interne Optimierungen des Touch-/Gamepad-Systems.
+
+---
+
+## 🗺️ Verschobene Minikarte bei Verwendung der Touch-Steuerung
+
+Eine **sehr wichtige** Änderung in diesem Update ist die **Implementierung eines Systems zum Verschieben der Minikarte im Spiel**, wenn der Nutzer mit Touch-Steuerung spielt.
+
+In früheren Versionen konnte die ursprüngliche Position der Minikarte visuell mit einigen Symbolen der Touch-Steuerung kollidieren, wodurch bestimmte Bereiche des Bildschirms während des Spielens überladener oder weniger komfortabel wirkten.
+
+In Version **0.87.4** wird die Minikarte bei Verwendung der Touch-Steuerung in den oberen rechten Bereich des Bildschirms verschoben. Dadurch wird eine bessere visuelle Erfahrung geboten und verhindert, dass die Touch-Symbole die Minikarte überlagern.
+
+---
+
+## ⚙️ Optionen für Gamepad-Vibration und Kamerainvertierung im Spiel
+
+In dieser Version wurde die Möglichkeit hinzugefügt, einige wichtige Optionen des Ports direkt im Spiel zu aktivieren oder zu deaktivieren:
+
+* **Gamepad-Vibration** aktivieren oder deaktivieren.
+* Die Option zum **Invertieren der Kamera** aktivieren oder deaktivieren.
+
+Dafür muss der Nutzer die folgende Datei modifiziert haben:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+Konkret muss der **Settings**-Menübildschirm der Konsolenversion verwendet werden, da die originale PC-Version von 2003 diese beiden Optionen nicht in ihrem Konfigurationsmenü enthielt.
+
+Dadurch kann der Nutzer diese Einstellungen komfortabler ändern, ohne ausschließlich auf manuelle Änderungen vor dem Start des Spiels angewiesen zu sein.
+
+Falls der Nutzer diese erwähnte Änderung am Settings-Menü in der Datei ingame.p3d nicht angewendet hat, kann die Änderung weiterhin vor dem Start des Spiels durch Bearbeiten dieser Datei vorgenommen werden:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+---
+
+## 🎮 Beibehaltung der originalen Minikartenposition bei Verwendung eines externen Gamepads
+
+Das System wurde so entwickelt, dass es das ursprüngliche Spielerlebnis von 2003 so weit wie möglich respektiert.
+
+Aus diesem Grund kehrt die Minikarte zu ihrer ursprünglichen Position zurück, wenn der Nutzer ein **externes Gamepad** anschließt.
+
+Das bedeutet, dass die Minikarte nur dann verschoben wird, wenn es wirklich notwendig ist, also wenn der Spieler die Touch-Steuerung verwendet.
+
+So passt die Android-Version die Benutzeroberfläche beim Spielen über den Touchscreen an, behält jedoch die vollständige ursprüngliche HUD-Position bei, wenn mit einem externen Gamepad gespielt wird.
+
+---
+
+## 📱 Anpassung der Touch-Start-Taste
+
+Die **Touch-Start**-Taste wurde auf die linke Seite des Bildschirms verschoben.
+
+Dank dieser Anpassung ist das Layout der Touch-Steuerung besser in das neue Layout der Minikarte integriert.
+
+---
+
+## 🎮 Optimierung der Touch-Steuerung
+
+Diese Version enthält interne Optimierungen am Touch-Steuerungssystem.
+
+Auch wenn der Endnutzer die meisten dieser Optimierungen wahrscheinlich nicht direkt bemerken wird, sind sie wichtig, um die Architektur sauberer, stabiler und effizienter zu halten.
+
+---
+
+## 🎮 Optimierung des Touch-/Gamepad-Systems
+
+Auch das System, das die Zusammenarbeit zwischen **Touch-Steuerung** und **externem Gamepad** verwaltet, wurde optimiert.
+
+Wenn der Nutzer mit einem Gamepad spielt, kann das System unnötige Arbeit im Zusammenhang mit der Touch-Steuerung vermeiden. Dadurch wird die interne Logik effizienter und es wird verhindert, dass beide Systeme miteinander konkurrieren.
+
+---
+
+## 🔌 Verbesserungen beim Verbinden und Trennen eines Gamepads im Spiel
+
+Das System zum Verbinden und Trennen externer Gamepads innerhalb des Spiels wurde optimiert.
+
+Diese Verbesserung betrifft besonders Fälle, in denen der Nutzer ein Gamepad verbindet oder trennt, während er sich bereits im Spiel befindet.
+
+In dieser Version erfolgt der Wechsel vom **Gamepad-Modus** zum **Touch-Steuerungsmodus** nach dem Trennen des Gamepads schneller als in früheren Versionen.
+
+Dadurch kann der Spieler die Touch-Steuerung nach dem Trennen des externen Gamepads mit weniger Wartezeit wieder verwenden.
+
+---
+
+## ⚡ Verbesserungen für leistungsschwächere Geräte
+
+Es ist erwähnenswert, dass diese Optimierungen, mit Ausnahme der Verbesserung des schnelleren Wechsels zurück in den Touch-Modus nach dem Trennen des Gamepads, für den Endnutzer auf leistungsstarken Geräten wahrscheinlich nicht sehr sichtbar sein werden.
+
+Dennoch sind es wichtige Änderungen, um den Port Schritt für Schritt weiter zu verbessern.
+
+Die Idee ist, dass sich viele kleine Optimierungen im Laufe der Zeit besonders für leistungsschwächere Geräte auszahlen können, zum Beispiel für einige **Smart TVs**, ältere Smartphones oder weniger leistungsstarke Android-Geräte.
+
+Auch wenn jede einzelne Verbesserung für sich genommen klein erscheinen mag, hilft ein immer saubereres, stabileres und effizienteres System dabei, die allgemeine Qualität des Ports langfristig zu verbessern.
+
+---
+
+## ✨ Zusammenfassung der Version 0.87.4
+
+* ✔ Möglichkeit hinzugefügt, die Gamepad-Vibration im Spiel zu aktivieren oder zu deaktivieren.
+* ✔ Möglichkeit hinzugefügt, die Kamerainvertierung im Spiel zu aktivieren oder zu deaktivieren.
+* ✔ **Minikarte verschoben** bei Verwendung der Touch-Steuerung. [**Touch-Steuerung**](TOUCH_CONTROLS.md)
+* ✔ Die Minikarte kehrt zu ihrer ursprünglichen Position zurück, wenn mit einem externen Gamepad gespielt wird.
+* ✔ Die **Touch-Start**-Taste wurde nach links verschoben, damit sie die Minikarte nicht stört.
+* ✔ Die **Bremstaste** im Fahrzeug wurde leicht nach rechts verschoben.
+* ✔ Die Größe der **Bremstaste** im Fahrzeug wurde erhöht.
+* ✔ Touch-Steuerung optimiert.
+* ✔ Touch-/Gamepad-System optimiert, wenn der Nutzer mit einem externen Gamepad spielt.
+* ✔ System zum Verbinden und Trennen von Gamepads im Spiel optimiert.
+* ✔ Schnellerer Wechsel vom Gamepad-Modus zum Touch-Steuerungsmodus nach dem Trennen des Gamepads im Spiel.
+* ✔ Interne Verbesserungen, um die Leistung auf leistungsschwächeren Android-Geräten weiter zu optimieren.
+
+
+##  Version 0.87.2
 
 Version **0.87.2** ist ein Update, das sich auf die Verbesserung des Komforts der Touch-Steuerung, das Hinzufügen neuer Konfigurationsoptionen und die Behebung einiger unerwünschter Verhaltensweisen konzentriert, die nach Version 0.87 festgestellt wurden.
 
@@ -486,7 +964,7 @@ Die konfigurierbare Vibration bleibt ausschließlich für kompatible Gamepads ü
 
 
 
-## 🚀 Version 0.87
+##  Version 0.87
 
 Version **0.87** ist eines der bisher wichtigsten Updates für den Android-Port von *The Simpsons: Hit & Run*.
 

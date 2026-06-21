@@ -60,7 +60,7 @@ Este proyecto continúa el trabajo de la comunidad con el objetivo de llevar **T
 
 ## Estado del proyecto
 
-Versión actual: **0.87**
+Versión actual: **0.87.4**
 
 * ✔ Controles táctiles nativos integrados con el juego y sus herramientas propias.
 * ✔ Modo historia jugable de principio a fin.
@@ -161,7 +161,7 @@ This project continues the community effort with the goal of bringing **The Simp
 
 ## Project Status
 
-Current version: **0.87**
+Current version: **0.87.4**
 
 * ✔ Native touch controls integrated with the game and its own tools.
 * ✔ Story mode playable from start to finish.
@@ -262,7 +262,7 @@ Ce projet poursuit le travail de la communauté avec l'objectif d'amener **The S
 
 ## État du projet
 
-Version actuelle : **0.87**
+Version actuelle : **0.87.4**
 
 * ✔ Commandes tactiles natives intégrées au jeu et à ses propres outils.
 * ✔ Mode histoire jouable du début à la fin.
@@ -363,7 +363,7 @@ Dieses Projekt führt die Arbeit der Community fort, mit dem Ziel, **The Simpson
 
 ## Projektstatus
 
-Aktuelle Version: **0.87**
+Aktuelle Version: **0.87.4**
 
 * ✔ Native Touch-Steuerung, die in das Spiel und die eigenen Tools integriert ist.
 * ✔ Story-Modus von Anfang bis Ende spielbar.

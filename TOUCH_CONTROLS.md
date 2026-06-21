@@ -18,6 +18,8 @@ El objetivo desde el principio era claro: no colocar una simple capa visual enci
 
 Por eso, los controles táctiles han sido integrados usando el propio sistema del juego y las herramientas originales que el motor utilizaba para dibujar elementos en pantalla. Esto permite conseguir una experiencia mucho más sólida, limpia y coherente, manteniendo el mejor rendimiento posible y una integración mucho más fiel con el funcionamiento interno del juego.
 
+En la actualizacion  **0.87.4** se ha desplazado el minimapa del juego para ofrecer una mejor experiencia al usuario que juega con controles táctiles, no interfiriendo ahora la posición de los iconos con el minimapa como ocurría en versiones anteriores
+
 ## ✨ Iconos diseñados manualmente
 
 Todos los iconos táctiles han sido diseñados por mí usando **GIMP**, cuidando que encajen visualmente con la estética del juego y que sean claros durante la partida.
@@ -100,6 +102,8 @@ This implementation was not easy, but it was absolutely worth it. It represents 
 From the beginning, the goal was clear: not to place a simple visual layer on top of the game, but to build a touch control system that respected the original engine, its internal architecture and the way the game handled input and rendering back in 2003.
 
 That is why the touch controls have been integrated using the game’s own systems and the original tools the engine used to draw elements on screen. This helps provide a much more solid, clean and coherent experience, while keeping the best possible performance and a much more faithful integration with the game’s internal behavior.
+
+In update **0.87.4**, the in-game minimap has been moved to provide a better experience for users playing with touch controls, preventing the position of the icons from interfering with the minimap as happened in previous versions.
 
 ## ✨ Manually designed icons
 
@@ -184,6 +188,8 @@ Dès le départ, l’objectif était clair : ne pas placer une simple couche vis
 
 C’est pourquoi les commandes tactiles ont été intégrées en utilisant les propres systèmes du jeu ainsi que les outils originaux que le moteur utilisait pour afficher les éléments à l’écran. Cela permet d’obtenir une expérience beaucoup plus solide, propre et cohérente, tout en conservant les meilleures performances possibles et une intégration beaucoup plus fidèle au fonctionnement interne du jeu.
 
+Dans la mise à jour **0.87.4**, la mini-carte du jeu a été déplacée afin d’offrir une meilleure expérience aux utilisateurs jouant avec les commandes tactiles, en évitant désormais que la position des icônes n’interfère avec la mini-carte comme c’était le cas dans les versions précédentes.
+
 ## ✨ Icônes conçues manuellement
 
 Toutes les icônes tactiles ont été conçues par moi avec **GIMP**, en veillant à ce qu’elles s’intègrent visuellement à l’esthétique du jeu tout en restant claires pendant la partie.
@@ -266,6 +272,8 @@ Diese Umsetzung war nicht einfach, aber sie hat sich absolut gelohnt. Mehr als *
 Von Anfang an war das Ziel klar: Es sollte nicht einfach nur eine visuelle Ebene über das Spiel gelegt werden. Stattdessen sollte ein Touch-Steuerungssystem entstehen, das die ursprüngliche Engine, ihre interne Architektur und die Art, wie das Spiel im Jahr 2003 Eingaben und Darstellung verwaltet hat, so weit wie möglich respektiert.
 
 Deshalb wurden die Touch-Steuerelemente mit den eigenen Systemen des Spiels und den originalen Werkzeugen integriert, die die Engine zum Zeichnen von Bildschirmelementen verwendet hat. Dadurch entsteht eine deutlich stabilere, sauberere und stimmigere Spielerfahrung, mit der bestmöglichen Performance und einer viel engeren Verbindung zur internen Logik des Spiels.
+
+Im Update **0.87.4** wurde die Minikarte des Spiels verschoben, um Nutzern, die mit Touch-Steuerung spielen, ein besseres Spielerlebnis zu bieten. Die Position der Symbole überlappt nun nicht mehr mit der Minikarte, wie es in früheren Versionen der Fall war.
 
 ## ✨ Manuell gestaltete Symbole
 

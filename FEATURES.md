@@ -20,6 +20,10 @@
 
 ---
 
+* ✔ **Minimapa desplazado**cuando utilizamos controles táctiles.[**Controles táctiles**](TOUCH_CONTROLS.md)
+
+---
+
 * ✔ **Los controles táctiles implementados son inteligentes** y se adaptan a los distintos contextos del jugador a pie.
 
 ---
@@ -110,6 +114,10 @@
 ---
 
 * ✔ **Touch controls perfectly integrated**, using the game’s own tools and therefore providing the best possible performance. [**Touch controls**](TOUCH_CONTROLS.md)
+
+---
+
+* ✔ **Minimap moved** when using touch controls. [**Touch controls**](TOUCH_CONTROLS.md)
 
 ---
 
@@ -206,6 +214,10 @@
 
 ---
 
+* ✔ **Mini-carte déplacée** lors de l’utilisation des commandes tactiles. [**Commandes tactiles**](TOUCH_CONTROLS.md)
+
+---
+
 * ✔ **Les commandes tactiles implémentées sont intelligentes** et s’adaptent aux différents contextes du joueur lorsqu’il est à pied.
 
 ---
@@ -296,6 +308,10 @@
 ---
 
 * ✔ **Touch-Steuerung perfekt integriert**, unter Verwendung der spieleigenen Werkzeuge und dadurch mit der bestmöglichen Leistung. [**Touch-Steuerung**](TOUCH_CONTROLS.md)
+
+---
+
+* ✔ **Minikarte verschoben** bei Verwendung der Touch-Steuerung. [**Touch-Steuerung**](TOUCH_CONTROLS.md)
 
 ---
 
