@@ -908,7 +908,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_CHARACTER_START,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_FE_SELECT,
-        TouchRect( 0.01f, 0.02f, 0.09f, 0.18f ), // originalmente arriba derecha TouchRect( 0.90f, 0.02f, 0.09f, 0.18f )
+        TouchRect( 0.015f, 0.02f, 0.09f, 0.18f ), // originalmente arriba derecha TouchRect( 0.90f, 0.02f, 0.09f, 0.18f )
         true,
         "CharacterStart"
     );
@@ -967,7 +967,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_START,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_FE_SELECT,
-        TouchRect( 0.01f, 0.02f, 0.09f, 0.18f ),
+        TouchRect( 0.015f, 0.02f, 0.09f, 0.18f ),
         true,
         "VehicleStart"
     );
@@ -1116,7 +1116,7 @@ void TouchHudSystem::InitializeDefaultControls()
     TOUCH_HUD_CONTROL_FRONTEND_START,
     TOUCH_PROFILE_FRONTEND,
     TOUCH_ACTION_FE_SELECT,
-    TouchRect( 0.01f, 0.02f, 0.09f, 0.18f ),
+    TouchRect( 0.015f, 0.02f, 0.09f, 0.18f ),
     true,
     "FrontendStart"
     );
