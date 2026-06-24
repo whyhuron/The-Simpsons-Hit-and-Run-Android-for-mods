@@ -384,6 +384,11 @@ void RenderManager::FlushDelList()
 //========================================================================
 void RenderManager::MunchDelList(unsigned us)
 {
+    // optimización evitamos llamar si no hay entidades pendientes
+    if (mEntityDeletionList.mUseSize == 0)
+    {
+        return;
+    }
     radTime64 start = radTimeGetMicroseconds64();
 
     while(mEntityDeletionList.mUseSize)
