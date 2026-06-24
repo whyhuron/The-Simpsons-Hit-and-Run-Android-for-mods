@@ -730,9 +730,22 @@ void TouchHudRenderer::RenderCinematicSkip()
     float w = normalizedW * screenWidth;
     float h = normalizedH * screenHeight;
 
+    const bool pressed =
+    TouchHudSystem::GetInstance().IsControlPressed(TOUCH_HUD_CONTROL_CINEMATIC_SKIP);
+
+    const float opacity = pressed ? mPressedOpacity : mOpacity;
+    
     BeginTouchHud2D();
 
-    sprite->DisplayAt( x, y, w, h );
+    RenderSpriteInPixelRect(
+        sprite,
+        x,
+        y,
+        w,
+        h,
+        opacity
+    );
+
 
     EndTouchHud2D();
 #endif
