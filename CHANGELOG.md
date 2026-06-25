@@ -8,6 +8,67 @@
 
 # 🇪🇸 Español
 
+## Versión 0.90 - Cinemáticas corregidas y 60 FPS estable
+
+La versión **0.90** es una actualización importante centrada en mejorar el rendimiento general y la fidelidad del port Android respecto al comportamiento original del juego.
+
+Esta versión introduce un nuevo sistema de limitación estable a **60 FPS**, corrige problemas visuales durante las cinemáticas y mejora el comportamiento del juego en varios apartados relacionados con la sincronización interna y la carga del mundo 3D.
+
+---
+
+## ⚡ Nuevo límite estable a 60 FPS
+
+Una de las mejoras principales de esta versión es la implementación de un límite de **60 FPS** mucho más estable y preciso.
+
+En versiones anteriores, debido a una pequeña imprecisión en el cálculo de los FPS, el juego podía ejecutarse aproximadamente a **62 FPS** en lugar de mantenerse exactamente en **60 FPS**.
+
+Aunque esta diferencia pudiera parecer pequeña, afectaba a varias partes internas del juego, ya que el motor original está muy ligado al ritmo de actualización consiguiendo de esta forma  una experiencia más estable y fiel al comportamiento del juego en plataformas originales.
+
+---
+
+## 🚀 Mejoras de rendimiento y estabilidad
+
+Gracias al nuevo sistema de limitación estable a **60 FPS**, esta versión también incluye mejoras importantes de rendimiento y estabilidad.
+
+Entre las mejoras conseguidas se encuentran:
+
+* ✔ La pantalla de carga al entrar al mundo 3D ahora es más rápida.
+* ✔ El juego mantiene un ritmo de ejecución más estable.
+* ✔ Se reducen pequeñas irregularidades provocadas por una tasa de FPS incorrecta.
+* ✔ El comportamiento interno del juego es más fiel a la versión original.
+* ✔ La física del juego se comporta de forma  correcta y estable.
+* ✔ Se reduce el exceso de brillo que estaba presente en versiones anteriores.
+
+---
+
+## 🎬 Cinemáticas corregidas
+
+En esta versión también se han corregido los problemas visuales relacionados con las cinemáticas.
+
+Anteriormente, algunas cinemáticas podían mostrar restos del frame anterior o provocar pequeños fallos visuales al comenzar la reproducción.
+
+En la versión **0.90**, el juego limpia correctamente el frame anterior antes de mostrar la cinemática, evitando que se arrastren imágenes previas en pantalla.
+
+Además, se han añadido barras negras laterales durante la reproducción, mejorando la presentación visual de las cinemáticas y evitando problemas de escalado o visualización en Android.
+
+Esta corrección se ha implementado de forma segura utilizando las propias herramientas gráficas del motor del juego.
+
+
+---
+
+## ✨ Resumen de la versión 0.90
+
+* ✔ Nuevo límite estable y preciso a **60 FPS**.
+* ✔ Corregido el problema por el que el juego podía ejecutarse aproximadamente a **62 FPS**.
+* ✔ Mejorada la estabilidad general del juego.
+* ✔ Mejoras de rendimiento relacionadas con la sincronización interna del motor.
+* ✔ La carga al mundo 3D ahora es más rápida.
+* ✔ Física del juego más fiel al comportamiento original.
+* ✔ Reducido el exceso de brillo presente en versiones anteriores.
+* ✔ Cinemáticas corregidas.
+* ✔ Limpieza correcta del frame anterior antes de reproducir una cinemática.
+* ✔ Añadidas barras negras laterales durante las cinemáticas.
+
 ##  Versión 0.87.4
 
 La versión **0.87.4** es una actualización centrada en mejorar la experiencia de juego en Android, especialmente para los usuarios que juegan con **controles táctiles**, y en seguir puliendo la convivencia entre controles táctiles, mando externo y opciones de configuración dentro del juego.
@@ -256,6 +317,67 @@ La versión **0.87** es un paso enorme para hacer que el port sea mucho más có
 ---
 
 # 🇬🇧 English
+
+## Version 0.90 — Fixed cutscenes and stable 60 FPS
+
+Version **0.90** is an important update focused on improving the overall performance and fidelity of the Android port compared to the original behavior of the game.
+
+This version introduces a new stable **60 FPS** limiting system, fixes visual issues during cutscenes, and improves the game’s behavior in several areas related to internal synchronization and 3D world loading.
+
+---
+
+## ⚡ New stable 60 FPS limit
+
+One of the main improvements in this version is the implementation of a much more stable and precise **60 FPS** limit.
+
+In previous versions, due to a small inaccuracy in the FPS calculation, the game could run at approximately **62 FPS** instead of staying exactly at **60 FPS**.
+
+Although this difference may seem small, it affected several internal parts of the game, since the original engine is closely tied to the update rate, resulting in a more stable experience that is more faithful to the behavior of the game on the original platforms.
+
+---
+
+## 🚀 Performance and stability improvements
+
+Thanks to the new stable **60 FPS** limiting system, this version also includes important performance and stability improvements.
+
+The improvements achieved include:
+
+* ✔ The loading screen when entering the 3D world is now faster.
+* ✔ The game maintains a more stable execution rhythm.
+* ✔ Small irregularities caused by an incorrect FPS rate have been reduced.
+* ✔ The internal behavior of the game is more faithful to the original version.
+* ✔ The game physics now behave correctly and consistently.
+* ✔ The excessive brightness present in previous versions has been reduced.
+
+---
+
+## 🎬 Fixed cutscenes
+
+This version also fixes the visual issues related to cutscenes.
+
+Previously, some cutscenes could show remnants of the previous frame or cause small visual glitches when playback started.
+
+In version **0.90**, the game correctly clears the previous frame before displaying the cutscene, preventing previous images from being dragged onto the screen.
+
+In addition, black side bars have been added during playback, improving the visual presentation of the cutscenes and preventing scaling or display issues on Android.
+
+This fix has been safely implemented using the game engine’s own graphics tools.
+
+---
+
+## ✨ Version 0.90 summary
+
+* ✔ New stable and precise **60 FPS** limit.
+* ✔ Fixed the issue where the game could run at approximately **62 FPS**.
+* ✔ Improved overall game stability.
+* ✔ Performance improvements related to the engine’s internal synchronization.
+* ✔ Loading into the 3D world is now faster.
+* ✔ Game physics are more faithful to the original behavior.
+* ✔ Reduced the excessive brightness present in previous versions.
+* ✔ Fixed cutscenes.
+* ✔ Correct clearing of the previous frame before playing a cutscene.
+* ✔ Added black side bars during cutscenes.
+
 
 
 ##  Version 0.87.4
@@ -510,6 +632,66 @@ Version **0.87** is a huge step toward making the port feel much more comfortabl
 
 # 🇫🇷 Français
 
+## Version 0.90 — Cinématiques corrigées et 60 FPS stables
+
+La version **0.90** est une mise à jour importante axée sur l’amélioration des performances générales et de la fidélité du portage Android par rapport au comportement original du jeu.
+
+Cette version introduit un nouveau système de limitation stable à **60 FPS**, corrige les problèmes visuels pendant les cinématiques et améliore le comportement du jeu dans plusieurs domaines liés à la synchronisation interne et au chargement du monde 3D.
+
+---
+
+## ⚡ Nouvelle limite stable à 60 FPS
+
+L’une des principales améliorations de cette version est la mise en place d’une limite de **60 FPS** beaucoup plus stable et précise.
+
+Dans les versions précédentes, en raison d’une légère imprécision dans le calcul des FPS, le jeu pouvait fonctionner à environ **62 FPS** au lieu de rester exactement à **60 FPS**.
+
+Même si cette différence peut sembler faible, elle affectait plusieurs parties internes du jeu, car le moteur original est fortement lié au rythme de mise à jour, permettant ainsi d’obtenir une expérience plus stable et plus fidèle au comportement du jeu sur les plateformes originales.
+
+---
+
+## 🚀 Améliorations des performances et de la stabilité
+
+Grâce au nouveau système de limitation stable à **60 FPS**, cette version inclut également d’importantes améliorations des performances et de la stabilité.
+
+Parmi les améliorations obtenues, on trouve :
+
+* ✔ L’écran de chargement lors de l’entrée dans le monde 3D est maintenant plus rapide.
+* ✔ Le jeu maintient un rythme d’exécution plus stable.
+* ✔ Les petites irrégularités provoquées par un taux de FPS incorrect ont été réduites.
+* ✔ Le comportement interne du jeu est plus fidèle à la version originale.
+* ✔ La physique du jeu se comporte désormais de manière correcte et stable.
+* ✔ L’excès de luminosité présent dans les versions précédentes a été réduit.
+
+---
+
+## 🎬 Cinématiques corrigées
+
+Dans cette version, les problèmes visuels liés aux cinématiques ont également été corrigés.
+
+Auparavant, certaines cinématiques pouvaient afficher des restes de l’image précédente ou provoquer de petits défauts visuels au début de la lecture.
+
+Dans la version **0.90**, le jeu efface correctement l’image précédente avant d’afficher la cinématique, évitant ainsi que des images précédentes restent visibles à l’écran.
+
+De plus, des barres noires latérales ont été ajoutées pendant la lecture, améliorant la présentation visuelle des cinématiques et évitant les problèmes de mise à l’échelle ou d’affichage sur Android.
+
+Cette correction a été implémentée de manière sûre en utilisant les propres outils graphiques du moteur du jeu.
+
+---
+
+## ✨ Résumé de la version 0.90
+
+* ✔ Nouvelle limite stable et précise à **60 FPS**.
+* ✔ Correction du problème qui pouvait faire fonctionner le jeu à environ **62 FPS**.
+* ✔ Amélioration de la stabilité générale du jeu.
+* ✔ Améliorations des performances liées à la synchronisation interne du moteur.
+* ✔ Le chargement vers le monde 3D est maintenant plus rapide.
+* ✔ Physique du jeu plus fidèle au comportement original.
+* ✔ Réduction de l’excès de luminosité présent dans les versions précédentes.
+* ✔ Cinématiques corrigées.
+* ✔ Effacement correct de l’image précédente avant la lecture d’une cinématique.
+* ✔ Ajout de barres noires latérales pendant les cinématiques.
+
 
 ##  Version 0.87.4
 
@@ -761,6 +943,67 @@ La version **0.87** est une énorme avancée pour rendre le port beaucoup plus c
 ---
 
 # 🇩🇪 Deutsch
+
+## Version 0.90 — Zwischensequenzen korrigiert und stabile 60 FPS
+
+Version **0.90** ist ein wichtiges Update, das sich auf die Verbesserung der allgemeinen Leistung und der Genauigkeit des Android-Ports im Vergleich zum ursprünglichen Verhalten des Spiels konzentriert.
+
+Diese Version führt ein neues stabiles Begrenzungssystem auf **60 FPS** ein, behebt visuelle Probleme während der Zwischensequenzen und verbessert das Verhalten des Spiels in mehreren Bereichen, die mit der internen Synchronisierung und dem Laden der 3D-Welt zusammenhängen.
+
+---
+
+## ⚡ Neue stabile Begrenzung auf 60 FPS
+
+Eine der wichtigsten Verbesserungen dieser Version ist die Implementierung einer deutlich stabileren und präziseren Begrenzung auf **60 FPS**.
+
+In früheren Versionen konnte das Spiel aufgrund einer kleinen Ungenauigkeit bei der FPS-Berechnung mit ungefähr **62 FPS** laufen, anstatt exakt bei **60 FPS** zu bleiben.
+
+Auch wenn dieser Unterschied klein erscheinen mag, wirkte er sich auf mehrere interne Bereiche des Spiels aus, da die ursprüngliche Engine stark an die Aktualisierungsrate gebunden ist. Dadurch entsteht nun ein stabileres Erlebnis, das dem Verhalten des Spiels auf den ursprünglichen Plattformen treuer entspricht.
+
+---
+
+## 🚀 Leistungs- und Stabilitätsverbesserungen
+
+Dank des neuen stabilen Begrenzungssystems auf **60 FPS** enthält diese Version auch wichtige Verbesserungen bei Leistung und Stabilität.
+
+Zu den erzielten Verbesserungen gehören:
+
+* ✔ Der Ladebildschirm beim Betreten der 3D-Welt ist jetzt schneller.
+* ✔ Das Spiel hält einen stabileren Ausführungsrhythmus ein.
+* ✔ Kleine Unregelmäßigkeiten, die durch eine falsche FPS-Rate verursacht wurden, wurden reduziert.
+* ✔ Das interne Verhalten des Spiels ist der Originalversion treuer.
+* ✔ Die Spielphysik verhält sich korrekt und stabil.
+* ✔ Die übermäßige Helligkeit aus früheren Versionen wurde reduziert.
+
+---
+
+## 🎬 Zwischensequenzen korrigiert
+
+In dieser Version wurden auch die visuellen Probleme im Zusammenhang mit den Zwischensequenzen behoben.
+
+Zuvor konnten einige Zwischensequenzen Reste des vorherigen Frames anzeigen oder kleine visuelle Fehler beim Start der Wiedergabe verursachen.
+
+In Version **0.90** löscht das Spiel den vorherigen Frame korrekt, bevor die Zwischensequenz angezeigt wird, wodurch verhindert wird, dass vorherige Bilder auf dem Bildschirm sichtbar bleiben.
+
+Außerdem wurden während der Wiedergabe schwarze Seitenbalken hinzugefügt, was die visuelle Darstellung der Zwischensequenzen verbessert und Skalierungs- oder Anzeigeprobleme auf Android verhindert.
+
+Diese Korrektur wurde sicher umgesetzt, indem die eigenen Grafikwerkzeuge der Spiel-Engine verwendet wurden.
+
+---
+
+## ✨ Zusammenfassung der Version 0.90
+
+* ✔ Neue stabile und präzise Begrenzung auf **60 FPS**.
+* ✔ Das Problem wurde behoben, bei dem das Spiel mit ungefähr **62 FPS** laufen konnte.
+* ✔ Die allgemeine Stabilität des Spiels wurde verbessert.
+* ✔ Leistungsverbesserungen im Zusammenhang mit der internen Synchronisierung der Engine.
+* ✔ Das Laden in die 3D-Welt ist jetzt schneller.
+* ✔ Die Spielphysik entspricht dem ursprünglichen Verhalten genauer.
+* ✔ Die übermäßige Helligkeit aus früheren Versionen wurde reduziert.
+* ✔ Zwischensequenzen korrigiert.
+* ✔ Korrektes Löschen des vorherigen Frames vor dem Abspielen einer Zwischensequenz.
+* ✔ Schwarze Seitenbalken während der Zwischensequenzen hinzugefügt.
+
 
 ##  Version 0.87.4
 
