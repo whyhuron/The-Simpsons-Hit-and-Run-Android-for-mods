@@ -40,29 +40,11 @@ Si encontráis errores que no estén en este documento y queréis que se puedan 
 
 ## 🎬 Cinemáticas
 
-* **Si una cinemática comienza estando nosotros en el contexto de menú**, aparecerá un bug gráfico en el que los iconos del menú aparecerán junto con el icono de saltar cinemática.
-
-  No es algo especialmente molesto, pero sí puede dar una sensación algo cutre. Es complicado de arreglar y no quería haceros esperar más para los controles táctiles por este error.
-
-* **Las cinemáticas reproducidas desde el menú principal**, en la casa de Homer, pueden verse, pero **faltan las franjas negras cinematográficas**.
-
-* **Los créditos reproducidos desde el menú principal** presentan **un fallo en la reproducción al inicio**.
-
-* **En la cinemática de introducción**, si existe una partida guardada, **parpadeará el icono amarillo de la familia Simpson**.
-
-* **Al saltarse cinemáticas** en dispositivos **64 bits**, pueden aparecer **parpadeos y artefactos en la imagen**.
+* Al visualizar cinematicas desde el menu principal casa de homer las cinematicas deberían tener como marco la propia tele a los lados en lugar de barras negras.
 
 ---
 
-## 📉 Rendimiento
 
-* En la versión **NTSC**, en dispositivos **64 bits**, el juego **puede tardar unos segundos extra en cargar**.
-
-* En dispositivos **64 bits** existe un **ligero mayor popping** respecto a la versión de **32 bits**.
-
-* En dispositivos **64 bits** existe un cartel de **Springfield Gasoline**, presente en los niveles 1 y 4, en el que **solo aparece el poste y no el óvalo con el logo**.
-
----
 
 # 🇬🇧 English
 
@@ -98,27 +80,7 @@ If you find bugs that are not listed in this document and you want them to be fi
 
 ## 🎬 Cinematics
 
-* **If a cinematic starts while we are still in a menu context**, a graphical bug will appear where the menu icons are shown together with the skip cinematic icon.
-
-  It is not especially annoying, but it can look a bit unpolished. It is difficult to fix, and I did not want to make you wait longer for the touch controls because of this issue.
-
-* **Cinematics played from the main menu**, in Homer’s house, can be watched, but **the black cinematic bars are missing**.
-
-* **Credits played from the main menu** have **a playback glitch at the beginning**.
-
-* **In the intro cinematic**, if a save file exists, **the yellow Simpson family icon will blink**.
-
-* **When skipping cinematics** on **64-bit devices**, **flickering and visual artifacts** may appear.
-
----
-
-## 📉 Performance
-
-* In the **NTSC version**, on **64-bit devices**, the game **may take a few extra seconds to load**.
-
-* On **64-bit devices**, there is **slightly more popping** compared to the **32-bit version**.
-
-* On **64-bit devices**, there is a **Springfield Gasoline** sign, present in levels 1 and 4, where **only the pole appears and not the oval logo**.
+* When viewing cinematics from the main menu in Homer’s house, the cinematics should have the TV itself as a frame on the sides instead of black bars.
 
 ---
 
@@ -156,29 +118,10 @@ Si vous trouvez des bugs qui ne figurent pas dans ce document et que vous souhai
 
 ## 🎬 Cinématiques
 
-* **Si une cinématique commence alors que nous sommes encore dans un contexte de menu**, un bug graphique apparaîtra : les icônes du menu seront affichées en même temps que l’icône permettant de passer la cinématique.
-
-  Ce n’est pas quelque chose de particulièrement gênant, mais cela peut donner une impression un peu peu soignée. C’est compliqué à corriger, et je ne voulais pas vous faire attendre davantage pour les contrôles tactiles à cause de cette erreur.
-
-* **Les cinématiques lancées depuis le menu principal**, dans la maison d’Homer, peuvent être visionnées, mais **les bandes noires cinématographiques sont absentes**.
-
-* **Les crédits lancés depuis le menu principal** présentent **un problème de lecture au début**.
-
-* **Dans la cinématique d’introduction**, s’il existe une sauvegarde, **l’icône jaune de la famille Simpson clignotera**.
-
-* **Lorsque vous passez les cinématiques** sur des appareils **64 bits**, des **clignotements et artefacts visuels** peuvent apparaître.
+* Lors de la visualisation des cinématiques depuis le menu principal, dans la maison d’Homer, les cinématiques devraient avoir la télévision elle-même comme cadre sur les côtés au lieu de bandes noires.
 
 ---
 
-## 📉 Performances
-
-* Dans la version **NTSC**, sur les appareils **64 bits**, le jeu **peut prendre quelques secondes supplémentaires à charger**.
-
-* Sur les appareils **64 bits**, il existe un **léger popping supplémentaire** par rapport à la version **32 bits**.
-
-* Sur les appareils **64 bits**, il existe un panneau **Springfield Gasoline**, présent dans les niveaux 1 et 4, sur lequel **seul le poteau apparaît, mais pas l’ovale avec le logo**.
-
----
 
 # 🇩🇪 Deutsch
 
@@ -213,25 +156,6 @@ Wenn ihr Fehler findet, die nicht in diesem Dokument aufgeführt sind, und möch
 ---
 
 ## 🎬 Zwischensequenzen
-
-* **Wenn eine Zwischensequenz startet, während wir uns noch im Menü-Kontext befinden**, erscheint ein Grafikfehler, bei dem die Menü-Symbole zusammen mit dem Symbol zum Überspringen der Zwischensequenz angezeigt werden.
-
-  Das ist nicht besonders störend, kann aber etwas unfertig wirken. Es ist schwierig zu beheben, und ich wollte euch wegen dieses Fehlers nicht noch länger auf die Touch-Steuerung warten lassen.
-
-* **Zwischensequenzen, die aus dem Hauptmenü**, im Haus von Homer, abgespielt werden, können angesehen werden, aber **die schwarzen Kinobalken fehlen**.
-
-* **Die Credits aus dem Hauptmenü** weisen **einen Wiedergabefehler am Anfang** auf.
-
-* **In der Einleitungs-Zwischensequenz** blinkt **das gelbe Symbol der Simpson-Familie**, wenn ein Spielstand vorhanden ist.
-
-* **Beim Überspringen von Zwischensequenzen** auf **64-Bit-Geräten** können **Flackern und Bildartefakte** auftreten.
-
+* Beim Anzeigen der Zwischensequenzen über das Hauptmenü in Homers Haus sollten die Zwischensequenzen an den Seiten den Fernseher selbst als Rahmen haben, anstatt schwarze Balken anzuzeigen.
 ---
 
-## 📉 Leistung
-
-* In der **NTSC-Version** kann das Spiel auf **64-Bit-Geräten** **einige Sekunden länger zum Laden benötigen**.
-
-* Auf **64-Bit-Geräten** gibt es ein **leicht stärkeres Popping** im Vergleich zur **32-Bit-Version**.
-
-* Auf **64-Bit-Geräten** gibt es ein **Springfield Gasoline**-Schild, das in Level 1 und 4 vorkommt, bei dem **nur der Pfosten erscheint und nicht das ovale Logo**.

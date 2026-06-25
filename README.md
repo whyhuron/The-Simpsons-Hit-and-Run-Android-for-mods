@@ -60,13 +60,14 @@ Este proyecto continúa el trabajo de la comunidad con el objetivo de llevar **T
 
 ## Estado del proyecto
 
-Versión actual: **0.87.4**
+Versión actual: **0.90**
 
 * ✔ Controles táctiles nativos integrados con el juego y sus herramientas propias.
 * ✔ Modo historia jugable de principio a fin.
 * ✔ Cinemáticas funcionando correctamente durante el juego.
 * ✔ Soporte para mandos/controladores externos.
 * ✔ 60 FPS estables con VSync.
+* ✔ Físicas del juego fieles a la version original.
 * ✔ Soporte para múltiples resoluciones de forma adaptativa. Revisa el archivo [Cómo instalar](INSTALLATION.md) para saber cómo cambiar la resolución.
 
 ---
@@ -76,6 +77,7 @@ Versión actual: **0.87.4**
 * 📥  [Cómo instalar](INSTALLATION.md)
 * 🎮  [Controles del mando](CONTROLLER_CONTROLS.md)
 * 📱   [Controles táctiles](TOUCH_CONTROLS.md)
+* 📌  [Novedades de la última versión](CHANGELOG.md)
 * ⚠   [Problemas conocidos](KNOWN_ISSUES.md)
 * 📊  [Estado actual del port en profundidad](FEATURES.md)
 * 🎮  [Cheats](CHEATS.md)
@@ -161,13 +163,14 @@ This project continues the community effort with the goal of bringing **The Simp
 
 ## Project Status
 
-Current version: **0.87.4**
+Current version: **0.90**
 
 * ✔ Native touch controls integrated with the game and its own tools.
 * ✔ Story mode playable from start to finish.
 * ✔ Cutscenes working correctly during gameplay.
 * ✔ Support for controllers/external gamepads.
 * ✔ Stable 60 FPS with VSync.
+* ✔ Game physics faithful to the original version.
 * ✔ Support for multiple adaptive resolutions. Check the [Installation Guide](INSTALLATION.md) file to learn how to change the resolution.
 
 ---
@@ -176,8 +179,9 @@ Current version: **0.87.4**
 
 * 📥 [How to install](INSTALLATION.md)
 * 🎮 [Controller controls](CONTROLLER_CONTROLS.md)
-* 📱 [Touch controls](TOUCH_CONTROLS.md)
-* ⚠ [Known issues](KNOWN_ISSUES.md) 
+* 📱  [Touch controls](TOUCH_CONTROLS.md)
+* 📌 [Latest version news](CHANGELOG.md)
+* ⚠  [Known issues](KNOWN_ISSUES.md) 
 * 📊 [Current port status in depth](FEATURES.md)
 * 🎮 [Cheats](CHEATS.md) 
 * 🚧 [Future work](FUTURE_WORK.md)
@@ -262,13 +266,14 @@ Ce projet poursuit le travail de la communauté avec l'objectif d'amener **The S
 
 ## État du projet
 
-Version actuelle : **0.87.4**
+Version actuelle : **0.90**
 
 * ✔ Commandes tactiles natives intégrées au jeu et à ses propres outils.
 * ✔ Mode histoire jouable du début à la fin.
 * ✔ Cinématiques fonctionnant correctement pendant le jeu.
 * ✔ Support des manettes/contrôleurs externes.
 * ✔ 60 FPS stables avec VSync.
+* ✔ Physique du jeu fidèle à la version originale.
 * ✔ Prise en charge de plusieurs résolutions adaptatives. Consultez le fichier [Guide d'installation](INSTALLATION.md) pour savoir comment changer la résolution.
 
 ---
@@ -277,8 +282,9 @@ Version actuelle : **0.87.4**
 
 * 📥 [Comment installer](INSTALLATION.md)
 * 🎮 [Commandes de la manette](CONTROLLER_CONTROLS.md)
-* 📱 [Commandes tactiles](TOUCH_CONTROLS.md)
-* ⚠ [Problèmes connus](KNOWN_ISSUES.md)
+* 📱  [Commandes tactiles](TOUCH_CONTROLS.md)
+* 📌 [Nouveautés de la dernière version](CHANGELOG.md)
+* ⚠  [Problèmes connus](KNOWN_ISSUES.md)
 * 📊 [État actuel détaillé du port](FEATURES.md) 
 * 🎮 [Codes de triche](CHEATS.md) 
 * 🚧 [Travail futur](FUTURE_WORK.md)
@@ -363,13 +369,14 @@ Dieses Projekt führt die Arbeit der Community fort, mit dem Ziel, **The Simpson
 
 ## Projektstatus
 
-Aktuelle Version: **0.87.4**
+Aktuelle Version: **0.90**
 
 * ✔ Native Touch-Steuerung, die in das Spiel und die eigenen Tools integriert ist.
 * ✔ Story-Modus von Anfang bis Ende spielbar.
 * ✔ Zwischensequenzen funktionieren während des Spiels korrekt.
 * ✔ Unterstützung für Controller/externe Gamepads.
 * ✔ Stabile 60 FPS mit VSync.
+* ✔ Spielphysik getreu der Originalversion.
 * ✔ Unterstützung für mehrere adaptive Auflösungen. Siehe die Datei [Installationsanleitung](INSTALLATION.md), um zu erfahren, wie die Auflösung geändert wird.
 
 ---
@@ -378,8 +385,9 @@ Aktuelle Version: **0.87.4**
 
 * 📥 [Installationsanleitung](INSTALLATION.md) 
 * 🎮 [Controller-Steuerung](CONTROLLER_CONTROLS.md) 
-* 📱 [Touch-Steuerung](TOUCH_CONTROLS.md)
-* ⚠ [Bekannte Probleme](KNOWN_ISSUES.md) 
+* 📱  [Touch-Steuerung](TOUCH_CONTROLS.md)
+* 📌 [Neuigkeiten der neuesten Version](CHANGELOG.md)
+* ⚠  [Bekannte Probleme](KNOWN_ISSUES.md) 
 * 📊 [Aktueller Stand des Ports im Detail](FEATURES.md)
 * 🎮 [Cheats](CHEATS.md) 
 * 🚧 [Zukünftige Arbeiten](FUTURE_WORK.md)

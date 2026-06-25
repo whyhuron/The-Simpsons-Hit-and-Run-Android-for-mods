@@ -20,7 +20,7 @@
 
 ---
 
-* ✔ **Minimapa desplazado**cuando utilizamos controles táctiles.[**Controles táctiles**](TOUCH_CONTROLS.md)
+* ✔ **Minimapa desplazado** cuando utilizamos controles táctiles. [**Controles táctiles**](TOUCH_CONTROLS.md)
 
 ---
 
@@ -37,8 +37,7 @@
 ---
 
 * ✔ **Modo historia completamente jugable de principio a fin**, sin ningún problema durante la partida.
-  Las **cinemáticas se reproducen correctamente** durante el juego. Consulta **[KNOWN_ISSUES.md](KNOWN_ISSUES.md)** para más detalles sobre posibles problemas menores.
-
+  Las **cinemáticas se reproducen correctamente** durante el juego. 
 ---
 
 * ✔ **Reproducción de audio completamente funcional**, manteniendo el comportamiento original del juego.
@@ -104,6 +103,23 @@
   * una experiencia de conducción **más natural y cómoda**
 
 ---
+* ✔ **Configuración extra disponible dentro del juego** 
+
+  A partir de la versión **0.87.4**, algunos ajustes extra pueden modificarse directamente desde el menú de ajustes del propio juego, siempre que se tenga aplicado el archivo `ingame.p3d` modificado.
+
+  Actualmente estas opciones permiten cambiar:
+
+  * **Vibración del mando**
+  * **Inversión de cámara**
+
+  Si no se dispone del archivo `ingame.p3d` modificado, estos ajustes todavía pueden cambiarse antes de iniciar el juego editando el archivo de configuración externo.
+
+  Para más información sobre esta configuración extra, revisa el archivo:
+
+  [Cómo instalar](INSTALLATION.md)
+
+
+---
 
 # 🇬🇧 English
 
@@ -134,7 +150,7 @@
 ---
 
 * ✔ **Story mode fully playable from start to finish**, with no issues during gameplay.
-  **Cutscenes play correctly** during the game. See **[KNOWN_ISSUES.md](KNOWN_ISSUES.md)** for more details about possible minor issues.
+  **Cutscenes play correctly** during the game.
 
 ---
 
@@ -201,6 +217,23 @@
   * a more **natural and comfortable** driving experience
 
 ---
+* ✔ **Extra in-game configuration available**
+
+  Starting from version **0.87.4**, some extra settings can be changed directly from the game’s own settings menu, as long as the modified `ingame.p3d` file is applied.
+
+  These options currently allow you to change:
+
+  * **Gamepad vibration**
+  * **Camera inversion**
+
+  If the modified `ingame.p3d` file is not applied, these settings can still be changed before launching the game by editing the external configuration file.
+
+  For more information about this extra configuration, check the file:
+
+  [Installation guide](INSTALLATION.md)
+
+
+---
 
 # 🇫🇷 Français
 
@@ -231,7 +264,7 @@
 ---
 
 * ✔ **Mode histoire entièrement jouable du début à la fin**, sans problème pendant la partie.
-  Les **cinématiques se lisent correctement** pendant le jeu. Consultez **[KNOWN_ISSUES.md](KNOWN_ISSUES.md)** pour plus de détails concernant d’éventuels problèmes mineurs.
+  Les **cinématiques se lisent correctement** pendant le jeu.
 
 ---
 
@@ -299,6 +332,23 @@
 
 ---
 
+* ✔ **Configuration supplémentaire disponible en jeu**
+
+  À partir de la version **0.87.4**, certains réglages supplémentaires peuvent être modifiés directement depuis le menu des réglages du jeu, à condition que le fichier `ingame.p3d` modifié soit appliqué.
+
+  Ces options permettent actuellement de modifier:
+
+  * **Vibration de la manette**
+  * **Inversion de la caméra**
+
+  Si le fichier `ingame.p3d` modifié n’est pas appliqué, ces réglages peuvent tout de même être changés avant de lancer le jeu en modifiant le fichier de configuration externe.
+
+  Pour plus d’informations sur cette configuration supplémentaire, consultez le fichier:
+
+  [Guide d’installation](INSTALLATION.md)
+
+---
+
 # 🇩🇪 Deutsch
 
 ## 📊 Port-Funktionalitäten
@@ -328,7 +378,7 @@
 ---
 
 * ✔ **Story-Modus vollständig von Anfang bis Ende spielbar**, ohne Probleme während des Spiels.
-  **Zwischensequenzen werden korrekt abgespielt**. Siehe **[KNOWN_ISSUES.md](KNOWN_ISSUES.md)** für weitere Details zu möglichen kleineren Problemen.
+  **Zwischensequenzen werden korrekt abgespielt**. 
 
 ---
 
@@ -393,5 +443,22 @@
   * eine **präzisere Beschleunigung**
   * eine **bessere Geschwindigkeitskontrolle**
   * ein **natürlicheres und komfortableres** Fahrerlebnis
+
+---
+
+* ✔ **Zusätzliche Einstellungen im Spiel verfügbar**
+
+  Ab Version **0.87.4** können einige zusätzliche Einstellungen direkt über das Einstellungsmenü des Spiels geändert werden, sofern die modifizierte Datei `ingame.p3d` angewendet wurde.
+
+  Diese Optionen ermöglichen derzeit das Ändern von:
+
+  * **Gamepad-Vibration**
+  * **Kamerainvertierung**
+
+  Wenn die modifizierte Datei `ingame.p3d` nicht angewendet wurde, können diese Einstellungen weiterhin vor dem Starten des Spiels durch Bearbeiten der externen Konfigurationsdatei geändert werden.
+
+  Weitere Informationen zu dieser zusätzlichen Konfiguration findest du in der Datei:
+
+  [Installationsanleitung](INSTALLATION.md)
 
 ---
