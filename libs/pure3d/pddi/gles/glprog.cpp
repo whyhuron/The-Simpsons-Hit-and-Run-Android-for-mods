@@ -307,6 +307,8 @@ bool pglProgram::LinkProgram(GLuint vertexShader, GLuint fragmentShader)
     srm = glGetUniformLocation(program, "srm");
     // registro la ubicación del uniform gamma
     gamma = glGetUniformLocation(program, "gamma");
+    // registro si el material está iluminado o no
+    lit = glGetUniformLocation(program, "lit");
 
 #ifndef RAD_VITAGL
     // Always detach shaders after a successful link
