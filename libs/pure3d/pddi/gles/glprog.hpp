@@ -71,6 +71,8 @@ protected:
     GLint acs, acm, dcm, scm, ecm, srm;
     // ubicación del uniform gamma en el shader
     GLint gamma;
+    // indica al shader si el material tiene iluminación o no
+    GLint lit;
 #endif
 };
 
