@@ -110,6 +110,10 @@ void pglProgram::SetModelViewMatrix(const pddiMatrix* matrix)
 void pglProgram::SetTextureEnvironment(const pglTextureEnv* texEnv)
 {
 #ifdef RAD_CG
+    // para que el shader sepa si este material tiene o no iluminación 
+    if(lit >= 0)
+        glUniform1i(lit, texEnv->lit ? 1 : 0);
+
     if (texEnv->lit)
     {
         UniformColour(acm, texEnv->ambient);
