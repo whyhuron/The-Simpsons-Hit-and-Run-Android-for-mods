@@ -204,6 +204,7 @@ pglContext::pglContext(pglDevice* dev, pglDisplay* disp) : pddiBaseContext((pddi
         "uniform vec4 scm;\n"
         "uniform vec4 ecm;\n"
         "uniform float srm;\n"
+        "uniform int lit;\n"
 
         "varying vec2 tc;\n"
         "varying vec4 cpri;\n"
@@ -217,26 +218,28 @@ pglContext::pglContext(pglDevice* dev, pglDisplay* disp) : pddiBaseContext((pddi
         "    vec4 V = modelview * vec4(position, 1.0);\n"
         "    vec3 n = normalize(mat3(normalmatrix) * normal);\n"
 
-        "    vec3 diff = ecm.rgb + acm.rgb * acs.rgb;\n"
+        "    vec3 diff;\n"
         "    vec3 spec = vec3(0.0);\n"
-        "    for (int i = 0; i < " PDDI_STRINGIZE(PDDI_MAX_LIGHTS) "; i++) {\n"
-        "        if (lights[i].enabled == 0) continue;\n"
-
-        "        vec3 VP = direction(V, lights[i].position);\n"
-        "        float f = product(n,VP) != 0.0 ? 1.0 : 0.0;\n"
-        "        vec3 h = normalize(VP + vec3(0.0, 0.0, 1.0));\n"
-
-        "        vec3 k = lights[i].attenuation;\n"
-        "        float d = distance(V.xyz, lights[i].position.xyz);\n"
-        "        float att = lights[i].position.w != 0.0 ? 1.0 / (k[0] + k[1] * d + k[2] * d * d) : 1.0;\n"
-
-        "        diff += att * product(n,VP) * dcm.rgb * lights[i].colour.rgb;\n"
-        "        spec += att * f * power(product(n,h),srm) * scm.rgb * lights[i].colour.rgb;\n"
+        // si no hay iluminación usa el color del vértice directamente sin modificar
+        "    if(lit == 0) {\n"
+        "        diff = vec3(1.0);\n"
+        "    } else {\n"
+        "        diff = ecm.rgb + acm.rgb * acs.rgb;\n"
+        "        for (int i = 0; i < " PDDI_STRINGIZE(PDDI_MAX_LIGHTS) "; i++) {\n"
+        "            if (lights[i].enabled == 0) continue;\n"
+        "            vec3 VP = direction(V, lights[i].position);\n"
+        "            float f = product(n,VP) != 0.0 ? 1.0 : 0.0;\n"
+        "            vec3 h = normalize(VP + vec3(0.0, 0.0, 1.0));\n"
+        "            vec3 k = lights[i].attenuation;\n"
+        "            float d = distance(V.xyz, lights[i].position.xyz);\n"
+        "            float att = lights[i].position.w != 0.0 ? 1.0 / (k[0] + k[1] * d + k[2] * d * d) : 1.0;\n"
+        "            diff += att * product(n,VP) * dcm.rgb * lights[i].colour.rgb;\n"
+        "            spec += att * f * power(product(n,h),srm) * scm.rgb * lights[i].colour.rgb;\n"
+        "        }\n"
         "    }\n"
-
         "    tc = texcoord;\n"
         "    cpri = color * vec4(diff, dcm.a);\n"
-        "    csec = vec4(spec, 0.0);\n"
+        "    csec = vec4(spec, 0.0);\n" 
         "    gl_Position = projection * V;\n"
         "}\n"
     );
