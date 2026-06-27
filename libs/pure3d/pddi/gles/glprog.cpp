@@ -143,6 +143,10 @@ void pglProgram::SetTextureEnvironment(const pglTextureEnv* texEnv)
     if (sampler >= 0)
         glUniform1i(sampler, 0);
 
+    // el shader necesita saber si este material tiene o no iluminación
+    if(lit >= 0)
+        glUniform1i(lit, texEnv->lit ? 1 : 0);
+
     if (texEnv->lit)
     {
         UniformColour(acm, texEnv->ambient);
