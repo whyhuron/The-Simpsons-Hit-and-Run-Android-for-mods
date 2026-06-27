@@ -2395,29 +2395,51 @@ class radControllerSystemSDL
             int androidInstanceId = -1;
         #endif
 
-        #if SDL_MAJOR_VERSION < 3
-            if( event->type == SDL_CONTROLLERDEVICEADDED )
-            {
-                pController = SDL_GameControllerOpen( event->cdevice.which );
-            }
-            else if( event->type == SDL_CONTROLLERDEVICEREMOVED )
-            {
-                pController = SDL_GameControllerFromInstanceID( event->cdevice.which );
-            }
+    #if SDL_MAJOR_VERSION < 3
+        if( event->type == SDL_CONTROLLERDEVICEADDED )
+        {
+            pController = SDL_GameControllerOpen( event->cdevice.which );
+        }
+        else if( event->type == SDL_CONTROLLERDEVICEREMOVED )
+        {
+        #if defined(RAD_ANDROID)
+            /*
+            * On Android, for removed events, event->cdevice.which is already
+            * the controller instance id.
+            *
+            * Do not try to recover the SDL controller object here. It may already
+            * be gone. We only need the instance id to remove our tracked state.
+            */
+            pController = NULL;
         #else
-            if( event->type == SDL_EVENT_GAMEPAD_ADDED )
-            {
-                pController = SDL_OpenGamepad( event->cdevice.which );
-            }
-            else if( event->type == SDL_EVENT_GAMEPAD_REMOVED )
-            {
-                pController = SDL_GetGamepadFromID( event->cdevice.which );
-            }
+            pController = SDL_GameControllerFromInstanceID( event->cdevice.which );
         #endif
-            else
-            {
-                return true;
-            }
+        }
+    #else
+        if( event->type == SDL_EVENT_GAMEPAD_ADDED )
+        {
+            pController = SDL_OpenGamepad( event->cdevice.which );
+        }
+        else if( event->type == SDL_EVENT_GAMEPAD_REMOVED )
+        {
+        #if defined(RAD_ANDROID)
+            /*
+            * On Android, for removed events, event->cdevice.which is already
+            * the controller instance id.
+            *
+            * Do not try to recover the SDL gamepad object here. It may already
+            * be gone. We only need the instance id to remove our tracked state.
+            */
+            pController = NULL;
+        #else
+            pController = SDL_GetGamepadFromID( event->cdevice.which );
+        #endif
+        }
+    #endif
+        else
+        {
+            return true;
+        }
 
         #if defined(RAD_ANDROID)
         #if SDL_MAJOR_VERSION < 3

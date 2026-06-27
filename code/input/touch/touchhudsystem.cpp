@@ -33,6 +33,8 @@ void TouchHudFingerState::Reset()
     delta = TouchVector2( 0.0f, 0.0f );
 
     pressure = 0.0f;
+    
+    
 }
 
 //=============================================================================
@@ -118,7 +120,7 @@ TouchHudSystem& TouchHudSystem::GetInstance()
 //=============================================================================
 
 TouchHudSystem::TouchHudSystem():mEnabled( true ),mCurrentProfile( TOUCH_PROFILE_HIDDEN ),mControlCount( 0 ),mCharacterTouchSplitX( 0.32f ),
-mCurrentInteractionType( TOUCH_INTERACTION_NONE ),mCurrentInteractionIcon( TOUCH_INTERACTION_ICON_NONE )
+mCurrentInteractionType( TOUCH_INTERACTION_NONE ),mCurrentInteractionIcon( TOUCH_INTERACTION_ICON_NONE ),mTouchInputWasSuppressed (false)
 {
     InitializeDefaultControls();
     ClearActiveTouches();
@@ -146,7 +148,7 @@ void TouchHudSystem::Reset()
     {
         InitializeDefaultControls();
     }
-    
+    mTouchInputWasSuppressed = false;
 }
 
 void TouchHudSystem::SetEnabled( bool enabled )
@@ -255,18 +257,51 @@ void TouchHudSystem::Update( unsigned int elapsedMs )
 }
 
 //Bloquea input tactil en caso de existir mando conectado
+// primer frame limpia fuerte 
+// los siguientes una vez esta suprimido el touch simplemente retorna true 
 
 bool TouchHudSystem::RejectTouchInputIfSuppressed()
 {
 #if defined(RAD_ANDROID)
-    if ( !TouchInputModeManager::GetInstance().ShouldShowTouchHud() )
-    {
-        ClearActiveTouches();
+    const bool touchSuppressed =
+        !TouchInputModeManager::GetInstance().ShouldShowTouchHud();
 
-        TouchInputAdapter::GetInstance().ClearQueuedInputs();
-        TouchInputAdapter::GetInstance().ClearActiveInputs();
+    if ( touchSuppressed )
+    {
+        /*
+         * First frame entering suppressed state.
+         *
+         * This is the only moment where we need the expensive/full cleanup:
+         * - remove active touches
+         * - clear queued touch inputs
+         * - release virtual buttons/axes currently held by touch
+         */
+        if ( !mTouchInputWasSuppressed )
+        {
+            ClearActiveTouches();
+
+            TouchInputAdapter::GetInstance().ClearQueuedInputs();
+            TouchInputAdapter::GetInstance().ClearActiveInputs();
+
+            mTouchInputWasSuppressed = true;
+        }
 
         return true;
+    }
+
+    /*
+     * Touch input is no longer suppressed.
+     *
+     * Reset the transition flag and make sure the touch system resumes from
+     * a clean state. We do not need to clear active virtual inputs here because
+     * they were already released when suppression started.
+     */
+    if ( mTouchInputWasSuppressed )
+    {
+        ClearActiveTouches();
+        TouchInputAdapter::GetInstance().ClearQueuedInputs();
+
+        mTouchInputWasSuppressed = false;
     }
 #endif
 
@@ -873,7 +908,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_CHARACTER_START,
         TOUCH_PROFILE_CHARACTER,
         TOUCH_ACTION_FE_SELECT,
-        TouchRect( 0.90f, 0.02f, 0.09f, 0.18f ),
+        TouchRect( 0.015f, 0.02f, 0.09f, 0.18f ), // originalmente arriba derecha TouchRect( 0.90f, 0.02f, 0.09f, 0.18f )
         true,
         "CharacterStart"
     );
@@ -932,7 +967,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_START,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_FE_SELECT,
-        TouchRect( 0.90f, 0.02f, 0.09f, 0.18f ),
+        TouchRect( 0.015f, 0.02f, 0.09f, 0.18f ),
         true,
         "VehicleStart"
     );
@@ -978,7 +1013,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_REVERSE,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_REVERSE,
-        TouchRect( 0.69f, 0.72f, 0.11f, 0.20f ),
+        TouchRect( 0.69f, 0.71f, 0.11f, 0.22f ), // Originalmente TouchRect( 0.69f, 0.72f, 0.11f, 0.20f ),
         true,
         "VehicleReverse"
     );
@@ -987,7 +1022,7 @@ void TouchHudSystem::InitializeDefaultControls()
         TOUCH_HUD_CONTROL_VEHICLE_HAND_BRAKE,
         TOUCH_PROFILE_VEHICLE,
         TOUCH_ACTION_HAND_BRAKE,
-        TouchRect( 0.69f, 0.49f, 0.11f, 0.20f ),
+        TouchRect( 0.69f, 0.49f, 0.11f, 0.20f ), 
         true,
         "VehicleHandBrake"
     );
@@ -1081,7 +1116,7 @@ void TouchHudSystem::InitializeDefaultControls()
     TOUCH_HUD_CONTROL_FRONTEND_START,
     TOUCH_PROFILE_FRONTEND,
     TOUCH_ACTION_FE_SELECT,
-    TouchRect( 0.90f, 0.02f, 0.09f, 0.18f ),
+    TouchRect( 0.015f, 0.02f, 0.09f, 0.18f ),
     true,
     "FrontendStart"
     );

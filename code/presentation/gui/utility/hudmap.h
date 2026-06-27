@@ -167,6 +167,10 @@ public:
     void RestoreAllRegisteredIcons();
     static void ClearAllRegisteredIcons();
 
+    #ifdef RAD_ANDROID
+    void SetAndroidHudMapOverlayOffset( int x, int y );
+    #endif
+
 private:
 
     //---------------------------------------------------------------------
@@ -228,6 +232,11 @@ private:
     static HudMapIcon s_registeredIcons[ MAX_NUM_REGISTERED_ICONS ];
     static int s_numRegisteredIcons;
     static int s_fpIconID;
+
+    #ifdef RAD_ANDROID
+    int m_androidHudMapOverlayOffsetX;
+    int m_androidHudMapOverlayOffsetY;
+    #endif
 
 };
 

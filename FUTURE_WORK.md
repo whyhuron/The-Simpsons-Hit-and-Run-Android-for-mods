@@ -26,9 +26,7 @@ Esto evitaría los inconvenientes actuales, ya que dicha carpeta está bloqueada
 
 ### Solución de cinemáticas
 
-En futuras versiones se solucionarán los bugs visuales relacionados con las cinemáticas.
-
-Hay que tener paciencia, ya que las cinemáticas son uno de los elementos más problemáticos del port. Se les han dedicado muchas horas de trabajo, pero todavía siguen causando algunos problemas.
+Las cinematicas se visualizan ahora correctamente con barras negras, pero el caso de uso de visualizar las cinematicas desde el menu principal (casa de homer) deberia aparecer el marco de la tele a los lados, es un detalle que estudiaré en el futuro.
 
 ### Solución de bugs y errores menores
 
@@ -58,9 +56,7 @@ This would avoid the current inconvenience, as this folder is blocked or has lim
 
 ### Cinematics fixes
 
-Future versions will fix visual bugs related to cinematics.
-
-Please be patient, as cinematics are one of the most problematic elements of the port. Many hours of work have already been dedicated to them, but they are still causing some issues.
+The cinematics now display correctly with black bars, but in the use case of viewing the cinematics from the main menu (Homer’s house), the TV frame should appear on the sides. It’s a detail I’ll look into in the future.
 
 ### Bug fixes and minor errors
 
@@ -90,9 +86,7 @@ Cela permettrait d’éviter les inconvénients actuels, car ce dossier est bloq
 
 ### Correction des cinématiques
 
-Dans les futures versions, les bugs visuels liés aux cinématiques seront corrigés.
-
-Il faut faire preuve de patience, car les cinématiques sont l’un des éléments les plus problématiques du portage. De nombreuses heures de travail leur ont déjà été consacrées, mais elles continuent encore à poser certains problèmes.
+Les cinématiques s’affichent désormais correctement avec des bandes noires, mais dans le cas d’utilisation où l’on visualise les cinématiques depuis le menu principal (la maison d’Homer), le cadre de la télévision devrait apparaître sur les côtés. C’est un détail que j’étudierai à l’avenir.
 
 ### Correction de bugs et d’erreurs mineures
 
@@ -122,9 +116,7 @@ Dadurch würden die aktuellen Nachteile vermieden, da dieser Ordner in vielen ne
 
 ### Korrektur der Zwischensequenzen
 
-In zukünftigen Versionen werden visuelle Fehler im Zusammenhang mit den Zwischensequenzen behoben.
-
-Bitte habt Geduld, da die Zwischensequenzen eines der problematischsten Elemente der Portierung sind. Es wurden bereits viele Arbeitsstunden in sie investiert, dennoch verursachen sie weiterhin einige Probleme.
+Die Zwischensequenzen werden jetzt korrekt mit schwarzen Balken angezeigt, aber im Anwendungsfall, in dem die Zwischensequenzen über das Hauptmenü (Homers Haus) angesehen werden, sollte der Fernsehrahmen an den Seiten erscheinen. Das ist ein Detail, das ich in Zukunft untersuchen werde.
 
 ### Fehlerbehebungen und kleinere Probleme
 

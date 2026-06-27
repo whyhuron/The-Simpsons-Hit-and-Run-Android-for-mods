@@ -191,6 +191,10 @@ CHudMap::CHudMap( Scrooby::Page* pPage, int playerID, const char* p3dFile )
     m_lastRoadSeg( NULL ),
     m_lastOnRoadLocation( 0.0f, 0.0f, 0.0f ),
     m_frameCount( -1 )
+    #ifdef RAD_ANDROID
+    ,m_androidHudMapOverlayOffsetX( 0 )
+    ,m_androidHudMapOverlayOffsetY( 0 )
+    #endif
 {
 MEMTRACK_PUSH_GROUP( "CHudMap" );
     memset( m_icons, 0, sizeof( m_icons ) );
@@ -530,8 +534,16 @@ CHudMap::Update( unsigned int elapsedTime )
             // center icon in hud map first
             //
             s_registeredIcons[ i ].m_iconImage->GetBoundingBoxSize( iconWidth, iconHeight );
-            iconPosX = (mapX + mapWidth / 2) - (iconWidth / 2);
-            iconPosY = (mapY + mapHeight / 2) - (iconHeight / 2);
+            #ifdef RAD_ANDROID
+                        const int iconBaseMapX = mapX - m_androidHudMapOverlayOffsetX;
+                        const int iconBaseMapY = mapY - m_androidHudMapOverlayOffsetY;
+            #else
+                        const int iconBaseMapX = mapX;
+                        const int iconBaseMapY = mapY;
+            #endif
+            iconPosX = (iconBaseMapX + mapWidth / 2) - (iconWidth / 2);
+            iconPosY = (iconBaseMapY + mapHeight / 2) - (iconHeight / 2);
+
             s_registeredIcons[ i ].m_iconImage->SetPosition( iconPosX, iconPosY );
 
             s_registeredIcons[ i ].m_iconImage->ResetTransformation();
@@ -1173,6 +1185,17 @@ CHudMap::FindIcon( HudMapIcon::eIconType type ) const
 
     return const_cast<HudMapIcon*>( icon );
 }
+
+
+#ifdef RAD_ANDROID
+
+void CHudMap::SetAndroidHudMapOverlayOffset( int x, int y )
+{
+    m_androidHudMapOverlayOffsetX = x;
+    m_androidHudMapOverlayOffsetY = y;
+}
+
+#endif
 
 //===========================================================================
 // CHudMap::Translate

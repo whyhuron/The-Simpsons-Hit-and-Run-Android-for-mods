@@ -384,6 +384,11 @@ void RenderManager::FlushDelList()
 //========================================================================
 void RenderManager::MunchDelList(unsigned us)
 {
+    // optimización evitamos llamar si no hay entidades pendientes
+    if (mEntityDeletionList.mUseSize == 0)
+    {
+        return;
+    }
     radTime64 start = radTimeGetMicroseconds64();
 
     while(mEntityDeletionList.mUseSize)
@@ -755,6 +760,20 @@ void RenderManager::ContextUpdate( unsigned int iElapsedTime )
     BEGIN_PROFILE("Begin Frame");
     p3d::context->BeginFrame();
     END_PROFILE("Begin Frame");
+
+    #if defined(RAD_ANDROID)
+    {
+    PresentationManager* pm = GetPresentationManager();
+
+        if (pm != NULL &&
+            pm->GetFMVPlayer() != NULL &&
+            pm->GetFMVPlayer()->IsPlaying())
+        {
+            p3d::pddi->SetClearColour(pddiColour(0, 0, 0));
+            p3d::pddi->Clear(PDDI_BUFFER_COLOUR | PDDI_BUFFER_DEPTH);
+        }
+    }
+#endif
 
     for (int i = RenderEnums::numLayers - 1; i > -1; i--)
     {

@@ -528,36 +528,93 @@ void pglDisplay::SwapBuffers(void)
     SDL_GL_SwapWindow(win);
     reset = false;
     #ifdef RAD_ANDROID
-    // --- FPS CAP 60 (muy ligero) ---
-    
+    /*
+     * Manual 60 FPS cap for Android.
+     *
+     * This is intentionally independent from display refresh rate.
+     * It prevents 90 Hz / 120 Hz devices from running the game logic too fast.
+     *
+     * m_only60 must remain the switch:
+     * - true  = gameplay cap at 60 FPS
+     * - false = FMV/cinematics or special states, do not force 60 here
+     */
+    static Uint64 sCapFreq = 0;
+    static Uint64 sLastFrameTime = 0;
+
+    if (sCapFreq == 0)
+    {
+        sCapFreq = SDL_GetPerformanceFrequency();
+    }
+
     if (m_only60)
     {
-        static const double TARGET_MS = 1000.0 / 60.0;  // 16.666...
-        static Uint64 freq = 0;
-        static Uint64 last = 0;
-
-        if (freq == 0) {
-            freq = SDL_GetPerformanceFrequency();
-            last = SDL_GetPerformanceCounter();
-            return;
-        }
+        const Uint64 targetTicks =
+            (Uint64)((double)sCapFreq / 60.0 + 0.5);
 
         Uint64 now = SDL_GetPerformanceCounter();
-        double ms = (double)(now - last) * 1000.0 / (double)freq;
 
-        if (ms < TARGET_MS)
+        if (sLastFrameTime == 0)
         {
-            // SDL_Delay es barato; puede tener cierta imprecisión, pero para física ligada a frame suele ir bien.
-            Uint32 delayMs = (Uint32)(TARGET_MS - ms);
-            if (delayMs > 0) SDL_Delay(delayMs);
-            // Re-sincroniza timestamp tras el delay
-            now = SDL_GetPerformanceCounter();
+            sLastFrameTime = now;
         }
+        else
+        {
+            const Uint64 targetTime = sLastFrameTime + targetTicks;
 
-        last = now;
+            if (now < targetTime)
+            {
+                Uint64 remainingTicks = targetTime - now;
+
+                double remainingMs =
+                    (double)remainingTicks * 1000.0 / (double)sCapFreq;
+
+                /*
+                 * Coarse wait.
+                 * Sleep most of the remaining time, leaving a small margin
+                 * because SDL_Delay is not perfectly precise on Android.
+                 */
+                if (remainingMs > 2.0)
+                {
+                    SDL_Delay((Uint32)(remainingMs - 1.0));
+                }
+
+                /*
+                 * Fine wait.
+                 * Not a pure busy-wait: SDL_Delay(0) yields to the scheduler.
+                 * This usually only runs for a tiny fraction of a millisecond.
+                 */
+                while (SDL_GetPerformanceCounter() < targetTime)
+                {
+                    SDL_Delay(0);
+                }
+
+                now = SDL_GetPerformanceCounter();
+            }
+
+            /*
+             * Important:
+             * Use the real current time, not targetTime.
+             *
+             * This avoids "catch-up" frames after a small hitch.
+             * For this old game, we prefer never producing a too-fast frame.
+             */
+            sLastFrameTime = now;
+        }
+    }
+    else
+    {
+        /*
+         * If 60 FPS cap is disabled, reset the cap timer.
+         *
+         * This is important for FMV/cinematics:
+         * when the game returns from a 30 FPS movie to gameplay,
+         * we do not want to carry an old timestamp.
+         */
+        sLastFrameTime = 0;
     }
 #endif
 
+// Contador fps para logcat
 #if defined(RAD_ANDROID) && defined(RAD_DEBUG)
     static int frames = 0;
     static Uint32 lastTick = 0;

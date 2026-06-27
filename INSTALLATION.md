@@ -14,8 +14,6 @@ Hola, esto es un **port del videojuego *The Simpsons: Hit & Run* para Android**.
 
 Por favor, lee este pequeño documento en tu idioma correspondiente **de principio a fin**, ya que es de **vital importancia para una correcta instalación**.
 
- 
-
 
 En el futuro se incorporarán **controles táctiles con sus respectivos iconos**.
 
@@ -122,7 +120,7 @@ Para más información, consulta el archivo **[TOUCH_CONTROLS.md](TOUCH_CONTROLS
 
 ---
 
-## 📝 Configuración adicional de gameplay
+## ⚙️ Configuración adicional 
 
 El port también incluye un archivo de configuración adicional llamado:
 
@@ -145,6 +143,31 @@ A través de este archivo, puedes configurar las siguientes opciones:
 
 Estas opciones no estaban disponibles originalmente en la versión de PC del juego. Como no formaban parte de los assets originales de PC, se ofrecen mediante este archivo de configuración externo en lugar de estar integradas directamente en el menú de configuración del juego.
 
+---
+
+
+## ⚙️ Configuración extra dentro del juego 
+
+A partir de la versión **0.87.4**, algunos ajustes extra pueden modificarse directamente dentro del juego:
+
+* Vibración del mando.
+* Inversión de cámara.
+
+Para usar estas opciones desde el menú de ajustes del juego, es necesario tener aplicado el archivo `ingame.p3d` modificado, debido a que el juego original de 2003 en PC no tenía estas opciones:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+Este archivo modificado puede obtenerse uniéndote al servidor de Discord:
+
+[Unirse al servidor de Discord](https://discord.gg/M4FeZpgBxX)
+
+Si no tienes el archivo `ingame.p3d` modificado, estos ajustes todavía pueden cambiarse antes de iniciar el juego editando el archivo de configuración externo:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
 ---
 
 Espero que disfrutes el port.
@@ -261,7 +284,7 @@ For more information, check the **[TOUCH_CONTROLS.md](TOUCH_CONTROLS.md)** file.
 
 ---
 
-## 📝 Additional Gameplay Configuration
+## ⚙️ Additional Gameplay Configuration
 
 The port also includes an additional configuration file called:
 
@@ -286,6 +309,30 @@ These options were not originally available in the PC version of the game. Since
 
 ---
 
+## ⚙️ Extra in-game configuration
+
+Starting from version **0.87.4**, some extra settings can be changed directly in-game:
+
+* Gamepad vibration.
+* Camera inversion.
+
+To use these options from the in-game settings menu, you need to have the modified `ingame.p3d` file applied, because the original 2003 PC game did not include these options:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+This modified file can be obtained by joining the Discord server:
+
+[Join the Discord server](https://discord.gg/M4FeZpgBxX)
+
+If you do not have the modified `ingame.p3d` file, these settings can still be changed before launching the game by editing the external configuration file:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
+
+---
 I hope you enjoy the port.
 
 
@@ -400,7 +447,7 @@ Pour plus d’informations, consultez le fichier **[TOUCH_CONTROLS.md](TOUCH_CON
 
 ---
 
-## 📝 Configuration supplémentaire du gameplay
+## ⚙️ Configuration supplémentaire du gameplay
 
 Le port inclut également un fichier de configuration supplémentaire appelé :
 
@@ -422,6 +469,32 @@ Grâce à ce fichier, vous pouvez configurer les options suivantes :
 * Choisir si vous souhaitez inverser la caméra sur l’axe X.
 
 Ces options n’étaient pas disponibles à l’origine dans la version PC du jeu. Comme elles ne faisaient pas partie des assets originaux de la version PC, elles sont proposées via ce fichier de configuration externe au lieu d’être directement intégrées dans le menu de configuration du jeu.
+
+---
+
+
+## ⚙️ Configuration supplémentaire en jeu
+
+À partir de la version **0.87.4**, certains réglages supplémentaires peuvent être modifiés directement en jeu:
+
+* Vibration de la manette.
+* Inversion de la caméra.
+
+Pour utiliser ces options depuis le menu des réglages du jeu, il est nécessaire d’avoir appliqué le fichier `ingame.p3d` modifié, car le jeu PC original de 2003 n’incluait pas ces options:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+Ce fichier modifié peut être obtenu en rejoignant le serveur Discord:
+
+[Rejoindre le serveur Discord](https://discord.gg/M4FeZpgBxX)
+
+Si vous n’avez pas le fichier `ingame.p3d` modifié, ces réglages peuvent toujours être changés avant de lancer le jeu en modifiant le fichier de configuration externe:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
 
 ---
 
@@ -540,7 +613,7 @@ Weitere Informationen finden Sie in der Datei **[TOUCH_CONTROLS.md](TOUCH_CONTRO
 
 ---
 
-## 📝 Zusätzliche Gameplay-Konfiguration
+## ⚙️ Zusätzliche Gameplay-Konfiguration
 
 Der Port enthält außerdem eine zusätzliche Konfigurationsdatei mit dem Namen:
 
@@ -562,6 +635,32 @@ Alle Änderungen an dieser Datei müssen **vor dem Starten des Spiels** vorgenom
 * Auswählen, ob die Kamera auf der X-Achse invertiert werden soll.
 
 Diese Optionen waren ursprünglich in der PC-Version des Spiels nicht verfügbar. Da sie nicht Teil der originalen PC-Assets waren, werden sie über diese externe Konfigurationsdatei bereitgestellt, anstatt direkt in das Konfigurationsmenü des Spiels integriert zu sein.
+
+---
+
+
+## ⚙️ Zusätzliche Einstellungen im Spiel
+
+Ab Version **0.87.4** können einige zusätzliche Einstellungen direkt im Spiel geändert werden:
+
+* Gamepad-Vibration.
+* Kamerainvertierung.
+
+Um diese Optionen über das Einstellungsmenü im Spiel zu verwenden, muss die modifizierte Datei `ingame.p3d` angewendet werden, da das originale PC-Spiel von 2003 diese Optionen nicht enthielt:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/art/frontend/scrooby/ingame.p3d
+```
+
+Diese modifizierte Datei kann über den Discord-Server bezogen werden:
+
+[Dem Discord-Server beitreten](https://discord.gg/M4FeZpgBxX)
+
+Wenn du die modifizierte Datei `ingame.p3d` nicht hast, können diese Einstellungen trotzdem vor dem Starten des Spiels geändert werden, indem die externe Konfigurationsdatei bearbeitet wird:
+
+```txt
+Android/data/com.c4rlox.simpsons/files/Simpsons_configuration/Simpsons_configuration.txt
+```
 
 ---
 
